@@ -54,6 +54,7 @@
             </div>
             <div><label>Unit/Barang</label><input type="text" id="devName" placeholder="Contoh: Acer Laptop"></div>
         </div>
+        <input type="text" id="kelengkapan" placeholder="Kelengkapan Unit (Contoh: Charger, Tas, Baterai...)">
         <textarea id="keluhan" placeholder="Keluhan atau Keterangan..."></textarea>
         <button class="btn btn-blue" onclick="saveToCloud()">💾 SIMPAN & PRINT TANDA TERIMA</button>
     </div>
@@ -97,8 +98,7 @@
 <div id="printArea">
     <div style="text-align:center; border-bottom: 2px dashed #000; padding-bottom:10px;">
         <h2 style="margin:0;">ARIF EDU TECH</h2>
-         <p style="margin:8px 0;">Service - Study - Software - Hardware (IT Solutions)</p>
-        <p style="font-size: 10px; margin: 5px 0;">Dsn. Blabak, Kec. Kandat | HP: 087758018426/081805305278</p>
+        <p style="font-size: 10px; margin: 5px 0;">Dsn. Blabak, Kec. Kandat | HP: 087758018426</p>
     </div>
     <div id="notaKonten" style="margin-top:15px; font-size: 12px;"></div>
     <div id="qrPrint" style="display:flex; justify-content:center; margin:15px 0;"></div>
@@ -167,6 +167,7 @@
             tgl: document.getElementById('entryDate').value,
             tipe: document.getElementById('serviceType').value,
             barang: document.getElementById('devName').value,
+            kelengkapan: document.getElementById('kelengkapan').value, // Simpan Kelengkapan
             keluhan: document.getElementById('keluhan').value,
             status: 'checking', tindakan: '-', items: [], total: 0
         };
@@ -205,19 +206,20 @@
         const trackingUrl = window.location.origin + window.location.pathname + "?id=" + id;
         const tglCetak = new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
 
-        let h = `<div style="text-align:right; font-size:10px; margin-bottom:10px;">Tanggal Cetak: ${tglCetak}</div>
+        let h = `<div style="text-align:right; font-size:10px; margin-bottom:10px;">Tanggal: ${tglCetak}</div>
                  <h3 style="text-align:center; margin:10px 0;">${data.items.length > 0 ? 'NOTA LUNAS' : 'TANDA TERIMA'}</h3>
-                 <div style="line-height:1.4;">
+                 <div style="line-height:1.6; font-size: 13px;">
                     <strong>Pelanggan :</strong> ${data.nama}<br>
                     <strong>Tgl Masuk :</strong> ${data.tgl}<br>
                     <strong>Unit      :</strong> ${data.barang}<br>
-                    <strong>Ket/Keluh :</strong> ${data.keluhan}
+                    <strong>Kelengkapan:</strong> ${data.kelengkapan || '-'}<br>
+                    <strong>Keluhan   :</strong> ${data.keluhan}
                  </div>`;
         
         if(data.items.length > 0) {
-            h += `<table style="margin-top:10px;">`;
+            h += `<table style="margin-top:10px; border-top: 1px solid #000;">`;
             data.items.forEach(i => h += `<tr><td>${i.desc}</td><td style="text-align:right;">Rp ${parseInt(i.price).toLocaleString()}</td></tr>`);
-            h += `</table><h4 style="text-align:right; margin-top:10px;">TOTAL: Rp ${parseInt(data.total).toLocaleString()}</h4>`;
+            h += `</table><h4 style="text-align:right; margin-top:10px; border-top: 1px dashed #000; padding-top:5px;">TOTAL: Rp ${parseInt(data.total).toLocaleString()}</h4>`;
         }
         
         document.getElementById('notaKonten').innerHTML = h;
@@ -231,7 +233,7 @@
                 <a href="${trackingUrl}" class="qr-link">${trackingUrl}</a>
             </div>
             <div style="font-size:9px; font-style:italic; color:#444; line-height:1.2; padding:0 20px;">
-                "Scan QR Code untuk memantau progres servis Anda secara real-time"
+                "Scan untuk melihat progres servis"
             </div>
         `;
 
@@ -254,6 +256,7 @@
                     <div style="background:#f1f1f1; padding:20px; border-radius:10px; display:inline-block; text-align:left; border:1px solid #ddd;">
                         <p><strong>Unit:</strong> ${data.barang}</p>
                         <p><strong>Tanggal Masuk:</strong> ${data.tgl}</p>
+                        <p><strong>Kelengkapan:</strong> ${data.kelengkapan || '-'}</p>
                         <hr><p style="color:#007bff; margin-bottom:5px;"><strong>Tindakan Teknisi:</strong></p>
                         <p style="font-size:1.2em; font-weight:bold; margin:0;">${data.tindakan || '-'}</p>
                     </div>
