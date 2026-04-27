@@ -28,6 +28,8 @@
         .search-box { margin-bottom: 15px; display: flex; gap: 10px; }
         @media print { .no-print { display: none !important; } #printArea { display: block !important; } }
         #printArea { display: none; padding: 20px; font-family: monospace; border: 1px solid #000; }
+        .qr-info { text-align: center; margin-top: 10px; font-family: sans-serif; }
+        .qr-link { color: #007bff; text-decoration: none; word-break: break-all; font-size: 11px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -98,6 +100,7 @@
     </div>
     <div id="notaKonten" style="margin-top:20px;"></div>
     <div id="qrPrint" style="display:flex; justify-content:center; margin:20px 0;"></div>
+    <div id="qrInfoContainer" class="qr-info"></div>
 </div>
 
 <script>
@@ -197,16 +200,36 @@
 
     async function reprint(id) {
         const { data } = await sbClient.from('layanan').select('*').eq('id', id).single();
+        
+        // Buat Link Tracking
+        const trackingUrl = window.location.origin + window.location.pathname + "?id=" + id;
+
         let h = `<h3>${data.items.length > 0 ? 'NOTA LUNAS' : 'TANDA TERIMA'}</h3>
                  <p>Pelanggan: ${data.nama}<br>Unit: ${data.barang}<br>Ket: ${data.keluhan}</p>`;
+        
         if(data.items.length > 0) {
             h += `<table>`;
             data.items.forEach(i => h += `<tr><td>${i.desc}</td><td>Rp ${parseInt(i.price).toLocaleString()}</td></tr>`);
             h += `</table><h4>TOTAL: Rp ${parseInt(data.total).toLocaleString()}</h4>`;
         }
+        
         document.getElementById('notaKonten').innerHTML = h;
         document.getElementById('qrPrint').innerHTML = "";
-        new QRCode(document.getElementById("qrPrint"), { text: window.location.origin + window.location.pathname + "?id=" + id, width: 120, height: 120 });
+        
+        // Generate QR Code
+        new QRCode(document.getElementById("qrPrint"), { text: trackingUrl, width: 120, height: 120 });
+
+        // Tampilkan Link dan Instruksi di bawah barcode
+        document.getElementById('qrInfoContainer').innerHTML = `
+            <div style="margin-bottom:8px;">
+                <span style="font-size:10px;">Cek Status Online:</span><br>
+                <a href="${trackingUrl}" class="qr-link">${trackingUrl}</a>
+            </div>
+            <div style="font-size:10px; font-style:italic; color:#444; line-height:1.2; padding:0 20px;">
+                "scan barcode dengan google lens atau kunjungi link untuk melihat proses tindakan service"
+            </div>
+        `;
+
         setTimeout(() => { window.print(); }, 500);
     }
 
@@ -228,7 +251,7 @@
                         <hr><p style="color:#007bff; margin-bottom:5px;"><strong>Tindakan Teknisi:</strong></p>
                         <p style="font-size:1.2em; font-weight:bold; margin:0;">${data.tindakan || '-'}</p>
                     </div>
-                    <div style="margin-top:30px;"><button onclick="location.reload()" style="padding:10px 20px; cursor:pointer;">Refresh</button></div>
+                    <div style="margin-top:30px;"><button onclick="location.href='${window.location.origin + window.location.pathname}'" style="padding:10px 20px; cursor:pointer;">Kembali ke Dashboard</button></div>
                 </div>`;
             }
         } else { fetchData(); }
