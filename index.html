@@ -163,7 +163,7 @@
             tipe: document.getElementById('serviceType').value,
             barang: document.getElementById('devName').value,
             keluhan: document.getElementById('keluhan').value,
-            status: 'ceking', tindakan: '-', items: [], total: 0
+            status: 'checking', tindakan: '-', items: [], total: 0
         };
         if(!p.nama || !p.barang) return alert("Nama & Unit wajib diisi!");
         const { data, error } = await sbClient.from('layanan').insert([p]).select();
