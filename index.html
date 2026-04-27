@@ -36,7 +36,7 @@
     <header>
         <h1 style="color:var(--primary); margin:0;">ARIF EDU TECH 🌐 ONLINE</h1>
         <p style="margin:5px 0;">Manajemen Servis & Nota Digital Real-time</p>
-        <p style="font-size: 12px;">Dsn. Blabak, Kec. Kandat (HP: 087758018426)</p>
+        <p style="font-size: 12px;">Dsn. Blabak, Kec. Kandat (HP: 087758018426/081805305278)</p>
     </header>
 
     <div class="card">
@@ -151,7 +151,7 @@
     }
 
     function getStatusColor(s) {
-        if(s === 'ceking') return '#6c757d';
+        if(s === 'checking') return '#6c757d';
         if(s === 'proses') return '#ffc107';
         return '#28a745';
     }
@@ -171,7 +171,7 @@
     }
 
     async function updateProgres(id, cur) {
-        const next = cur === 'ceking' ? 'proses' : (cur === 'proses' ? 'selesai' : 'ceking');
+        const next = cur === 'checking' ? 'proses' : (cur === 'proses' ? 'selesai' : 'checking');
         await sbClient.from('layanan').update({ status: next }).eq('id', id);
         fetchData();
     }
