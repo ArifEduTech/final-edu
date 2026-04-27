@@ -290,6 +290,70 @@
         fetchData(); 
     }
 }
-</script>
-</body>
-</html>
+<script>
+        // ... kode Supabase yang sudah ada ...
+
+        // 1. TARUH DI SINI (Fungsi untuk menampilkan tabel dengan input tindakan)
+        function renderTable(data) {
+            const body = document.getElementById('dbBody');
+            body.innerHTML = '';
+            data.forEach(d => {
+                body.innerHTML += `
+                    <tr>
+                        <td><strong>${d.nama}</strong><br><small>${d.tgl}</small></td>
+                        <td>
+                            <input type="text" 
+                                   value="${d.tindakan || ''}" 
+                                   placeholder="Isi tindakan teknisi..." 
+                                   style="width:100%; padding:5px; border:1px solid #ddd; border-radius:4px;"
+                                   onchange="updateTindakan('${d.id}', this.value)">
+                        </td>
+                        <td>
+                            <span class="badge" style="background:${getStatusColor(d.status)}" onclick="updateProgres('${d.id}','${d.status}')">
+                                ${d.status}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn btn-blue" style="padding:5px 10px;" onclick="reprint('${d.id}')">🖨️</button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        // 2. TARUH DI SINI (Fungsi untuk mengirim data ke Supabase saat Anda mengetik)
+        async function updateTindakan(id, teks) {
+            const { error } = await sbClient
+                .from('layanan')
+                .update({ tindakan: teks })
+                .eq('id', id);
+            
+            if (error) {
+                alert("Gagal simpan: " + error.message);
+            }
+        }
+
+        // 3. UPDATE window.onload (Bagian pemantauan client)
+        window.onload = async () => {
+            const p = new URLSearchParams(window.location.search);
+            if(p.has('id')) {
+                document.getElementById('mainContent').style.display = 'none';
+                const { data } = await sbClient.from('layanan').select('*').eq('id', p.get('id')).single();
+                if(data) {
+                    document.body.innerHTML = `
+                        <div style="text-align:center; padding:50px; font-family:sans-serif;">
+                            <h1 style="color:#007bff;">ARIF EDU TECH</h1>
+                            <hr>
+                            <h2 style="color:#28a745;">STATUS: ${data.status.toUpperCase()}</h2>
+                            <div style="background:#f9f9f9; padding:20px; border-radius:10px; border:1px solid #ddd; display:inline-block; text-align:left;">
+                                <p><strong>Unit:</strong> ${data.barang}</p>
+                                <p style="color:#007bff; margin-bottom:5px;"><strong>Tindakan Terkini:</strong></p>
+                                <p style="font-size:1.2em; font-weight:bold; margin:0;">${data.tindakan || 'Sedang dicek teknisi'}</p>
+                            </div>
+                            <br><br>
+                            <button onclick="location.reload()" style="padding:10px 20px; cursor:pointer;">Refresh Halaman</button>
+                        </div>`;
+                }
+            } else { fetchData(); }
+        }
+    </script>
+</body> </html>
