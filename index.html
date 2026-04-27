@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Online - ARIF EDU TECH</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        :root { --primary: #007bff; --success: #28a745; --warning: #ffc107; --danger: #dc3545; --dark: #343a40; --light: #f8f9fa; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; margin: 0; padding: 15px; }
+        .container { max-width: 1100px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        
+        /* HEADER & LOGO */
+        header { text-align: center; border-bottom: 3px solid var(--primary); margin-bottom: 25px; padding-bottom: 15px; }
+        .main-logo { width: 120px; height: auto; margin-bottom: 10px; }
+        .brand-title { font-size: 28px; font-weight: 800; color: var(--primary); margin: 0; letter-spacing: 1px; }
+        .sub-title { font-size: 16px; font-weight: bold; margin: 5px 0; color: #333; }
+        .address-text { font-size: 11px; color: #666; line-height: 1.4; margin: 0; }
+
+        /* UI CARDS */
+        .card { border: 1px solid #eee; padding: 20px; border-radius: 10px; margin-bottom: 20px; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .card h3 { margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; font-size: 18px; color: var(--dark); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; margin-bottom: 10px; }
+        label { font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px; color: #555; }
+
+        /* SEARCH BOX */
+        .search-container { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
+        .search-box { position: relative; width: 100%; max-width: 350px; }
+        .search-box input { padding-left: 40px; border: 2px solid var(--primary); margin-bottom: 0; border-radius: 20px; }
+        .search-box::before { content: '🔍'; position: absolute; left: 15px; top: 10px; font-size: 16px; }
+
+        /* BUTTONS */
+        .btn { padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-blue { background: var(--primary); color: white; width: 100%; }
+        .btn-green { background: var(--success); color: white; }
+        .btn-yellow { background: var(--warning); color: black; }
+        .btn-red { background: var(--danger); color: white; }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        
+        /* TABLE */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: var(--light); font-weight: bold; }
+        tr:hover { background: #f9f9f9; }
+        
+        /* BADGES */
+        .badge { padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; color: white; text-transform: uppercase; cursor: pointer; display: inline-block; }
+        .tracking-link { color: var(--primary); font-size: 11px; text-decoration: underline; cursor: pointer; display: block; margin-top: 5px; font-weight: bold; }
+        
+        /* MODAL */
+        #modalNota { display:none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:100; overflow-y: auto; }
+        .modal-content { background:white; max-width:600px; margin: 40px auto; padding:25px; border-radius:12px; }
+
+        /* PRINT SETTINGS */
+        @media print { 
+            .no-print { display: none !important; } 
+            #printArea { display: block !important; } 
+            body { padding: 0; background: white; }
+        }
+        #printArea { display: none; padding: 20px; font-family: 'Courier New', Courier, monospace; border: 1px solid #000; }
+        .print-header { text-align: center; border-bottom: 2px dashed #000; padding-bottom: 10px; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+
+<div id="mainContent" class="container no-print">
+    <header>
+        <img src="logo.jpg" alt="Arif Edu Tech" class="main-logo" onerror="this.src='https://via.placeholder.com/120x120?text=LOGO+ARIF'">
+        <h1 class="brand-title">ARIF EDU TECH ONLINE</h1>
+        <p class="sub-title">Manajemen Servis & Produk Real-time</p>
+        <p class="address-text">
+            Alamat: Ds. Blabak, Dsn. Blabak, RT/RW 001/004, Kec. Kandat, Kab Kediri<br>
+            (HP : 087758018426 / 0815805305278)
+        </p>
+    </header>
+
+    <div class="card">
+        <h3>1. Registrasi Transaksi Baru</h3>
+        <div class="grid">
+            <div>
+                <label>Jenis Transaksi</label>
+                <select id="transType" onchange="toggleInputs()">
+                    <option value="servis">🛠️ Layanan Servis IT</option>
+                    <option value="produk">🛍️ Pembelian Produk</option>
+                </select>
+            </div>
+            <div><label>Nama Pelanggan</label><input type="text" id="custName" placeholder="Nama lengkap..."></div>
+            <div><label>Tanggal</label><input type="date" id="entryDate"></div>
+            <div><label>Unit / Nama Barang</label><input type="text" id="devName" placeholder="Contoh: Laptop / Sparepart"></div>
+        </div>
+        
+        <div id="servisFields">
+            <label>Keluhan Pelanggan</label>
+            <textarea id="keluhan" placeholder="Tulis diagnosa atau keluhan..."></textarea>
+            <button class="btn btn-blue" onclick="saveToCloud()">💾 SIMPAN & CETAK TANDA TERIMA</button>
+        </div>
+        
+        <div id="produkFields" style="display:none;">
+            <button class="btn btn-green" onclick="openModalForProduk()">💾 PROSES PEMBAYARAN & CETAK NOTA</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="search-container">
+            <h3>2. Database & Tracking Transaksi</h3>
+            <div class="search-box">
+                <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Cari Nama atau Barang...">
+            </div>
+        </div>
+        <div style="overflow-x:auto;">
+            <table id="myTable">
+                <thead>
+                    <tr>
+                        <th>Pelanggan / Tgl</th>
+                        <th>Kategori</th>
+                        <th>Unit Barang</th>
+                        <th>Status / Tracking</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="dbBody">
+                    <tr><td colspan="5" style="text-align:center;">Memuat data...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="modalNota" class="no-print">
+    <div class="modal-content">
+        <h2 id="modalTitle" style="text-align:center;">Rincian Nota</h2>
+        <div id="itemRows"></div>
+        <button class="btn btn-yellow" style="width:100%;" onclick="addRow()">+ Tambah Item Biaya</button>
+        <hr>
+        <label>Metode Pembayaran</label>
+        <select id="payMethod"><option>Tunai</option><option>Transfer Bank</option><option>QRIS</option></select>
+        <div style="display:flex; gap:10px; margin-top:20px;">
+            <button id="btnFinalize" class="btn btn-green" style="flex:1;" onclick="finalizeNota()">💾 SELESAIKAN & CETAK</button>
+            <button class="btn btn-red" onclick="closeModal()">BATAL</button>
+        </div>
+    </div>
+</div>
+
+<div id="printArea">
+    <div class="print-header">
+        <img src="logo.jpg" style="height: 70px;" onerror="this.style.display='none'">
+        <h2 style="margin:5px 0;">ARIF EDU TECH</h2>
+        <p style="margin:0; font-size:10px;">Ds. Blabak, Dsn. Blabak, Kec. Kandat, Kediri<br>HP: 087758018426 / 0815805305278</p>
+    </div>
+    <div id="notaKonten"></div>
+    <div id="qrPrint" style="display:flex; justify-content:center; margin:15px 0;"></div>
+    <div style="text-align:center; font-size:11px; border-top: 1px solid #000; padding-top:5px;">
+        Terima kasih atas kepercayaan Anda.<br>Status servis dapat dicek online melalui QR di atas.
+    </div>
+</div>
+
+<script>
+    // KONFIGURASI SUPABASE
+    const _URL = "https://plwpgjwozugznrlwgtwc.supabase.co";
+    const _KEY = "sb_publishable_IudfuYPNAbYypJ5_YQ-zng_SJ6tDNYP";
+    const sb = window.supabase.createClient(_URL, _KEY);
+
+    let activeId = null;
+    let isProdukDirect = false;
+
+    document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
+
+    // FITUR TRACKING PENCARIAN DATA
+    function filterTable() {
+        let input = document.getElementById("searchInput");
+        let filter = input.value.toUpperCase();
+        let table = document.getElementById("myTable");
+        let tr = table.getElementsByTagName("tr");
+        for (let i = 1; i < tr.length; i++) {
+            let tdNama = tr[i].getElementsByTagName("td")[0];
+            let tdBarang = tr[i].getElementsByTagName("td")[2];
+            if (tdNama || tdBarang) {
+                let txtNama = tdNama.textContent || tdNama.innerText;
+                let txtBarang = tdBarang.textContent || tdBarang.innerText;
+                if (txtNama.toUpperCase().indexOf(filter) > -1 || txtBarang.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+
+    function toggleInputs() {
+        const type = document.getElementById('transType').value;
+        document.getElementById('servisFields').style.display = type === 'servis' ? 'block' : 'none';
+        document.getElementById('produkFields').style.display = type === 'produk' ? 'block' : 'none';
+    }
+
+    async function fetchData() {
+        const { data, error } = await sb.from('layanan').select('*').order('created_at', { ascending: false });
+        if (data) renderTable(data);
+    }
+
+    function renderTable(data) {
+        const body = document.getElementById('dbBody');
+        body.innerHTML = '';
+        data.forEach(d => {
+            const isServis = d.tipe === 'servis';
+            const trackUrl = window.location.origin + window.location.pathname + "?id=" + d.id;
+            body.innerHTML += `
+                <tr>
+                    <td><strong>${d.nama}</strong><br><small>${d.tgl}</small></td>
+                    <td><small class="badge" style="background:${isServis ? '#6f42c1' : '#fd7e14'}">${d.tipe || 'servis'}</small></td>
+                    <td>${d.barang}</td>
+                    <td>
+                        <span class="badge" style="background:${getStatusColor(d.status)}" onclick="${isServis ? `updateProgres('${d.id}','${d.status}')` : ''}">${d.status}</span>
+                        <span class="tracking-link" onclick="window.open('${trackUrl}')">🔗 Link Tracking</span>
+                    </td>
+                    <td>
+                        <button class="btn btn-green" style="padding:5px 8px;" onclick="openModal('${d.id}')">📝</button>
+                        <button class="btn btn-blue" style="padding:5px 8px;" onclick="reprint('${d.id}')">🖨️</button>
+                        <button class="btn btn-red" style="padding:5px 8px;" onclick="hapusData('${d.id}')">🗑️</button>
+                    </td>
+                </tr>`;
+        });
+    }
+
+    function getStatusColor(s) {
+        if(s === 'ceking') return '#6c757d';
+        if(s === 'proses') return '#ffc107';
+        return '#28a745';
+    }
+
+    async function saveToCloud() {
+        const payload = {
+            nama: document.getElementById('custName').value,
+            tgl: document.getElementById('entryDate').value,
+            barang: document.getElementById('devName').value,
+            keluhan: document.getElementById('keluhan').value,
+            tipe: 'servis', status: 'ceking', items: [], total: 0
+        };
+        if(!payload.nama || !payload.barang) return alert("Lengkapi data!");
+        const { data } = await sb.from('layanan').insert([payload]).select();
+        if (data) { fetchData(); printTandaTerima(data[0]); clearForm(); }
+    }
+
+    function openModalForProduk() {
+        if(!document.getElementById('custName').value) return alert("Isi nama pelanggan!");
+        isProdukDirect = true; openModal(null);
+    }
+
+    function openModal(id) {
+        activeId = id; document.getElementById('itemRows').innerHTML = ''; addRow();
+        document.getElementById('modalNota').style.display = 'block';
+    }
+
+    function addRow() {
+        const div = document.createElement('div');
+        div.className = 'grid'; div.style.gridTemplateColumns = '2fr 1fr'; div.style.marginBottom = '10px';
+        div.innerHTML = `<input type="text" class="i-desc" placeholder="Item/Jasa"><input type="number" class="i-price" placeholder="Harga">`;
+        document.getElementById('itemRows').appendChild(div);
+    }
+
+    async function finalizeNota() {
+        const rows = document.querySelectorAll('#itemRows .grid');
+        let items = [], total = 0;
+        rows.forEach(r => {
+            const desc = r.querySelector('.i-desc').value;
+            const price = r.querySelector('.i-price').value;
+            if(desc && price) { items.push({desc, price}); total += parseInt(price); }
+        });
+        if(isProdukDirect) {
+            const payload = {
+                nama: document.getElementById('custName').value,
+                tgl: document.getElementById('entryDate').value,
+                barang: document.getElementById('devName').value,
+                tipe: 'produk', status: 'selesai', items, total
+            };
+            const { data } = await sb.from('layanan').insert([payload]).select();
+            if(data) { reprint(data[0].id); isProdukDirect = false; }
+        } else {
+            await sb.from('layanan').update({ items, total, status: 'selesai' }).eq('id', activeId);
+            reprint(activeId);
+        }
+        closeModal(); fetchData(); clearForm();
+    }
+
+    async function reprint(id) {
+        const { data } = await sb.from('layanan').select('*').eq('id', id).single();
+        if(data.status === 'selesai') printNotaFinal(data);
+        else printTandaTerima(data);
+    }
+
+    function printTandaTerima(d) {
+        const h = `<h3>TANDA TERIMA SERVIS (#${d.id})</h3>
+                   <p>Pelanggan: ${d.nama}<br>Unit: ${d.barang}<br>Keluhan: ${d.keluhan}</p>`;
+        doPrint(h, d);
+    }
+
+    function printNotaFinal(d) {
+        let h = `<h3>NOTA LUNAS (#${d.id})</h3><p>Unit: ${d.barang}</p><table>`;
+        d.items.forEach(i => h += `<tr><td>${i.desc}</td><td>Rp ${parseInt(i.price).toLocaleString()}</td></tr>`);
+        h += `</table><h3 style="text-align:right;">TOTAL: Rp ${parseInt(d.total).toLocaleString()}</h3>`;
+        doPrint(h, d);
+    }
+
+    function doPrint(html, d) {
+        document.getElementById('notaKonten').innerHTML = html;
+        document.getElementById('qrPrint').innerHTML = "";
+        const trackUrl = window.location.origin + window.location.pathname + "?id=" + d.id;
+        new QRCode(document.getElementById("qrPrint"), { text: trackUrl, width: 120, height: 120 });
+        setTimeout(() => { window.print(); }, 800);
+    }
+
+    function clearForm() {
+        document.getElementById('custName').value = '';
+        document.getElementById('devName').value = '';
+        document.getElementById('keluhan').value = '';
+    }
+
+    async function updateProgres(id, curr) {
+        const next = curr === 'ceking' ? 'proses' : (curr === 'proses' ? 'selesai' : 'ceking');
+        await sb.from('layanan').update({ status: next }).eq('id', id);
+        fetchData();
+    }
+
+    async function hapusData(id) { if(confirm("Hapus?")) { await sb.from('layanan').delete().eq('id', id); fetchData(); } }
+    function closeModal() { document.getElementById('modalNota').style.display = 'none'; isProdukDirect = false;}
+
+    window.onload = async () => {
+        const p = new URLSearchParams(window.location.search);
+        if(p.has('id')) {
+            document.getElementById('mainContent').style.display = 'none';
+            const { data } = await sb.from('layanan').select('*').eq('id', p.get('id')).single();
+            if(data) {
+                document.body.innerHTML = `
+                <div style="text-align:center; padding:50px; background:white; min-height:100vh;">
+                    <img src="logo.jpg" style="height:100px; margin-bottom:20px;">
+                    <h1>STATUS SERVIS ONLINE</h1>
+                    <div style="border:2px solid #ddd; padding:20px; border-radius:15px; max-width:400px; margin:auto;">
+                        <h2 style="color:${getStatusColor(data.status)}">${data.status.toUpperCase()}</h2>
+                        <hr><p align="left">ID: #${data.id}<br>Unit: ${data.barang}<br>Pelanggan: ${data.nama}</p>
+                        <button onclick="location.reload()" class="btn btn-blue">🔄 Refresh</button>
+                    </div>
+                </div>`;
+            }
+        } else { fetchData(); }
+    }
+</script>
+</body>
+</html>
