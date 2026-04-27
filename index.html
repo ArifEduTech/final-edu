@@ -258,15 +258,38 @@
     function closeModal() { document.getElementById('modalNota').style.display = 'none'; }
 
     window.onload = async () => {
-        const p = new URLSearchParams(window.location.search);
-        if(p.has('id')) {
-            document.getElementById('mainContent').style.display = 'none';
-            const { data } = await sbClient.from('layanan').select('*').eq('id', p.get('id')).single();
-            if(data) {
-                document.body.innerHTML = `<div style="text-align:center; padding:50px;"><h1>ARIF EDU TECH</h1><hr><h3>STATUS: ${data.status.toUpperCase()}</h3><p>Tipe: ${data.tipe || 'Service'}</p><p>Unit: ${data.barang}</p><button onclick="location.reload()">Kembali</button></div>`;
-            }
-        } else { fetchData(); }
+    const p = new URLSearchParams(window.location.search);
+    if(p.has('id')) {
+        // Mode Pantauan Client
+        document.getElementById('mainContent').style.display = 'none';
+        const { data } = await sbClient.from('layanan').select('*').eq('id', p.get('id')).single();
+        if(data) {
+            document.body.innerHTML = `
+                <div style="text-align:center; padding:50px; font-family: sans-serif;">
+                    <h1 style="margin:0;">ARIF EDU TECH</h1>
+                    <hr style="width:100px; border:2px solid #007bff; margin: 20px auto;">
+                    
+                    <h2 style="color:#28a745;">STATUS: ${data.status.toUpperCase()}</h2>
+                    
+                    <div style="background:#f1f1f1; padding:20px; border-radius:10px; display:inline-block; text-align:left; min-width:280px; border:1px solid #ddd;">
+                        <p><strong>Unit:</strong> ${data.barang}</p>
+                        <p><strong>Tipe:</strong> ${data.tipe || 'Servis'}</p>
+                        <hr>
+                        <p style="margin-bottom:5px; color:#007bff;"><strong>Tindakan Teknisi:</strong></p>
+                        <p style="font-size:1.2em; font-weight:bold; margin:0;">${data.tindakan || '-'}</p>
+                    </div>
+
+                    <div style="margin-top:30px;">
+                        <button onclick="location.reload()" style="padding:10px 20px; border-radius:5px; border:1px solid #ccc; cursor:pointer;">Cek Lagi (Refresh)</button>
+                        <br><br>
+                        <button onclick="window.location.href=window.location.pathname" style="color:#007bff; background:none; border:none; cursor:pointer;">Kembali ke Dashboard</button>
+                    </div>
+                </div>`;
+        }
+    } else { 
+        fetchData(); 
     }
+}
 </script>
 </body>
 </html>
