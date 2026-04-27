@@ -36,7 +36,7 @@
     <header>
         <h1 style="color:var(--primary); margin:0;">ARIF EDU TECH 🌐 ONLINE</h1>
         <p style="margin:5px 0;">Manajemen Servis & Nota Digital Real-time</p>
-         <p style="margin:3px 0;">Alamat: Dsn. Blabak, Ds. Blabak, RT/RW 001/004, Kec. kandat (HP : 087758018426/081805305278)</p>
+        <p style="font-size: 12px;">Dsn. Blabak, Kec. Kandat (HP: 087758018426)</p>
     </header>
 
     <div class="card">
@@ -44,38 +44,35 @@
         <div class="grid">
             <div><label>Nama Pelanggan</label><input type="text" id="custName" placeholder="Nama..."></div>
             <div><label>Tanggal Masuk</label><input type="date" id="entryDate"></div>
-            <div><label>Tipe Layanan</label>
+            <div><label>Tipe</label>
                 <select id="serviceType">
-                    <option value="Service">Service / Perbaikan</option>
-                    <option value="Produk">Pembelian Produk</option>
+                    <option value="Service">Service</option>
+                    <option value="Produk">Produk</option>
                 </select>
             </div>
-            <div><label>Unit/Barang</label><input type="text" id="devName" placeholder="Contoh: Acer Laptop / RAM 8GB"></div>
+            <div><label>Unit/Barang</label><input type="text" id="devName" placeholder="Contoh: Acer Laptop"></div>
         </div>
-        <textarea id="keluhan" placeholder="Keluhan Pelanggan atau Keterangan Produk..."></textarea>
-        <button class="btn btn-blue" id="btnSimpan" onclick="saveToCloud()">💾 SIMPAN & CETAK TANDA TERIMA</button>
+        <textarea id="keluhan" placeholder="Keluhan atau Keterangan..."></textarea>
+        <button class="btn btn-blue" onclick="saveToCloud()">💾 SIMPAN & PRINT TANDA TERIMA</button>
     </div>
 
     <div class="card">
-        <h3>2. Database Servis & Riwayat</h3>
-        
+        <h3>2. Database & Riwayat</h3>
         <div class="search-box">
-            <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Cari nama pelanggan atau barang...">
+            <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Cari nama atau unit...">
         </div>
-
         <div style="overflow-x:auto;">
-            <table id="mainTable">
+            <table>
                 <thead>
                     <tr>
-                        <th>Pelanggan / Tgl</th>
-                        <th>Tipe</th>
-                        <th>Unit Barang</th>
+                        <th>Pelanggan</th>
+                        <th>Tindakan Teknisi (Ketik Langsung)</th>
                         <th>Status</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="dbBody">
-                    <tr><td colspan="5" style="text-align:center;">Memuat data...</td></tr>
+                    <tr><td colspan="4" style="text-align:center;">Memuat data...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -84,14 +81,12 @@
 
 <div id="modalNota" class="no-print">
     <div class="modal-content">
-        <h2>Rincian Nota & Biaya</h2>
+        <h2>Rincian Biaya</h2>
         <div id="itemRows"></div>
         <button class="btn btn-yellow" onclick="addRow()">+ Tambah Item</button>
         <hr>
-        <label>Metode Pembayaran</label>
-        <select id="payMethod"><option>Tunai</option><option>Transfer</option><option>QRIS</option></select>
-        <div style="display:flex; gap:10px; margin-top:20px;">
-            <button class="btn btn-green" style="flex:1;" onclick="finalizeNota()">💾 SIMPAN & CETAK</button>
+        <div style="display:flex; gap:10px;">
+            <button class="btn btn-green" style="flex:1;" onclick="finalizeNota()">SIMPAN & CETAK NOTA</button>
             <button class="btn btn-red" onclick="closeModal()">BATAL</button>
         </div>
     </div>
@@ -100,11 +95,9 @@
 <div id="printArea">
     <div style="text-align:center; border-bottom: 2px dashed #000; padding-bottom:10px;">
         <h2 style="margin:0;">ARIF EDU TECH</h2>
-        <p style="margin:0;">Solusi Teknologi Terpercaya</p>
     </div>
     <div id="notaKonten" style="margin-top:20px;"></div>
     <div id="qrPrint" style="display:flex; justify-content:center; margin:20px 0;"></div>
-    <p style="text-align:center; font-size:12px;">Scan QR untuk cek status servis.</p>
 </div>
 
 <script>
@@ -113,14 +106,13 @@
     const sbClient = window.supabase.createClient(_URL, _KEY);
 
     let activeId = null;
-    let fullData = []; // Untuk menyimpan data asli agar pencarian cepat
+    let fullData = [];
 
     document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
 
     async function fetchData() {
         const { data, error } = await sbClient.from('layanan').select('*').order('created_at', { ascending: false });
-        if (error) console.error(error);
-        else {
+        if (!error) {
             fullData = data;
             renderTable(data);
         }
@@ -132,27 +124,30 @@
         data.forEach(d => {
             body.innerHTML += `
                 <tr>
-                    <td><strong>${d.nama}</strong><br><small>${d.tgl}</small></td>
-                    <td><small>${d.tipe || 'Service'}</small></td>
-                    <td>${d.barang}</td>
+                    <td><strong>${d.nama}</strong><br><small>${d.tgl}</small><br><small>(${d.barang})</small></td>
+                    <td>
+                        <input type="text" value="${d.tindakan || ''}" 
+                               style="width:100%; padding:5px; border:1px solid #ddd;"
+                               onchange="updateTindakan('${d.id}', this.value)" placeholder="Ketik tindakan...">
+                    </td>
                     <td><span class="badge" style="background:${getStatusColor(d.status)}" onclick="updateProgres('${d.id}','${d.status}')">${d.status}</span></td>
                     <td>
-                        <button class="btn btn-green" style="padding:5px 10px;" onclick="openModal('${d.id}')">📝</button>
-                        <button class="btn btn-blue" style="padding:5px 10px;" onclick="reprint('${d.id}')">🖨️</button>
-                        <button class="btn btn-red" style="padding:5px 10px;" onclick="hapusData('${d.id}')">🗑️</button>
+                        <button class="btn btn-green" style="padding:5px;" onclick="openModal('${d.id}')">📝</button>
+                        <button class="btn btn-blue" style="padding:5px;" onclick="reprint('${d.id}')">🖨️</button>
+                        <button class="btn btn-red" style="padding:5px;" onclick="hapusData('${d.id}')">🗑️</button>
                     </td>
                 </tr>`;
         });
     }
 
-    // Fungsi Pencarian Client-Side
     function filterTable() {
         const input = document.getElementById('searchInput').value.toLowerCase();
-        const filtered = fullData.filter(item => 
-            item.nama.toLowerCase().includes(input) || 
-            item.barang.toLowerCase().includes(input)
-        );
+        const filtered = fullData.filter(i => i.nama.toLowerCase().includes(input) || i.barang.toLowerCase().includes(input));
         renderTable(filtered);
+    }
+
+    async function updateTindakan(id, teks) {
+        await sbClient.from('layanan').update({ tindakan: teks }).eq('id', id);
     }
 
     function getStatusColor(s) {
@@ -162,56 +157,30 @@
     }
 
     async function saveToCloud() {
-        const payload = {
+        const p = {
             nama: document.getElementById('custName').value,
             tgl: document.getElementById('entryDate').value,
             tipe: document.getElementById('serviceType').value,
             barang: document.getElementById('devName').value,
             keluhan: document.getElementById('keluhan').value,
-            status: 'ceking',
-            items: [],
-            total: 0
+            status: 'ceking', tindakan: '-', items: [], total: 0
         };
-
-        if(!payload.nama || !payload.barang) return alert("Isi Nama dan Unit!");
-
-        const { data, error } = await sbClient.from('layanan').insert([payload]).select();
-        if (data && data.length > 0) {
-            alert("Berhasil Disimpan!");
-            fetchData();
-            printTandaTerima(data[0]);
-            clearForm();
-        } else {
-            alert("Gagal: " + error.message);
-        }
+        if(!p.nama || !p.barang) return alert("Nama & Unit wajib diisi!");
+        const { data, error } = await sbClient.from('layanan').insert([p]).select();
+        if(!error) { fetchData(); reprint(data[0].id); }
     }
 
-    function clearForm() {
-        document.getElementById('custName').value = '';
-        document.getElementById('devName').value = '';
-        document.getElementById('keluhan').value = '';
-        document.getElementById('serviceType').value = 'Service';
-    }
-
-    async function updateProgres(id, current) {
-        const next = current === 'ceking' ? 'proses' : (current === 'proses' ? 'selesai' : 'ceking');
+    async function updateProgres(id, cur) {
+        const next = cur === 'ceking' ? 'proses' : (cur === 'proses' ? 'selesai' : 'ceking');
         await sbClient.from('layanan').update({ status: next }).eq('id', id);
         fetchData();
     }
 
-    function openModal(id) {
-        activeId = id;
-        document.getElementById('itemRows').innerHTML = '';
-        addRow();
-        document.getElementById('modalNota').style.display = 'block';
-    }
-
+    function openModal(id) { activeId = id; document.getElementById('itemRows').innerHTML = ''; addRow(); document.getElementById('modalNota').style.display = 'block'; }
     function addRow() {
         const div = document.createElement('div');
-        div.className = 'grid';
-        div.style.gridTemplateColumns = '2fr 1fr';
-        div.style.marginBottom = '10px';
-        div.innerHTML = `<input type="text" class="i-desc" placeholder="Item/Jasa"><input type="number" class="i-price" placeholder="Harga">`;
+        div.className = 'grid'; div.style.gridTemplateColumns = '2fr 1fr'; div.style.marginBottom = '5px';
+        div.innerHTML = `<input type="text" class="i-desc" placeholder="Item"><input type="number" class="i-price" placeholder="Harga">`;
         document.getElementById('itemRows').appendChild(div);
     }
 
@@ -222,138 +191,48 @@
             const d = r.querySelector('.i-desc').value, p = r.querySelector('.i-price').value;
             if(d && p) { items.push({desc: d, price: p}); total += parseInt(p); }
         });
-
-        const { error } = await sbClient.from('layanan').update({ items, total, status: 'selesai' }).eq('id', activeId);
-        if(!error) { closeModal(); fetchData(); reprint(activeId); }
+        await sbClient.from('layanan').update({ items, total, status: 'selesai' }).eq('id', activeId);
+        closeModal(); fetchData(); reprint(activeId);
     }
 
     async function reprint(id) {
         const { data } = await sbClient.from('layanan').select('*').eq('id', id).single();
-        if(data.items && data.items.length > 0) printNotaFinal(data);
-        else printTandaTerima(data);
-    }
-
-    function printTandaTerima(d) {
-        const h = `<h3>TANDA TERIMA (${d.tipe || 'Service'})</h3>
-                   <p>ID: ${d.id}<br>Nama: ${d.nama}<br>Unit: ${d.barang}<br>Ket: ${d.keluhan}</p>`;
-        doPrint(h, d);
-    }
-
-    function printNotaFinal(d) {
-        let h = `<h3>NOTA LUNAS</h3><p>Nama: ${d.nama} | Unit: ${d.barang}</p><table>`;
-        d.items.forEach(i => h += `<tr><td>${i.desc}</td><td>Rp ${parseInt(i.price).toLocaleString()}</td></tr>`);
-        h += `</table><h3>TOTAL: Rp ${parseInt(d.total).toLocaleString()}</h3>`;
-        doPrint(h, d);
-    }
-
-    function doPrint(html, d) {
-        document.getElementById('notaKonten').innerHTML = html;
+        let h = `<h3>${data.items.length > 0 ? 'NOTA LUNAS' : 'TANDA TERIMA'}</h3>
+                 <p>Pelanggan: ${data.nama}<br>Unit: ${data.barang}<br>Ket: ${data.keluhan}</p>`;
+        if(data.items.length > 0) {
+            h += `<table>`;
+            data.items.forEach(i => h += `<tr><td>${i.desc}</td><td>Rp ${parseInt(i.price).toLocaleString()}</td></tr>`);
+            h += `</table><h4>TOTAL: Rp ${parseInt(data.total).toLocaleString()}</h4>`;
+        }
+        document.getElementById('notaKonten').innerHTML = h;
         document.getElementById('qrPrint').innerHTML = "";
-        const link = window.location.origin + window.location.pathname + "?id=" + d.id;
-        new QRCode(document.getElementById("qrPrint"), { text: link, width: 120, height: 120 });
-        setTimeout(() => { window.print(); }, 700);
+        new QRCode(document.getElementById("qrPrint"), { text: window.location.origin + window.location.pathname + "?id=" + id, width: 120, height: 120 });
+        setTimeout(() => { window.print(); }, 500);
     }
 
-    async function hapusData(id) { if(confirm("Hapus?")) { await sbClient.from('layanan').delete().eq('id', id); fetchData(); } }
+    async function hapusData(id) { if(confirm("Hapus data ini?")) { await sbClient.from('layanan').delete().eq('id', id); fetchData(); } }
     function closeModal() { document.getElementById('modalNota').style.display = 'none'; }
 
     window.onload = async () => {
-    const p = new URLSearchParams(window.location.search);
-    if(p.has('id')) {
-        // Mode Pantauan Client
-        document.getElementById('mainContent').style.display = 'none';
-        const { data } = await sbClient.from('layanan').select('*').eq('id', p.get('id')).single();
-        if(data) {
-            document.body.innerHTML = `
+        const p = new URLSearchParams(window.location.search);
+        if(p.has('id')) {
+            document.getElementById('mainContent').style.display = 'none';
+            const { data } = await sbClient.from('layanan').select('*').eq('id', p.get('id')).single();
+            if(data) {
+                document.body.innerHTML = `
                 <div style="text-align:center; padding:50px; font-family: sans-serif;">
-                    <h1 style="margin:0;">ARIF EDU TECH</h1>
-                    <hr style="width:100px; border:2px solid #007bff; margin: 20px auto;">
-                    
+                    <h1>ARIF EDU TECH</h1><hr style="width:100px; border:2px solid #007bff; margin:20px auto;">
                     <h2 style="color:#28a745;">STATUS: ${data.status.toUpperCase()}</h2>
-                    
-                    <div style="background:#f1f1f1; padding:20px; border-radius:10px; display:inline-block; text-align:left; min-width:280px; border:1px solid #ddd;">
+                    <div style="background:#f1f1f1; padding:20px; border-radius:10px; display:inline-block; text-align:left; border:1px solid #ddd;">
                         <p><strong>Unit:</strong> ${data.barang}</p>
-                        <p><strong>Tipe:</strong> ${data.tipe || 'Servis'}</p>
-                        <hr>
-                        <p style="margin-bottom:5px; color:#007bff;"><strong>Tindakan Teknisi:</strong></p>
+                        <hr><p style="color:#007bff; margin-bottom:5px;"><strong>Tindakan Teknisi:</strong></p>
                         <p style="font-size:1.2em; font-weight:bold; margin:0;">${data.tindakan || '-'}</p>
                     </div>
-
-                    <div style="margin-top:30px;">
-                        <button onclick="location.reload()" style="padding:10px 20px; border-radius:5px; border:1px solid #ccc; cursor:pointer;">Cek Lagi (Refresh)</button>
-                        <br><br>
-                        <button onclick="window.location.href=window.location.pathname" style="color:#007bff; background:none; border:none; cursor:pointer;">Kembali ke Dashboard</button>
-                    </div>
+                    <div style="margin-top:30px;"><button onclick="location.reload()" style="padding:10px 20px; cursor:pointer;">Refresh</button></div>
                 </div>`;
-        }
-    } else { 
-        fetchData(); 
-    }
-}
-<script>
-        // ... kode Supabase yang sudah ada ...
-
-        // 1. TARUH DI SINI (Fungsi untuk menampilkan tabel dengan input tindakan)
-        function renderTable(data) {
-            const body = document.getElementById('dbBody');
-            body.innerHTML = '';
-            data.forEach(d => {
-                body.innerHTML += `
-                    <tr>
-                        <td><strong>${d.nama}</strong><br><small>${d.tgl}</small></td>
-                        <td>
-                            <input type="text" 
-                                   value="${d.tindakan || ''}" 
-                                   placeholder="Isi tindakan teknisi..." 
-                                   style="width:100%; padding:5px; border:1px solid #ddd; border-radius:4px;"
-                                   onchange="updateTindakan('${d.id}', this.value)">
-                        </td>
-                        <td>
-                            <span class="badge" style="background:${getStatusColor(d.status)}" onclick="updateProgres('${d.id}','${d.status}')">
-                                ${d.status}
-                            </span>
-                        </td>
-                        <td>
-                            <button class="btn btn-blue" style="padding:5px 10px;" onclick="reprint('${d.id}')">🖨️</button>
-                        </td>
-                    </tr>`;
-            });
-        }
-
-        // 2. TARUH DI SINI (Fungsi untuk mengirim data ke Supabase saat Anda mengetik)
-        async function updateTindakan(id, teks) {
-            const { error } = await sbClient
-                .from('layanan')
-                .update({ tindakan: teks })
-                .eq('id', id);
-            
-            if (error) {
-                alert("Gagal simpan: " + error.message);
             }
-        }
-
-        // 3. UPDATE window.onload (Bagian pemantauan client)
-        window.onload = async () => {
-            const p = new URLSearchParams(window.location.search);
-            if(p.has('id')) {
-                document.getElementById('mainContent').style.display = 'none';
-                const { data } = await sbClient.from('layanan').select('*').eq('id', p.get('id')).single();
-                if(data) {
-                    document.body.innerHTML = `
-                        <div style="text-align:center; padding:50px; font-family:sans-serif;">
-                            <h1 style="color:#007bff;">ARIF EDU TECH</h1>
-                            <hr>
-                            <h2 style="color:#28a745;">STATUS: ${data.status.toUpperCase()}</h2>
-                            <div style="background:#f9f9f9; padding:20px; border-radius:10px; border:1px solid #ddd; display:inline-block; text-align:left;">
-                                <p><strong>Unit:</strong> ${data.barang}</p>
-                                <p style="color:#007bff; margin-bottom:5px;"><strong>Tindakan Terkini:</strong></p>
-                                <p style="font-size:1.2em; font-weight:bold; margin:0;">${data.tindakan || 'Sedang dicek teknisi'}</p>
-                            </div>
-                            <br><br>
-                            <button onclick="location.reload()" style="padding:10px 20px; cursor:pointer;">Refresh Halaman</button>
-                        </div>`;
-                }
-            } else { fetchData(); }
-        }
-    </script>
-</body> </html>
+        } else { fetchData(); }
+    }
+</script>
+</body>
+</html>
