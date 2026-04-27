@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Online - ARIF EDU TECH</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        :root { --primary: #007bff; --success: #28a745; --warning: #ffc107; --danger: #dc3545; --dark: #343a40; --light: #f8f9fa; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; margin: 0; padding: 15px; }
+        .container { max-width: 1100px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        
+        /* HEADER & LOGO */
+        header { text-align: center; border-bottom: 3px solid var(--primary); margin-bottom: 25px; padding-bottom: 15px; }
+        .logo-wrapper { margin-bottom: 15px; }
+        .main-logo { max-height: 120px; width: auto; object-fit: contain; }
+        .brand-title { font-size: 26px; font-weight: 800; color: var(--primary); margin: 5px 0; letter-spacing: 1px; }
+        .address-text { font-size: 12px; color: #666; line-height: 1.4; margin: 0; }
+
+        /* CARDS & GRID */
+        .card { border: 1px solid #eee; padding: 20px; border-radius: 10px; margin-bottom: 20px; background: #fff; }
+        .card h3 { margin-top: 0; border-bottom: 2px solid var(--light); padding-bottom: 10px; margin-bottom: 15px; font-size: 18px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        
+        label { font-size: 13px; font-weight: bold; color: #555; display: block; margin-bottom: 5px; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 14px; margin-bottom: 12px; }
+        
+        /* SEARCH TRACKING */
+        .search-container { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px; }
+        .search-box { position: relative; width: 100%; max-width: 350px; }
+        .search-box input { padding-left: 40px; border: 2px solid var(--primary); border-radius: 25px; margin-bottom: 0; }
+        .search-box::before { content: '🔍'; position: absolute; left: 15px; top: 11px; z-index: 1; }
+
+        /* BUTTONS */
+        .btn { padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 13px; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-blue { background: var(--primary); color: white; width: 100%; justify-content: center; }
+        .btn-green { background: var(--success); color: white; }
+        .btn-red { background: var(--danger); color: white; }
+        .btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+        
+        /* TABLE */
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 5px; }
+        th, td { border: 1px solid #eee; padding: 12px; text-align: left; }
+        th { background: var(--light); font-weight: bold; }
+        
+        .badge { padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; color: white; text-transform: uppercase; }
+        .t-link { color: var(--primary); font-size: 11px; text-decoration: none; font-weight: bold; display: block; margin-top: 5px; }
+
+        /* MODAL */
+        #modalNota { display:none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:1000; }
+        .modal-content { background:white; max-width:550px; margin: 30px auto; padding:25px; border-radius:15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+
+        /* PRINT SECTION (Dihidden dari layar) */
+        #printArea { display: none; }
+        @media print {
+            body * { visibility: hidden; }
+            #printArea, #printArea * { visibility: visible; }
+            #printArea { position: absolute; left: 0; top: 0; width: 100%; display: block !important; font-family: 'Courier New', Courier, monospace; }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container no-print">
+    <header>
+        <div class="logo-wrapper">
+            <img src="logo.jpg" alt="ARIF EDU TECH" class="main-logo" id="mainLogoImg" onerror="this.src='https://via.placeholder.com/200x100?text=ARIF+EDU+TECH'">
+        </div>
+        <h1 class="brand-title">ARIF EDU TECH ONLINE</h1>
+        <p class="address-text">
+            Ds. Blabak, Dsn. Blabak, RT/RW 001/004, Kec. Kandat, Kab Kediri<br>
+            📞 087758018426 / 0815805305278
+        </p>
+    </header>
+
+    <div class="card">
+        <h3>1. Registrasi Transaksi</h3>
+        <div class="grid">
+            <div>
+                <label>Jenis Transaksi</label>
+                <select id="transType" onchange="toggleForm()">
+                    <option value="servis">🛠️ Layanan Servis</option>
+                    <option value="produk">🛍️ Penjualan Produk</option>
+                </select>
+            </div>
+            <div><label>Nama Pelanggan</label><input type="text" id="custName" placeholder="Masukkan nama..."></div>
+            <div><label>Unit / Barang</label><input type="text" id="devName" placeholder="Contoh: Laptop Acer"></div>
+            <div><label>Tanggal</label><input type="date" id="entryDate"></div>
+        </div>
+        <div id="servisSection">
+            <label>Keluhan / Diagnosa</label>
+            <textarea id="keluhan" placeholder="Detail kerusakan..."></textarea>
+            <button class="btn btn-blue" onclick="saveData()">💾 SIMPAN & CETAK TANDA TERIMA</button>
+        </div>
+        <div id="produkSection" style="display:none;">
+            <button class="btn btn-green" style="width:100%; justify-content:center;" onclick="openNotaModal(true)">🛒 PROSES PEMBAYARAN PRODUK</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="search-container">
+            <h3>2. Database & Tracking Transaksi</h3>
+            <div class="search-box">
+                <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="Cari nama atau unit...">
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Pelanggan</th>
+                        <th>Kategori</th>
+                        <th>Unit</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="dbBody">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="modalNota">
+    <div class="modal-content">
+        <h3 id="modalTitle">Rincian Pembayaran</h3>
+        <div id="itemList"></div>
+        <button class="btn" style="background:#eee; width:100%; margin-bottom:15px;" onclick="addInvoiceRow()">+ Tambah Item</button>
+        <label>Metode Bayar</label>
+        <select id="payMethod"><option>Tunai</option><option>Transfer</option><option>QRIS</option></select>
+        <div style="display:flex; gap:10px; margin-top:20px;">
+            <button class="btn btn-green" style="flex:1" onclick="submitNota()">✅ SELESAIKAN & CETAK</button>
+            <button class="btn btn-red" onclick="closeModal()">BATAL</button>
+        </div>
+    </div>
+</div>
+
+<div id="printArea">
+    <div style="text-align:center; border-bottom:2px dashed #000; padding-bottom:10px; margin-bottom:15px;">
+        <img src="logo.jpg" style="height:80px; width:auto;" onerror="this.style.display='none'">
+        <h2 style="margin:5px 0;">ARIF EDU TECH</h2>
+        <p style="font-size:12px; margin:0;">Ds. Blabak, Kandat, Kab. Kediri<br>WA: 087758018426</p>
+    </div>
+    <div id="printContent"></div>
+    <div id="printQR" style="display:flex; justify-content:center; margin:20px 0;"></div>
+    <p style="text-align:center; font-size:11px; border-top:1px solid #000; padding-top:10px;">
+        Terima kasih atas kunjungan Anda.<br>Status servis dapat dipantau via QR di atas.
+    </p>
+</div>
+
+<script>
+    const _URL = "https://plwpgjwozugznrlwgtwc.supabase.co";
+    const _KEY = "sb_publishable_IudfuYPNAbYypJ5_YQ-zng_SJ6tDNYP";
+    const sb = window.supabase.createClient(_URL, _KEY);
+
+    let currentId = null;
+    let directProduct = false;
+
+    // Set tgl default
+    document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
+
+    function toggleForm() {
+        const isServis = document.getElementById('transType').value === 'servis';
+        document.getElementById('servisSection').style.display = isServis ? 'block' : 'none';
+        document.getElementById('produkSection').style.display = isServis ? 'none' : 'block';
+    }
+
+    function searchTable() {
+        let input = document.getElementById("searchInput").value.toUpperCase();
+        let rows = document.querySelectorAll("#dbBody tr");
+        rows.forEach(r => {
+            r.style.display = r.innerText.toUpperCase().includes(input) ? "" : "none";
+        });
+    }
+
+    async function fetchData() {
+        const { data } = await sb.from('layanan').select('*').order('created_at', { ascending: false });
+        if (data) {
+            const body = document.getElementById('dbBody');
+            body.innerHTML = '';
+            data.forEach(d => {
+                const tUrl = window.location.href.split('?')[0] + "?id=" + d.id;
+                body.innerHTML += `
+                    <tr>
+                        <td><b>${d.nama}</b><br><small>${d.tgl}</small></td>
+                        <td><span class="badge" style="background:${d.tipe==='servis'?'#6f42c1':'#fd7e14'}">${d.tipe || 'servis'}</span></td>
+                        <td>${d.barang}</td>
+                        <td><span class="badge" style="background:${getStatusColor(d.status)}" onclick="updateStatus('${d.id}','${d.status}')">${d.status}</span></td>
+                        <td>
+                            <button class="btn btn-green" style="padding:5px 10px;" onclick="openNotaModal(false, '${d.id}')">💰</button>
+                            <button class="btn btn-blue" style="padding:5px 10px;" onclick="printAgain('${d.id}')">🖨️</button>
+                        </td>
+                    </tr>`;
+            });
+        }
+    }
+
+    function getStatusColor(s) {
+        if(s==='selesai') return '#28a745';
+        if(s==='proses') return '#ffc107';
+        return '#6c757d';
+    }
+
+    async function saveData() {
+        const payload = {
+            nama: document.getElementById('custName').value,
+            tgl: document.getElementById('entryDate').value,
+            barang: document.getElementById('devName').value,
+            keluhan: document.getElementById('keluhan').value,
+            tipe: 'servis', status: 'ceking'
+        };
+        if(!payload.nama || !payload.barang) return alert("Nama & Unit wajib diisi!");
+        const { data } = await sb.from('layanan').insert([payload]).select();
+        if(data) { fetchData(); alert("Data Disimpan!"); printTandaTerima(data[0]); }
+    }
+
+    function openNotaModal(isDirect, id = null) {
+        directProduct = isDirect;
+        currentId = id;
+        document.getElementById('itemList').innerHTML = '';
+        addInvoiceRow();
+        document.getElementById('modalNota').style.display = 'block';
+    }
+
+    function addInvoiceRow() {
+        const d = document.createElement('div');
+        d.className = 'grid'; d.style.gridTemplateColumns = '2fr 1fr';
+        d.innerHTML = `<input type="text" class="p-name" placeholder="Item"><input type="number" class="p-price" placeholder="Rp">`;
+        document.getElementById('itemList').appendChild(d);
+    }
+
+    async function submitNota() {
+        const items = [];
+        let total = 0;
+        document.querySelectorAll('#itemList .grid').forEach(g => {
+            const n = g.querySelector('.p-name').value;
+            const p = g.querySelector('.p-price').value;
+            if(n && p) { items.push({n, p}); total += parseInt(p); }
+        });
+
+        if(directProduct) {
+            const payload = {
+                nama: document.getElementById('custName').value,
+                tgl: document.getElementById('entryDate').value,
+                barang: document.getElementById('devName').value,
+                tipe: 'produk', status: 'selesai', items, total
+            };
+            const { data } = await sb.from('layanan').insert([payload]).select();
+            if(data) printNota(data[0]);
+        } else {
+            const { data } = await sb.from('layanan').update({ items, total, status: 'selesai' }).eq('id', currentId).select();
+            if(data) printNota(data[0]);
+        }
+        closeModal(); fetchData();
+    }
+
+    function printTandaTerima(d) {
+        let h = `<h3>TANDA TERIMA SERVIS (#${d.id})</h3>
+                 <p>Pelanggan: ${d.nama}<br>Unit: ${d.barang}<br>Keluhan: ${d.keluhan || '-'}</p>
+                 <p style="text-align:center; font-weight:bold;">STATUS: CEKING</p>`;
+        executePrint(h, d);
+    }
+
+    function printNota(d) {
+        let h = `<h3>NOTA PEMBAYARAN (#${d.id})</h3>
+                 <p>Pelanggan: ${d.nama}<br>Unit: ${d.barang}</p>
+                 <table style="width:100%; border-top:1px solid #000;">`;
+        d.items.forEach(i => { h += `<tr><td>${i.n}</td><td align="right">Rp ${parseInt(i.p).toLocaleString()}</td></tr>`; });
+        h += `</table><h4 align="right">TOTAL: Rp ${parseInt(d.total).toLocaleString()}</h4>`;
+        executePrint(h, d);
+    }
+
+    function executePrint(html, d) {
+        document.getElementById('printContent').innerHTML = html;
+        document.getElementById('printQR').innerHTML = '';
+        const tUrl = window.location.href.split('?')[0] + "?id=" + d.id;
+        new QRCode(document.getElementById("printQR"), { text: tUrl, width: 120, height: 120 });
+        
+        setTimeout(() => {
+            window.print();
+        }, 1000);
+    }
+
+    async function printAgain(id) {
+        const { data } = await sb.from('layanan').select('*').eq('id', id).single();
+        if(data.status === 'selesai') printNota(data); else printTandaTerima(data);
+    }
+
+    async function updateStatus(id, cur) {
+        const next = cur === 'ceking' ? 'proses' : (cur === 'proses' ? 'selesai' : 'ceking');
+        await sb.from('layanan').update({ status: next }).eq('id', id);
+        fetchData();
+    }
+
+    function closeModal() { document.getElementById('modalNota').style.display = 'none'; }
+
+    window.onload = async () => {
+        const p = new URLSearchParams(window.location.search);
+        if(p.has('id')) {
+            document.querySelector('.container').style.display = 'none';
+            const { data } = await sb.from('layanan').select('*').eq('id', p.get('id')).single();
+            if(data) {
+                document.body.innerHTML = `
+                <div style="text-align:center; padding:40px; background:white; min-height:100vh;">
+                    <img src="logo.jpg" style="height:100px; margin-bottom:20px;">
+                    <h2>STATUS SERVIS: ${data.status.toUpperCase()}</h2>
+                    <div style="border:2px solid #ddd; padding:20px; border-radius:15px; max-width:400px; margin:auto; text-align:left;">
+                        <p><b>ID:</b> #${data.id}</p>
+                        <p><b>Unit:</b> ${data.barang}</p>
+                        <p><b>Pelanggan:</b> ${data.nama}</p>
+                        <p><b>Detail:</b> ${data.keluhan || '-'}</p>
+                        <button onclick="location.reload()" style="width:100%; padding:10px; background:blue; color:white; border:none; border-radius:5px;">CEK ULANG</button>
+                    </div>
+                </div>`;
+            }
+        } else { fetchData(); }
+    };
+</script>
+</body>
+</html>
