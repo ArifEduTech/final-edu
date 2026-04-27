@@ -167,7 +167,7 @@
             tgl: document.getElementById('entryDate').value,
             tipe: document.getElementById('serviceType').value,
             barang: document.getElementById('devName').value,
-            kelengkapan: document.getElementById('kelengkapan').value, // Simpan Kelengkapan
+            kelengkapan: document.getElementById('kelengkapan').value,
             keluhan: document.getElementById('keluhan').value,
             status: 'checking', tindakan: '-', items: [], total: 0
         };
@@ -250,17 +250,32 @@
             const { data } = await sbClient.from('layanan').select('*').eq('id', p.get('id')).single();
             if(data) {
                 document.body.innerHTML = `
-                <div style="text-align:center; padding:50px; font-family: sans-serif;">
-                    <h1>ARIF EDU TECH</h1><hr style="width:100px; border:2px solid #007bff; margin:20px auto;">
-                    <h2 style="color:#28a745;">STATUS: ${data.status.toUpperCase()}</h2>
-                    <div style="background:#f1f1f1; padding:20px; border-radius:10px; display:inline-block; text-align:left; border:1px solid #ddd;">
-                        <p><strong>Unit:</strong> ${data.barang}</p>
+                <div style="text-align:center; padding:50px; font-family: sans-serif; background: #fff; min-height: 100vh;">
+                    <h1 style="color:#007bff;">ARIF EDU TECH</h1>
+                    <hr style="width:100px; border:2px solid #007bff; margin:20px auto;">
+                    <p style="font-size: 1.1em; color: #555;">Status Perbaikan Unit Anda:</p>
+                    <h2 style="color:${data.status === 'selesai' ? '#28a745' : '#ffc107'}; text-transform: uppercase; background: #f8f9fa; display: inline-block; padding: 10px 30px; border-radius: 50px; border: 2px solid currentColor;">
+                        ${data.status}
+                    </h2>
+                    
+                    <div style="margin: 30px auto; max-width: 500px; background:#fdfdfd; padding:25px; border-radius:15px; text-align:left; border:1px solid #eee; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+                        <p><strong>Nama Pelanggan:</strong> ${data.nama}</p>
+                        <p><strong>Unit Barang:</strong> ${data.barang}</p>
                         <p><strong>Tanggal Masuk:</strong> ${data.tgl}</p>
                         <p><strong>Kelengkapan:</strong> ${data.kelengkapan || '-'}</p>
-                        <hr><p style="color:#007bff; margin-bottom:5px;"><strong>Tindakan Teknisi:</strong></p>
-                        <p style="font-size:1.2em; font-weight:bold; margin:0;">${data.tindakan || '-'}</p>
+                        <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
+                        <p style="color:#007bff; font-weight: bold; margin-bottom: 5px;">Update Progres Teknisi:</p>
+                        <p style="font-size:1.2em; font-weight:bold; color: #333; line-height: 1.4;">${data.tindakan || 'Sedang dalam pengecekan...'}</p>
                     </div>
-                    <div style="margin-top:30px;"><button onclick="location.href='${window.location.origin + window.location.pathname}'" style="padding:10px 20px; cursor:pointer;">Kembali ke Dashboard</button></div>
+
+                    <div style="margin-top:40px; padding: 0 20px;">
+                        <p style="font-size: 1.1em; color: #28a745; font-weight: 500;">
+                            Terimakasih atas kunjungan dan kepercayaannya,<br>kami akan melayani dengan sepenuh hati.
+                        </p>
+                    </div>
+                    <div style="margin-top: 30px; font-size: 12px; color: #999;">
+                        &copy; 2024 ARIF EDU TECH - Layanan Servis Transparan
+                    </div>
                 </div>`;
             }
         } else { fetchData(); }
