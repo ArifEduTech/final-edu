@@ -199,5 +199,85 @@
 
         muatTesti();
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        // Inisialisasi Supabase dengan kredensial Anda
+        const URL_SB = 'https://plwpgjwozugznrlwgtwc.supabase.co'; 
+        const KEY_SB = 'sb_publishable_IudfuYPNAbYypJ5_YQ-zng_SJ6tDNYP';
+        const client = supabase.createClient(URL_SB, KEY_SB);
+
+        let ratingTerpilih = 0;
+
+        // Fungsi agar bintang bisa diklik dan berubah warna
+        function setSkor(n) {
+            ratingTerpilih = n;
+            const stars = document.querySelectorAll('#starContainer i');
+            stars.forEach((s, i) => {
+                if (i < n) {
+                    s.classList.add('active');
+                } else {
+                    s.classList.remove('active');
+                }
+            });
+        }
+
+        // Fungsi utama untuk mengirim ulasan
+        async function kirimKeSupabase() {
+            const nama = document.getElementById('namaClient').value.trim();
+            const pengalaman = document.getElementById('pesanClient').value.trim();
+
+            // Validasi Input
+            if(!nama || !pengalaman || ratingTerpilih === 0) {
+                alert("Mohon isi nama, ulasan, dan klik bintangnya dulu ya!");
+                return;
+            }
+
+            // Proses Input ke Tabel 'testimoni'
+            const { error } = await client
+                .from('testimoni')
+                .insert([{ 
+                    nama: nama, 
+                    pengalaman: pengalaman, 
+                    rating: ratingTerpilih 
+                }]);
+
+            if (error) {
+                console.error("Gagal kirim:", error);
+                alert("Gagal mengirim. Pastikan Tabel 'testimoni' sudah dibuat di Supabase.");
+            } else {
+                alert("Terima kasih! Ulasan berhasil dikirim.");
+                location.reload(); // Refresh halaman agar ulasan muncul di bawah
+            }
+        }
+
+        // Fungsi untuk mengambil data ulasan dan menampilkannya
+        async function muatTesti() {
+            const { data, error } = await client
+                .from('testimoni')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (data) {
+                const list = document.getElementById('testiList');
+                if (data.length === 0) {
+                    list.innerHTML = '<p style="text-align:center; grid-column:1/-1; color:#999;">Belum ada ulasan. Jadilah yang pertama!</p>';
+                    return;
+                }
+                list.innerHTML = data.map(d => `
+                    <div class="testi-card">
+                        <div style="color:#f1c40f; margin-bottom:10px;">
+                            ${'<i class="fas fa-star"></i>'.repeat(d.rating)}
+                        </div>
+                        <strong style="color:#0b5345;">${d.nama}</strong>
+                        <p style="margin-top:10px; font-size:14px; color:#555; font-style:italic;">"${d.pengalaman}"</p>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Panggil fungsi muat data saat halaman terbuka
+        muatTesti();
+    </script>
 </body>
 </html>
