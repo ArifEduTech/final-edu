@@ -11,6 +11,7 @@
             --accent-color: #f1c40f;  /* Kuning Emas */
             --text-light: #ffffff;
             --dark-overlay: rgba(11, 83, 69, 0.85);
+            --gallery-bg: #f9fbfb;
         }
 
         body {
@@ -116,22 +117,109 @@
             transform: translateY(-5px);
         }
 
-        .nav-card i {
-            font-size: 24px;
+        /* --- CSS GALERI ELEGAN --- */
+        .home-gallery {
+            padding: 100px 20px;
+            background-color: var(--gallery-bg);
         }
 
-        .nav-card span {
-            font-size: 0.9rem;
-            font-weight: bold;
+        .gallery-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        /* Modal Login */
-        #pwModal {
+        .section-title {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .section-subtitle {
+            color: #777;
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto 50px auto;
+            text-align: center;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        .gallery-card {
+            background: #ffffff;
+            border-radius: 30px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.04);
+            border: 1px solid #f0f0f0;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .gallery-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 25px 50px rgba(11, 83, 69, 0.12);
+            border-color: var(--primary-color);
+        }
+
+        .img-container {
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        .img-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+            transition: 0.5s;
+        }
+
+        .gallery-card:hover img {
+            filter: drop-shadow(0 15px 25px rgba(11, 83, 69, 0.3));
+            transform: scale(1.05);
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .card-desc {
+            font-size: 0.95rem;
+            color: #666;
+        }
+
+        .btn-gallery-cta {
+            display: inline-block;
+            margin-top: 60px;
+            padding: 16px 35px;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 700;
+            box-shadow: 0 10px 20px rgba(11, 83, 69, 0.2);
+            transition: 0.3s;
+        }
+
+        /* Modal Styles */
+        #pwModal, #waModal {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.85);
-            z-index: 1000;
+            z-index: 2000;
             backdrop-filter: blur(8px);
         }
 
@@ -142,17 +230,6 @@
             padding: 35px;
             border-radius: 20px;
             text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        .modal-content input {
-            width: 100%;
-            padding: 12px;
-            margin: 20px 0;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            text-align: center;
-            font-size: 1.1rem;
         }
 
         .btn-login {
@@ -166,87 +243,11 @@
             cursor: pointer;
         }
 
-        /* WA Selector Modal */
-        #waModal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 1000;
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .section-title { font-size: 1.8rem; }
+            .gallery-grid { grid-template-columns: 1fr; }
         }
-
-        @media (max-width: 600px) {
-            .hero h1 { font-size: 1.8rem; }
-            .menu-grid { grid-template-columns: 1fr 1fr; }
-        }
-        /* Desain Galeri Beranda Arif Edu Tech */
-.home-gallery {
-    padding: 80px 20px;
-    background: linear-gradient(to bottom, #ffffff, #f9f9f9);
-}
-
-.gallery-wrapper {
-    max-width: 1100px;
-    margin: 0 auto;
-}
-
-.gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 35px;
-    margin-top: 40px;
-}
-
-.gallery-card {
-    background: white;
-    border-radius: 25px;
-    padding: 25px;
-    text-align: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.03);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    border: 1px solid #f0f0f0;
-    position: relative;
-}
-
-.gallery-card:hover {
-    transform: translateY(-12px);
-    box-shadow: 0 20px 40px rgba(11, 83, 69, 0.1);
-    border-color: #0b5345;
-}
-
-.img-container {
-    height: 220px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 20px;
-}
-
-.img-container img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-    /* Memberikan efek bayangan pada bentuk objek PNG */
-    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.15));
-    transition: 0.4s;
-}
-
-.gallery-card:hover img {
-    filter: drop-shadow(0 15px 25px rgba(11, 83, 69, 0.3));
-}
-
-.card-title {
-    font-size: 18px;
-    font-weight: 700;
-    color: #0b5345;
-    margin-bottom: 8px;
-}
-
-.card-desc {
-    font-size: 13px;
-    color: #777;
-    line-height: 1.4;
-}
     </style>
 </head>
 <body>
@@ -259,9 +260,7 @@
         <p class="deskripsi">
             Menghadapi kendala teknis pada perangkat kesayangan seringkali menghambat langkah Anda. 
             Di Arif Edu Tech, kami menyambut Anda dengan solusi perbaikan menyeluruh untuk laptop, 
-            komputer, dan printer dengan standar pengerjaan yang teliti dan jujur. Dedikasi kami adalah 
-            memberikan rasa tenang melalui diagnosa yang akurat dan penanganan tepat sasaran, sehingga 
-            Anda dapat kembali berkarya tanpa perlu khawatir akan masalah hardware maupun software yang berulang.
+            komputer, dan printer dengan standar pengerjaan yang teliti dan jujur.
         </p>
 
         <a href="javascript:void(0)" class="btn-wa" onclick="showWaModal()">
@@ -291,51 +290,58 @@
             </a>
         </div>
     </section>
-<section class="home-gallery">
+
+    <section class="home-gallery">
         <div class="gallery-wrapper">
-            <div style="text-align: center;">
-                <h2 style="color: #0b5345; margin-bottom: 10px;">Dokumentasi Profesional</h2>
-                <p style="color: #666; font-size: 15px;">Melihat lebih dekat dedikasi kami dalam merawat perangkat Anda.</p>
-            </div>
+            <h2 class="section-title">Dokumentasi Profesional</h2>
+            <p class="section-subtitle">Melihat lebih dekat dedikasi kami dalam merawat perangkat Anda secara transparan dan ahli.</p>
 
             <div class="gallery-grid">
                 <div class="gallery-card">
-                    <div class="img-container">
-                        <img src="servis1.png" alt="Hardware Repair">
-                    </div>
+                    <div class="img-container"><img src="servis1.png" alt="Hardware Repair"></div>
                     <div class="card-title">Hardware Repair</div>
-                    <div class="card-desc">Diagnosa mendalam dan perbaikan komponen fisik dengan presisi tinggi.</div>
+                    <p class="card-desc">Perbaikan komponen fisik laptop dan PC dengan presisi tinggi.</p>
                 </div>
-
                 <div class="gallery-card">
-                    <div class="img-container">
-                        <img src="servis2.png" alt="Personal Service">
-                    </div>
+                    <div class="img-container"><img src="servis2.png" alt="Professional Consult"></div>
                     <div class="card-title">Professional Consult</div>
-                    <div class="card-desc">Layanan konsultasi jujur untuk solusi terbaik perangkat Anda.</div>
+                    <p class="card-desc">Konsultasi jujur untuk solusi teknis yang paling efisien.</p>
                 </div>
-
                 <div class="gallery-card">
-                    <div class="img-container">
-                        <img src="servis3.png" alt="System Optimization">
-                    </div>
+                    <div class="img-container"><img src="servis3.png" alt="System Solutions"></div>
                     <div class="card-title">System Solutions</div>
-                    <div class="card-desc">Optimasi performa software agar produktivitas kembali lancar.</div>
+                    <p class="card-desc">Optimasi sistem operasi agar performa kembali seperti baru.</p>
+                </div>
+                <div class="gallery-card">
+                    <div class="img-container"><img src="servis4.png" alt="Device Maintenance"></div>
+                    <div class="card-title">Maintenance</div>
+                    <p class="card-desc">Pembersihan debu dan penggantian thermal paste secara rutin.</p>
+                </div>
+                <div class="gallery-card">
+                    <div class="img-container"><img src="servis5.png" alt="Setup & Installation"></div>
+                    <div class="card-title">Setup & Install</div>
+                    <p class="card-desc">Konfigurasi jaringan dan instalasi perangkat baru Anda.</p>
+                </div>
+                <div class="gallery-card">
+                    <div class="img-container"><img src="servis6.png" alt="Printer Repair"></div>
+                    <div class="card-title">Printer Services</div>
+                    <p class="card-desc">Penanganan masalah mekanis maupun tinta pada berbagai merk printer.</p>
                 </div>
             </div>
 
-            <div style="text-align: center; margin-top: 50px;">
-                <a href="kontak.html" style="display: inline-block; padding: 14px 30px; background: #0b5345; color: white; text-decoration: none; border-radius: 50px; font-weight: bold; box-shadow: 0 5px 15px rgba(11, 83, 69, 0.3);">
-                    Lihat Testimoni & Galeri Lengkap →
+            <div style="text-align: center;">
+                <a href="kontak.html" class="btn-gallery-cta">
+                    <i class="fas fa-comments"></i> Lihat Galeri Lengkap & Testimoni
                 </a>
             </div>
         </div>
     </section>
+
     <div id="pwModal">
         <div class="modal-content">
-            <h3 style="margin:0; color:#333;">Akses Admin</h3>
+            <h3 style="margin:0;">Akses Admin</h3>
             <p style="font-size:12px; color:gray;">Gunakan PIN untuk membuka database</p>
-            <input type="password" id="adminPw" placeholder="••••••">
+            <input type="password" id="adminPw" placeholder="••••••" style="width:100%; padding:10px; margin:20px 0; border:1px solid #ddd; border-radius:5px; text-align:center;">
             <button class="btn-login" onclick="checkPassword()">BUKA DATA</button>
             <p onclick="hidePwModal()" style="color:red; cursor:pointer; margin-top:15px; font-size:13px;">Batal</p>
         </div>
@@ -343,20 +349,17 @@
 
     <div id="waModal">
         <div class="modal-content">
-            <h3 style="margin:0; color:#333;">Pilih Kontak</h3>
-            <p style="font-size:12px; color:gray; margin-bottom:20px;">Silakan pilih teknisi kami:</p>
-            <a href="https://wa.me/6287758018426" target="_blank" class="btn-wa" style="display:flex; margin-bottom:10px; justify-content:center;">Kontak 1 (Arif)</a>
-            <a href="https://wa.me/6281805305278" target="_blank" class="btn-wa" style="display:flex; justify-content:center; background-color:#128c7e;">Kontak 2 (Nafi)</a>
+            <h3 style="margin:0;">Pilih Kontak</h3>
+            <p style="font-size:12px; color:gray; margin-bottom:20px;">Hubungi teknisi kami:</p>
+            <a href="https://wa.me/6287758018426" target="_blank" class="btn-wa" style="display:flex; margin-bottom:10px; justify-content:center;">Arif (Teknisi 1)</a>
+            <a href="https://wa.me/6281805305278" target="_blank" class="btn-wa" style="display:flex; justify-content:center; background-color:#128c7e;">Nafi (Teknisi 2)</a>
             <p onclick="hideWaModal()" style="color:red; cursor:pointer; margin-top:15px; font-size:13px;">Tutup</p>
         </div>
     </div>
 
     <script>
-        // Fungsi Modal Password
         function showPwModal() { document.getElementById('pwModal').style.display = 'block'; }
         function hidePwModal() { document.getElementById('pwModal').style.display = 'none'; }
-        
-        // Fungsi Modal WA
         function showWaModal() { document.getElementById('waModal').style.display = 'block'; }
         function hideWaModal() { document.getElementById('waModal').style.display = 'none'; }
 
@@ -369,12 +372,10 @@
             }
         }
 
-        // Tutup modal jika klik di luar box
         window.onclick = function(event) {
             if (event.target == document.getElementById('pwModal')) hidePwModal();
             if (event.target == document.getElementById('waModal')) hideWaModal();
         }
     </script>
-
 </body>
 </html>
