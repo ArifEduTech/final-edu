@@ -179,6 +179,74 @@
             .hero h1 { font-size: 1.8rem; }
             .menu-grid { grid-template-columns: 1fr 1fr; }
         }
+        /* Desain Galeri Beranda Arif Edu Tech */
+.home-gallery {
+    padding: 80px 20px;
+    background: linear-gradient(to bottom, #ffffff, #f9f9f9);
+}
+
+.gallery-wrapper {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 35px;
+    margin-top: 40px;
+}
+
+.gallery-card {
+    background: white;
+    border-radius: 25px;
+    padding: 25px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid #f0f0f0;
+    position: relative;
+}
+
+.gallery-card:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 20px 40px rgba(11, 83, 69, 0.1);
+    border-color: #0b5345;
+}
+
+.img-container {
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.img-container img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    /* Memberikan efek bayangan pada bentuk objek PNG */
+    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.15));
+    transition: 0.4s;
+}
+
+.gallery-card:hover img {
+    filter: drop-shadow(0 15px 25px rgba(11, 83, 69, 0.3));
+}
+
+.card-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0b5345;
+    margin-bottom: 8px;
+}
+
+.card-desc {
+    font-size: 13px;
+    color: #777;
+    line-height: 1.4;
+}
     </style>
 </head>
 <body>
@@ -223,7 +291,46 @@
             </a>
         </div>
     </section>
+<section class="home-gallery">
+        <div class="gallery-wrapper">
+            <div style="text-align: center;">
+                <h2 style="color: #0b5345; margin-bottom: 10px;">Dokumentasi Profesional</h2>
+                <p style="color: #666; font-size: 15px;">Melihat lebih dekat dedikasi kami dalam merawat perangkat Anda.</p>
+            </div>
 
+            <div class="gallery-grid">
+                <div class="gallery-card">
+                    <div class="img-container">
+                        <img src="servis1.png" alt="Hardware Repair">
+                    </div>
+                    <div class="card-title">Hardware Repair</div>
+                    <div class="card-desc">Diagnosa mendalam dan perbaikan komponen fisik dengan presisi tinggi.</div>
+                </div>
+
+                <div class="gallery-card">
+                    <div class="img-container">
+                        <img src="servis2.png" alt="Personal Service">
+                    </div>
+                    <div class="card-title">Professional Consult</div>
+                    <div class="card-desc">Layanan konsultasi jujur untuk solusi terbaik perangkat Anda.</div>
+                </div>
+
+                <div class="gallery-card">
+                    <div class="img-container">
+                        <img src="servis3.png" alt="System Optimization">
+                    </div>
+                    <div class="card-title">System Solutions</div>
+                    <div class="card-desc">Optimasi performa software agar produktivitas kembali lancar.</div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 50px;">
+                <a href="kontak.html" style="display: inline-block; padding: 14px 30px; background: #0b5345; color: white; text-decoration: none; border-radius: 50px; font-weight: bold; box-shadow: 0 5px 15px rgba(11, 83, 69, 0.3);">
+                    Lihat Testimoni & Galeri Lengkap →
+                </a>
+            </div>
+        </div>
+    </section>
     <div id="pwModal">
         <div class="modal-content">
             <h3 style="margin:0; color:#333;">Akses Admin</h3>
