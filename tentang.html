@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tentang Kami - Arif Edu Tech</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #0b5345; /* Hijau Teal sesuai Branding */
+            --accent-color: #f1c40f;  /* Kuning Emas */
+            --bg-light: #ffffff;
+            --section-bg: #f8faf9;
+            --text-main: #2d3436;
+            --text-muted: #636e72;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            background-color: var(--bg-light);
+            color: var(--text-main);
+            line-height: 1.8;
+        }
+
+        /* Navbar */
+        nav {
+            background: white;
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .btn-home {
+            text-decoration: none;
+            color: var(--primary-color);
+            font-weight: 600;
+            border: 2px solid var(--primary-color);
+            padding: 8px 20px;
+            border-radius: 50px;
+            transition: 0.3s;
+        }
+
+        .btn-home:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* Hero Tentang Kami */
+        .header-about {
+            background: linear-gradient(rgba(11, 83, 69, 0.9), rgba(11, 83, 69, 0.9)), 
+                        url('https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+            padding: 100px 20px;
+        }
+
+        .header-about h1 {
+            font-size: 3rem;
+            margin: 0;
+            letter-spacing: 2px;
+        }
+
+        /* Content Sections */
+        .container {
+            max-width: 1000px;
+            margin: -60px auto 60px auto;
+            padding: 0 20px;
+        }
+
+        .card-main {
+            background: white;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .divider {
+            width: 60px;
+            height: 4px;
+            background: var(--accent-color);
+            margin: -15px auto 30px auto;
+            border-radius: 2px;
+        }
+
+        .highlight-box {
+            background: var(--section-bg);
+            border-left: 5px solid var(--accent-color);
+            padding: 30px;
+            font-style: italic;
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            margin: 40px 0;
+            border-radius: 0 15px 15px 0;
+        }
+
+        /* Grid Visi Misi */
+        .mission-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .mission-item {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .mission-item i {
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            margin-bottom: 15px;
+        }
+
+        .mission-item h4 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        /* Services section */
+        .service-focus {
+            background: var(--primary-color);
+            color: white;
+            padding: 60px 5%;
+            border-radius: 20px;
+            margin-top: 50px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+        }
+
+        .service-item {
+            flex: 1;
+            min-width: 250px;
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .footer-quote {
+            text-align: center;
+            margin-top: 80px;
+            padding: 40px;
+            border-top: 1px solid #eee;
+        }
+
+        @media (max-width: 768px) {
+            .header-about h1 { font-size: 2rem; }
+            .card-main { padding: 30px; }
+            .container { margin-top: -30px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="nav-logo">
+            <img src="logo.png" alt="Logo" style="height: 40px;"> Arif Edu Tech
+        </a>
+        <a href="index.html" class="btn-home">🏠 Menu Utama</a>
+    </nav>
+
+    <header class="header-about">
+        <h1>TENTANG KAMI</h1>
+        <p>Integritas • Kualitas • Edukasi</p>
+    </header>
+
+    <div class="container">
+        <div class="card-main">
+            <h2>Berawal dari Sebuah Misi Kejujuran</h2>
+            <div class="divider"></div>
+            
+            <p>Dunia teknologi berkembang sangat pesat, namun sayangnya, hal ini sering kali dimanfaatkan oleh oknum teknisi yang tidak bertanggung jawab. Kami banyak menemui pemilik perangkat yang merasa tertipu dengan diagnosa yang dilebih-lebihkan dan biaya perbaikan yang tidak masuk akal.</p>
+            
+            <p><strong>Arif Edu Tech lahir dari keprihatinan tersebut.</strong> Kami percaya bahwa setiap pelanggan berhak mendapatkan kebenaran tentang kondisi perangkat mereka. Itulah mengapa kami berkomitmen untuk menjadi bengkel teknologi yang transparan.</p>
+
+            <div class="highlight-box">
+                "Jika memang bisa diperbaiki dengan mudah, kami tidak akan mengatakan itu sulit. Jika suku cadang tidak perlu diganti, kami tidak akan meminta Anda membelinya."
+            </div>
+
+            <h2 style="margin-top: 80px;">Visi Kami</h2>
+            <div class="divider"></div>
+            <p style="text-align: center; font-size: 1.2rem;">"Menjadi pusat layanan servis laptop, komputer, dan printer terbesar serta terbaik yang dikenal karena integritasnya, kualitas pengerjaannya, dan kemampuannya mengedukasi masyarakat."</p>
+
+            <h2 style="margin-top: 80px;">Misi Kami</h2>
+            <div class="divider"></div>
+            <div class="mission-grid">
+                <div class="mission-item">
+                    <i class="fas fa-eye"></i>
+                    <h4>Transparansi Total</h4>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">Diagnosa jujur dan rincian biaya transparan di awal.</p>
+                </div>
+                <div class="mission-item">
+                    <i class="fas fa-award"></i>
+                    <h4>Kualitas Tanpa Kompromi</h4>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">Standar pengerjaan teliti & suku cadang pilihan.</p>
+                </div>
+                <div class="mission-item">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <h4>Edukasi Pelanggan</h4>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">Tips perawatan agar masalah tidak berulang.</p>
+                </div>
+                <div class="mission-item">
+                    <i class="fas fa-smile-beam"></i>
+                    <h4>Kepuasan Utama</h4>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">Perangkat kembali prima demi kelancaran aktivitas Anda.</p>
+                </div>
+            </div>
+
+            <div class="service-focus">
+                <div class="service-item">
+                    <h3><i class="fas fa-laptop-code"></i> Laptop & Komputer</h3>
+                    <p>Mulai dari masalah perangkat lunak, instalasi, hingga perbaikan hardware tingkat rumit seperti mati total.</p>
+                </div>
+                <div class="service-item">
+                    <h3><i class="fas fa-print"></i> Printer Specialist</h3>
+                    <p>Menangani kendala mekanik, kelistrikan, maupun sistem tinta agar cetakan kembali sempurna.</p>
+                </div>
+            </div>
+
+            <div class="footer-quote">
+                <h3>Mengapa Memilih Arif Edu Tech?</h3>
+                <p>Bagi kami, kesuksesan bukan hanya soal berapa banyak perangkat yang diperbaiki, tapi soal berapa banyak pelanggan yang merasa tenang dan terbantu. Di sini, Anda bukan sekadar pelanggan, melainkan <strong>mitra yang kami hargai.</strong> Kami tidak hanya memperbaiki alat kerja Anda, kami merawat kepercayaan Anda.</p>
+                <br>
+                <img src="logo.png" style="width: 100px; opacity: 0.5;">
+            </div>
+        </div>
+    </div>
+
+    <footer style="text-align: center; padding-bottom: 40px; color: #999;">
+        &copy; 2026 Arif Edu Tech | Kediri, Jawa Timur
+    </footer>
+
+</body>
+</html>
