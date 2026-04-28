@@ -76,39 +76,39 @@
     <div class="container">
         <div class="grid">
             
-          <div class="card">
-    <h2 style="color: var(--primary); margin-top:0;"><i class="fas fa-store-alt"></i> Lokasi Workshop</h2>
-    <p style="color: #666; font-size: 14px;">Kunjungi kami untuk konsultasi langsung mengenai perangkat Anda.</p>
-    
- <div class="map-wrapper" style="position: relative; width: 100%; height: 400px; border-radius: 15px; overflow: hidden; border: 4px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
-    
-    <div style="position: absolute; top: 15px; right: 15px; z-index: 10; background: rgba(255,255,255,0.95); padding: 8px 12px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 10px; border: 1px solid #0b5345;">
-        <img src="logo.png" alt="Logo" style="height: 25px;">
-        <span style="font-weight: bold; font-size: 12px; color: #0b5345;">Arif Edu Tech</span>
-    </div>
+            <div class="card">
+                <h2 style="color: var(--primary); margin-top:0;"><i class="fas fa-store-alt"></i> Lokasi Workshop</h2>
+                <p style="color: #666; font-size: 14px;">Kunjungi kami untuk konsultasi langsung mengenai perangkat Anda.</p>
+                
+                <div class="map-wrapper">
+                    <div style="position: absolute; top: 15px; right: 15px; z-index: 10; background: rgba(255,255,255,0.95); padding: 8px 12px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 10px; border: 1px solid #0b5345;">
+                        <img src="logo.png" alt="Logo" style="height: 25px;">
+                        <span style="font-weight: bold; font-size: 12px; color: #0b5345;">Arif Edu Tech</span>
+                    </div>
 
-    <iframe 
-        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1234.5678!2d112.026387!3d-7.871145!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e785bc44666f7f3%3A0xc331a98056cc2290!2sArif_Edu_Tech!5e0!3m2!1sid!2sid!4v1714280000000!5m2!1sid!2sid" 
-        width="100%" 
-        height="100%" 
-        style="border:0;" 
-        allowfullscreen="" 
-        loading="lazy" 
-        referrerpolicy="no-referrer-when-downgrade">
-    </iframe>
-</div>
+                    <iframe 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3951.68412217646!2d112.02381207481977!3d-7.92805549208638!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e785bc44666f7f3%3A0xc331a98056cc2290!2sArif_Edu_Tech!5e0!3m2!1sid!2sid!4v1714280000000!5m2!1sid!2sid" 
+                        width="100%" 
+                        height="100%" 
+                        style="border:0;" 
+                        allowfullscreen="" 
+                        loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
 
-    <div style="margin-top:25px;">
-        <div style="margin-bottom:10px;"><i class="fas fa-map-pin" style="color:var(--accent); width:25px;"></i> Ds. Jarak - Plosoklaten | Ds. Blabak - Kandat, Kediri</div>
-        <div style="margin-bottom:10px;"><i class="fab fa-whatsapp" style="color:#25D366; width:25px;"></i> 0877-5801-8426 / 0818-0530-5278</div>
-    </div>
+                <div style="margin-top:25px;">
+                    <div style="margin-bottom:10px;"><i class="fas fa-map-pin" style="color:var(--accent); width:25px;"></i> Ds. Jarak - Plosoklaten | Ds. Blabak - Kandat, Kediri</div>
+                    <div style="margin-bottom:10px;"><i class="fab fa-whatsapp" style="color:#25D366; width:25px;"></i> 0877-5801-8426 / 0818-0530-5278</div>
+                </div>
 
-    <div class="social-box">
-        <a href="https://facebook.com/ArifEduTech" target="_blank" class="social-btn fb"><i class="fab fa-facebook-f"></i></a>
-        <a href="https://instagram.com/ArifEduTech" target="_blank" class="social-btn ig"><i class="fab fa-instagram"></i></a>
-        <a href="https://wa.me/6287758018426" target="_blank" class="social-btn wa"><i class="fab fa-whatsapp"></i></a>
-    </div>
-</div>
+                <div class="social-box">
+                    <a href="https://facebook.com/ArifEduTech" target="_blank" class="social-btn fb"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://instagram.com/ArifEduTech" target="_blank" class="social-btn ig"><i class="fab fa-instagram"></i></a>
+                    <a href="https://wa.me/6287758018426" target="_blank" class="social-btn wa"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+
             <div class="card">
                 <h2 style="color: var(--primary); margin-top:0; text-align:center;">Rating & Ulasan</h2>
                 <p style="text-align:center; color:#666; font-size: 14px;">Kepuasan Anda adalah energi bagi kami.</p>
@@ -139,77 +139,14 @@
     </div>
 
     <script>
-        // MASUKKAN DATA SUPABASE ANDA DI SINI
-        const URL_SB = 'URL_ANDA'; 
-        const KEY_SB = 'KEY_ANDA';
-        const client = supabase.createClient(URL_SB, KEY_SB);
-
-        let ratingTerpilih = 0;
-
-        function setSkor(n) {
-            ratingTerpilih = n;
-            const stars = document.querySelectorAll('#starContainer i');
-            stars.forEach((s, i) => s.classList.toggle('active', i < n));
-        }
-
-        async function kirimKeSupabase() {
-            const nama = document.getElementById('namaClient').value;
-            const pengalaman = document.getElementById('pesanClient').value;
-
-            if(!nama || !pengalaman || ratingTerpilih === 0) {
-                alert("Lengkapi nama, ulasan, dan rating bintang ya!");
-                return;
-            }
-
-            const { error } = await client
-                .from('testimoni')
-                .insert([{ nama, pengalaman, rating: ratingTerpilih }]);
-
-            if (error) {
-                alert("Ups, gagal mengirim. Coba lagi nanti.");
-            } else {
-                alert("Terima kasih atas dukungannya!");
-                location.reload();
-            }
-        }
-
-        async function muatTesti() {
-            const { data, error } = await client
-                .from('testimoni')
-                .select('*')
-                .order('created_at', { ascending: false });
-
-            if (data) {
-                const list = document.getElementById('testiList');
-                if (data.length === 0) {
-                    list.innerHTML = '<p style="text-align:center; grid-column:1/-1;">Belum ada ulasan pertama. Jadilah yang pertama!</p>';
-                    return;
-                }
-                list.innerHTML = data.map(d => `
-                    <div class="testi-card">
-                        <div style="color:var(--accent); margin-bottom:10px;">
-                            ${'<i class="fas fa-star"></i>'.repeat(d.rating)}
-                        </div>
-                        <strong style="color:var(--primary); font-size:16px;">${d.nama}</strong>
-                        <p style="margin:10px 0 0 0; font-size:14px; color:#555; font-style:italic;">"${d.pengalaman}"</p>
-                    </div>
-                `).join('');
-            }
-        }
-
-        muatTesti();
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <script>
-        // Inisialisasi Supabase dengan kredensial Anda
+        // INISIALISASI SUPABASE
         const URL_SB = 'https://plwpgjwozugznrlwgtwc.supabase.co'; 
         const KEY_SB = 'sb_publishable_IudfuYPNAbYypJ5_YQ-zng_SJ6tDNYP';
         const client = supabase.createClient(URL_SB, KEY_SB);
 
         let ratingTerpilih = 0;
 
-        // Fungsi agar bintang bisa diklik dan berubah warna
+        // FUNGSI RATING BINTANG
         function setSkor(n) {
             ratingTerpilih = n;
             const stars = document.querySelectorAll('#starContainer i');
@@ -222,18 +159,16 @@
             });
         }
 
-        // Fungsi utama untuk mengirim ulasan
+        // FUNGSI KIRIM ULASAN
         async function kirimKeSupabase() {
             const nama = document.getElementById('namaClient').value.trim();
             const pengalaman = document.getElementById('pesanClient').value.trim();
 
-            // Validasi Input
             if(!nama || !pengalaman || ratingTerpilih === 0) {
-                alert("Mohon isi nama, ulasan, dan klik bintangnya dulu ya!");
+                alert("Mohon isi nama, ulasan, dan pilih bintang rating dulu ya!");
                 return;
             }
 
-            // Proses Input ke Tabel 'testimoni'
             const { error } = await client
                 .from('testimoni')
                 .insert([{ 
@@ -244,14 +179,14 @@
 
             if (error) {
                 console.error("Gagal kirim:", error);
-                alert("Gagal mengirim. Pastikan Tabel 'testimoni' sudah dibuat di Supabase.");
+                alert("Gagal mengirim ulasan. Coba lagi nanti.");
             } else {
-                alert("Terima kasih! Ulasan berhasil dikirim.");
-                location.reload(); // Refresh halaman agar ulasan muncul di bawah
+                alert("Terima kasih! Ulasan Anda berhasil disimpan.");
+                location.reload();
             }
         }
 
-        // Fungsi untuk mengambil data ulasan dan menampilkannya
+        // FUNGSI TAMPILKAN ULASAN
         async function muatTesti() {
             const { data, error } = await client
                 .from('testimoni')
@@ -266,17 +201,16 @@
                 }
                 list.innerHTML = data.map(d => `
                     <div class="testi-card">
-                        <div style="color:#f1c40f; margin-bottom:10px;">
+                        <div style="color:var(--accent); margin-bottom:10px;">
                             ${'<i class="fas fa-star"></i>'.repeat(d.rating)}
                         </div>
-                        <strong style="color:#0b5345;">${d.nama}</strong>
-                        <p style="margin-top:10px; font-size:14px; color:#555; font-style:italic;">"${d.pengalaman}"</p>
+                        <strong style="color:var(--primary); font-size:16px;">${d.nama}</strong>
+                        <p style="margin:10px 0 0 0; font-size:14px; color:#555; font-style:italic;">"${d.pengalaman}"</p>
                     </div>
                 `).join('');
             }
         }
 
-        // Panggil fungsi muat data saat halaman terbuka
         muatTesti();
     </script>
 </body>
