@@ -420,29 +420,38 @@
         }
     }, { once: true });
 </script>
-  <!-- BAGIAN JUMLAH PENGUNJUNG -->
+  <!-- BAGIAN JUMLAH PENGUNJUNG - POSISI DI TENGAH BAWAH, TIDAK TERTUTUP -->
 <div style="
-    margin: 50px auto 30px auto;
-    padding: 12px 25px;
-    background-color: var(--primary-color);
-    color: white;
-    border-radius: 50px;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 15px;
-    font-weight: 500;
-    box-shadow: 0 4px 12px rgba(11, 83, 69, 0.15);
-    border: 1px solid rgba(255,255,255,0.1);
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 50px 0 40px 0;
+    padding: 0 20px;
+    position: relative;
+    z-index: 1;
 ">
-    <i class="fas fa-users" style="color: var(--accent-color); font-size: 17px;"></i>
-    <span>Jumlah Pengunjung:</span>
-    <span id="visitor-count" style="
-        font-weight: bold;
-        color: var(--accent-color);
-        font-size: 17px;
-        margin-left: 3px;
-    ">Memuat...</span>
+    <div style="
+        padding: 12px 25px;
+        background-color: var(--primary-color);
+        color: white;
+        border-radius: 50px;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 15px;
+        font-weight: 500;
+        box-shadow: 0 4px 12px rgba(11, 83, 69, 0.15);
+        border: 1px solid rgba(255,255,255,0.1);
+    ">
+        <i class="fas fa-users" style="color: var(--accent-color); font-size: 17px;"></i>
+        <span>Jumlah Pengunjung:</span>
+        <span id="visitor-count" style="
+            font-weight: bold;
+            color: var(--accent-color);
+            font-size: 17px;
+            margin-left: 3px;
+        ">Memuat...</span>
+    </div>
 </div>
 
 <script>
@@ -456,8 +465,6 @@ async function getVisitorCount() {
   } catch (err) {
     console.error('Detail Kesalahan:', err);
     elemen.textContent = 'Gagal dimuat';
-    // Hapus baris ini agar pesan pop-up tidak muncul terus
-    // alert('Terjadi kesalahan saat memuat data pengunjung. Cek konsol untuk detailnya.');
   }
 }
 
