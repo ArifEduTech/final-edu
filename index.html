@@ -420,5 +420,25 @@
         }
     }, { once: true });
 </script>
+    <!-- Tampilan Jumlah Pengunjung -->
+<div style="margin-top: 20px; padding: 10px; background: #f0f0f0; display: inline-block; border-radius: 8px;">
+  🧍 Jumlah Pengunjung: <span id="visitor-count">0</span>
+</div>
+
+<script>
+// Ambil dan tampilkan jumlah pengunjung
+async function getVisitorCount() {
+  try {
+    const res = await fetch('/api/visitor');
+    const data = await res.json();
+    document.getElementById('visitor-count').textContent = data.count;
+  } catch (err) {
+    console.error('Gagal memuat jumlah pengunjung:', err);
+  }
+}
+
+// Jalankan saat halaman dibuka
+getVisitorCount();
+</script>
 </body>
 </html>
