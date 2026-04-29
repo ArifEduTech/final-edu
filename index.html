@@ -420,7 +420,7 @@
         }
     }, { once: true });
 </script>
-    <!-- BAGIAN JUMLAH PENGUNJUNG - SUDAH DISESUAIKAN DENGAN DESAIN SITUS -->
+  <!-- BAGIAN JUMLAH PENGUNJUNG -->
 <div style="
     margin: 50px auto 30px auto;
     padding: 12px 25px;
@@ -446,22 +446,21 @@
 </div>
 
 <script>
-// Ambil dan tampilkan jumlah pengunjung
 async function getVisitorCount() {
+  const elemen = document.getElementById('visitor-count');
   try {
     const res = await fetch('/api/visitor');
-    if (!res.ok) throw new Error('Gagal terhubung ke server');
+    if (!res.ok) throw new Error(`Status: ${res.status}`);
     const data = await res.json();
-    document.getElementById('visitor-count').textContent = data.count || '0';
+    elemen.textContent = data.count || '0';
   } catch (err) {
     console.error('Detail Kesalahan:', err);
-    document.getElementById('visitor-count').textContent = 'Tidak dapat dimuat';
-    // Tampilkan pesan di konsol browser untuk pengecekan
-    alert('Terjadi kesalahan saat memuat data pengunjung. Cek konsol untuk detailnya.');
+    elemen.textContent = 'Gagal dimuat';
+    // Hapus baris ini agar pesan pop-up tidak muncul terus
+    // alert('Terjadi kesalahan saat memuat data pengunjung. Cek konsol untuk detailnya.');
   }
 }
 
-// Jalankan saat halaman selesai dimuat sepenuhnya
 window.addEventListener('load', getVisitorCount);
 </script>
 </body>
