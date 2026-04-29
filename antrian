@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Queue - Arif Edu Tech</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #0b5345;
+            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            --checking: #6c757d; 
+            --proses: #f1c40f;   
+            --selesai: #27ae60;
+            --glass: rgba(255, 255, 255, 0.8);
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: var(--primary-color);
+            font-weight: bold;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+
+        .header-box {
+            background: var(--primary-color);
+            color: white;
+            padding: 30px 20px;
+            border-radius: 25px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(11, 83, 69, 0.2);
+            position: relative;
+            z-index: 2;
+        }
+
+        .header-box h1 {
+            margin: 0;
+            font-size: 1.6rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .header-box p {
+            margin: 8px 0 0;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .content-area {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            margin-top: -30px;
+            padding: 50px 15px 30px;
+            border-radius: 30px;
+            border: 1px solid rgba(255,255,255,0.5);
+            min-height: 400px;
+        }
+
+        .queue-card {
+            background: white;
+            border-radius: 20px;
+            padding: 18px 22px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .info .device-name {
+            display: block;
+            font-weight: 800;
+            font-size: 1.05rem;
+            color: #2d3436;
+            margin-bottom: 4px;
+        }
+
+        .info .entry-date {
+            font-size: 0.8rem;
+            color: #b2bec3;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-badge {
+            font-size: 0.7rem;
+            font-weight: 900;
+            padding: 8px 15px;
+            border-radius: 12px;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .status-checking { background-color: var(--checking); }
+        .status-proses { background-color: var(--proses); color: #2d3436; }
+        .status-selesai { background-color: var(--selesai); }
+
+        .loading-state, .empty-state {
+            text-align: center;
+            padding: 50px 0;
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <a href="index.html" class="btn-back">
+        <i class="fas fa-arrow-left"></i> Kembali ke Beranda
+    </a>
+
+    <div class="header-box">
+        <h1>Monitoring Antrian</h1>
+        <p><i class="fas fa-sync-alt fa-spin"></i> Terkoneksi Real-Time</p>
+    </div>
+
+    <div class="content-area">
+        <div id="queue-list">
+            <div class="loading-state">
+                <i class="fas fa-spinner fa-3x fa-spin"></i>
+                <p style="margin-top: 15px; font-weight: 600;">Mengambil Data...</p>
+            </div>
+        </div>
+    </div>
+
+    <p style="text-align: center; font-size: 0.75rem; color: #636e72; margin-top: 20px;">
+        &copy; 2026 Arif Edu Tech - IT Solutions
+    </p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    // Menggunakan Kredensial yang Anda berikan
+    const SB_URL = "https://plwpgjwozugznrlwgtwc.supabase.co"; 
+    const SB_KEY = "sb_publishable_IudfuYPNAbYypJ5_YQ-zng_SJ6tDNYP";
+    const _supabase = supabase.createClient(SB_URL, SB_KEY);
+
+    async function fetchQueue() {
+        const queueContainer = document.getElementById('queue-list');
+        
+        try {
+            // Memanggil data dari VIEW sesuai instruksi sebelumnya
+            const { data, error } = await _supabase
+                .from('view_antrian_service')
+                .select('*');
+
+            if (error) throw error;
+
+            if (!data || data.length === 0) {
+                queueContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-clipboard-list fa-3x" style="opacity:0.2; margin-bottom:15px; display:block;"></i>
+                        <p>Tidak ada antrian aktif saat ini.</p>
+                    </div>`;
+                return;
+            }
+
+            queueContainer.innerHTML = '';
+            data.forEach(item => {
+                // Konversi status ke lower case untuk class CSS (checking, proses, selesai)
+                const statusSlug = item.status.toLowerCase();
+                const card = document.createElement('div');
+                card.className = 'queue-card';
+                card.innerHTML = `
+                    <div class="info">
+                        <span class="device-name">${item.barang}</span>
+                        <span class="entry-date"><i class="far fa-calendar-check"></i> ${item.tgl}</span>
+                    </div>
+                    <div class="status-badge status-${statusSlug}">
+                        ${item.status}
+                    </div>
+                `;
+                queueContainer.appendChild(card);
+            });
+
+        } catch (err) {
+            console.error("Error:", err);
+            queueContainer.innerHTML = `
+                <div class="empty-state" style="color:#d63031">
+                    <i class="fas fa-exclamation-triangle fa-2x"></i>
+                    <p>Gagal memuat data.<br><small>Pastikan SQL View sudah dibuat di Supabase.</small></p>
+                </div>`;
+        }
+    }
+
+    fetchQueue();
+    // Auto refresh setiap 30 detik agar benar-benar real-time
+    setInterval(fetchQueue, 30000);
+</script>
+
+</body>
+</html>
