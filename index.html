@@ -266,7 +266,15 @@
         <a href="javascript:void(0)" class="btn-wa" onclick="showWaModal()">
             <i class="fab fa-whatsapp"></i> Konsultasi Sekarang
         </a>
-
+<div id="music-container" style="position: fixed; bottom: 20px; left: 20px; z-index: 9999; background: rgba(11, 83, 69, 0.8); padding: 10px; border-radius: 50px; display: flex; align-items: center; gap: 10px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2);">
+    <button id="music-btn" onclick="toggleMusic()" style="background: var(--accent-color); border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+        <i id="music-icon" class="fas fa-play" style="color: #000; font-size: 14px;"></i>
+    </button>
+    <span id="music-status" style="color: white; font-size: 12px; font-weight: bold; padding-right: 10px;">Musik: OFF</span>
+    <audio id="bg-music" loop>
+        <source src="tech-ambient.mp3" type="audio/mpeg">
+    </audio>
+</div>
        <div class="menu-grid" style="grid-template-columns: repeat(3, 1fr);">
             <a href="tentang.html" class="nav-card">
                 <i class="fas fa-info-circle"></i>
@@ -381,5 +389,36 @@
             if (event.target == document.getElementById('waModal')) hideWaModal();
         }
     </script>
+    <script>
+    const music = document.getElementById('bg-music');
+    const musicBtn = document.getElementById('music-btn');
+    const musicIcon = document.getElementById('music-icon');
+    const musicStatus = document.getElementById('music-status');
+
+    // Atur volume agar lirih (0.2 = 20% volume)
+    music.volume = 0.2;
+
+    function toggleMusic() {
+        if (music.paused) {
+            music.play();
+            musicIcon.classList.replace('fa-play', 'fa-pause');
+            musicStatus.innerText = "Musik: ON";
+            musicStatus.style.color = "var(--accent-color)";
+        } else {
+            music.pause();
+            musicIcon.classList.replace('fa-pause', 'fa-play');
+            musicStatus.innerText = "Musik: OFF";
+            musicStatus.style.color = "white";
+        }
+    }
+
+    // Trik agar musik seolah-olah autoplay saat user klik pertama kali di web
+    document.body.addEventListener('click', function() {
+        if (music.paused && musicStatus.innerText === "Musik: OFF") {
+            // Uncomment baris di bawah jika ingin langsung putar saat klik pertama di mana saja
+            // toggleMusic(); 
+        }
+    }, { once: true });
+</script>
 </body>
 </html>
