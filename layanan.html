@@ -110,6 +110,41 @@
 </div>
 
 <script>
+    // Fungsi simpan dokumentasi
+    async function updateDokumentasi(id, teks) {
+        await sbClient.from('layanan').update({ dokumentasi_proses: teks }).eq('id', id);
+    }
+
+    // Fungsi Edit Data (Mengembalikan data ke form atas untuk diperbaiki)
+    async function editData(id) {
+        const item = fullData.find(i => i.id === id);
+        if(item) {
+            document.getElementById('custName').value = item.nama;
+            document.getElementById('entryDate').value = item.tgl;
+            document.getElementById('serviceType').value = item.tipe;
+            document.getElementById('devName').value = item.barang;
+            document.getElementById('kelengkapan').value = item.kelengkapan;
+            document.getElementById('keluhan').value = item.keluhan;
+            
+            // Ubah tombol simpan jadi mode update
+            const btn = document.querySelector('.btn-blue');
+            btn.innerHTML = "🆙 UPDATE DATA";
+            btn.onclick = async () => {
+                const up = {
+                    nama: document.getElementById('custName').value,
+                    tgl: document.getElementById('entryDate').value,
+                    tipe: document.getElementById('serviceType').value,
+                    barang: document.getElementById('devName').value,
+                    kelengkapan: document.getElementById('kelengkapan').value,
+                    keluhan: document.getElementById('keluhan').value
+                };
+                await sbClient.from('layanan').update(up).eq('id', id);
+                alert("Data diperbarui!");
+                location.reload();
+            };
+            window.scrollTo(0,0);
+        }
+    }
     const _URL = "https://plwpgjwozugznrlwgtwc.supabase.co";
     const _KEY = "sb_publishable_IudfuYPNAbYypJ5_YQ-zng_SJ6tDNYP";
     const sbClient = window.supabase.createClient(_URL, _KEY);
@@ -127,10 +162,16 @@
         }
     }
 
-    function renderTable(data) {
+  function renderTable(data) {
         const body = document.getElementById('dbBody');
         body.innerHTML = '';
         data.forEach(d => {
+            // Logika: Dokumentasi hanya muncul di input jika status BUKAN selesai
+            const inputDokumen = d.status !== 'selesai' ? 
+                `<textarea style="width:100%; margin-top:5px; font-size:11px;" 
+                  onchange="updateDokumentasi('${d.id}', this.value)" 
+                  placeholder="Input Dokumentasi Proses...">${d.dokumentasi_proses || ''}</textarea>` : '';
+
             body.innerHTML += `
                 <tr>
                     <td><strong>${d.nama}</strong><br><small>${d.tgl}</small><br><small>(${d.barang})</small></td>
@@ -138,9 +179,11 @@
                         <input type="text" value="${d.tindakan || ''}" 
                                style="width:100%; padding:5px; border:1px solid #ddd;"
                                onchange="updateTindakan('${d.id}', this.value)" placeholder="Ketik tindakan...">
+                        ${inputDokumen}
                     </td>
                     <td><span class="badge" style="background:${getStatusColor(d.status)}" onclick="updateProgres('${d.id}','${d.status}')">${d.status}</span></td>
                     <td>
+                        <button class="btn btn-yellow" style="padding:5px;" onclick="editData('${d.id}')">✏️</button>
                         <button class="btn btn-green" style="padding:5px;" onclick="openModal('${d.id}')">📝</button>
                         <button class="btn btn-blue" style="padding:5px;" onclick="reprint('${d.id}')">🖨️</button>
                         <button class="btn btn-red" style="padding:5px;" onclick="hapusData('${d.id}')">🗑️</button>
@@ -248,42 +291,49 @@
     function closeModal() { document.getElementById('modalNota').style.display = 'none'; }
 
     window.onload = async () => {
-        const p = new URLSearchParams(window.location.search);
-        if(p.has('id')) {
-            document.getElementById('mainContent').style.display = 'none';
-            const { data } = await sbClient.from('layanan').select('*').eq('id', p.get('id')).single();
-            if(data) {
-                document.body.innerHTML = `
-                <div style="text-align:center; padding:50px; font-family: sans-serif; background: #fff; min-height: 100vh;">
-                    <h1 style="color:#007bff;">ARIF EDU TECH</h1>
-                    <hr style="width:100px; border:2px solid #007bff; margin:20px auto;">
-                    <p style="font-size: 1.1em; color: #555;">Status Perbaikan Unit Anda:</p>
-                    <h2 style="color:${data.status === 'selesai' ? '#28a745' : '#ffc107'}; text-transform: uppercase; background: #f8f9fa; display: inline-block; padding: 10px 30px; border-radius: 50px; border: 2px solid currentColor;">
-                        ${data.status}
-                    </h2>
+    const p = new URLSearchParams(window.location.search);
+    if(p.has('id')) {
+        document.getElementById('mainContent').style.display = 'none';
+        const { data } = await sbClient.from('layanan').select('*').eq('id', p.get('id')).single();
+        if(data) {
+            document.body.innerHTML = `
+            <div style="text-align:center; padding:50px; font-family: sans-serif; background: #fff; min-height: 100vh;">
+                <h1 style="color:#007bff;">ARIF EDU TECH</h1>
+                <hr style="width:100px; border:2px solid #007bff; margin:20px auto;">
+                <p style="font-size: 1.1em; color: #555;">Status Perbaikan Unit Anda:</p>
+                <h2 style="color:${data.status === 'selesai' ? '#28a745' : '#ffc107'}; text-transform: uppercase; background: #f8f9fa; display: inline-block; padding: 10px 30px; border-radius: 50px; border: 2px solid currentColor;">
+                    ${data.status}
+                </h2>
+                
+                <div style="margin: 30px auto; max-width: 500px; background:#fdfdfd; padding:25px; border-radius:15px; text-align:left; border:1px solid #eee; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+                    <p><strong>Nama Pelanggan:</strong> ${data.nama}</p>
+                    <p><strong>Unit Barang:</strong> ${data.barang}</p>
+                    <p><strong>Tanggal Masuk:</strong> ${data.tgl}</p>
+                    <p><strong>Kelengkapan:</strong> ${data.kelengkapan || '-'}</p>
+                    <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
+                    <p style="color:#007bff; font-weight: bold; margin-bottom: 5px;">Update Progres Teknisi:</p>
+                    <p style="font-size:1.2em; font-weight:bold; color: #333; line-height: 1.4;">${data.tindakan || 'Sedang dalam pengecekan...'}</p>
                     
-                    <div style="margin: 30px auto; max-width: 500px; background:#fdfdfd; padding:25px; border-radius:15px; text-align:left; border:1px solid #eee; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
-                        <p><strong>Nama Pelanggan:</strong> ${data.nama}</p>
-                        <p><strong>Unit Barang:</strong> ${data.barang}</p>
-                        <p><strong>Tanggal Masuk:</strong> ${data.tgl}</p>
-                        <p><strong>Kelengkapan:</strong> ${data.kelengkapan || '-'}</p>
-                        <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
-                        <p style="color:#007bff; font-weight: bold; margin-bottom: 5px;">Update Progres Teknisi:</p>
-                        <p style="font-size:1.2em; font-weight:bold; color: #333; line-height: 1.4;">${data.tindakan || 'Sedang dalam pengecekan...'}</p>
+                    ${data.dokumentasi_proses ? `
+                        <div style="margin-top:20px; padding:15px; background:#fff9e6; border-left:4px solid #ffc107; border-radius:4px;">
+                            <p style="margin:0 0 5px 0; font-size:12px; color:#856404; font-weight:bold; text-transform:uppercase;">Dokumentasi Pengerjaan:</p>
+                            <p style="margin:0; font-size:14px; color:#333; white-space: pre-line;">${data.dokumentasi_proses}</p>
+                        </div>
+                    ` : ''}
                     </div>
 
-                    <div style="margin-top:40px; padding: 0 20px;">
-                        <p style="font-size: 1.1em; color: #28a745; font-weight: 500;">
-                            Terimakasih atas kunjungan dan kepercayaannya,<br>kami akan melayani dengan sepenuh hati.
-                        </p>
-                    </div>
-                    <div style="margin-top: 30px; font-size: 12px; color: #999;">
-                        &copy; 2024 ARIF EDU TECH - Layanan Servis Transparan
-                    </div>
-                </div>`;
-            }
-        } else { fetchData(); }
-    }
+                <div style="margin-top:40px; padding: 0 20px;">
+                    <p style="font-size: 1.1em; color: #28a745; font-weight: 500;">
+                        Terimakasih atas kunjungan dan kepercayaannya,<br>kami akan melayani dengan sepenuh hati.
+                    </p>
+                </div>
+                <div style="margin-top: 30px; font-size: 12px; color: #999;">
+                    &copy; 2024 ARIF EDU TECH - Layanan Servis Transparan
+                </div>
+            </div>`;
+        }
+    } else { fetchData(); }
+}
 </script>
 </body>
 </html>
