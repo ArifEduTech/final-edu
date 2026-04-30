@@ -256,31 +256,47 @@
         closeModal(); fetchData(); reprint(activeId);
     }
 
-    async function reprint(id) {
-        const { data } = await sbClient.from('layanan').select('*').eq('id', id).single();
-        const trackingUrl = window.location.origin + window.location.pathname + "?id=" + id;
-        
-        let h = `<h3>${data.items && data.items.length > 0 ? 'NOTA LUNAS' : 'TANDA TERIMA'}</h3>
-                 <div style="text-align:left; font-size:12px;">
-                    <p>Tgl Masuk: ${data.tgl}<br>
-                    Nama: ${data.nama}<br>
-                    Unit: ${data.barang}<br>
-                    Kelengkapan: ${data.kelengkapan || '-'}<br>
-                    Keluhan: ${data.keluhan}</p>
-                 </div>`;
+  async function reprint(id) {
+    const { data } = await sbClient.from('layanan').select('*').eq('id', id).single();
+    const trackingUrl = window.location.origin + window.location.pathname + "?id=" + id;
+    
+    // 1. Bagian isi Nota (Tanggal, Nama, Unit, Kelengkapan muncul di sini)
+    let h = `<h3>${data.items && data.items.length > 0 ? 'NOTA LUNAS' : 'TANDA TERIMA'}</h3>
+             <div style="text-align:left; font-size:12px;">
+                <p>Tgl Masuk: ${data.tgl}<br>
+                Nama: ${data.nama}<br>
+                Unit: ${data.barang}<br>
+                Kelengkapan: ${data.kelengkapan || '-'}<br>
+                Keluhan: ${data.keluhan}</p>
+             </div>`;
 
-        if(data.items && data.items.length > 0) {
-            h += `<hr><table>`;
-            data.items.forEach(i => h += `<tr><td>${i.desc}</td><td style="text-align:right;">Rp ${parseInt(i.price).toLocaleString()}</td></tr>`);
-            h += `</table><h4>TOTAL: Rp ${parseInt(data.total).toLocaleString()}</h4>`;
-        }
-        
-        document.getElementById('notaKonten').innerHTML = h;
-        document.getElementById('qrPrint').innerHTML = "";
-        new QRCode(document.getElementById("qrPrint"), { text: trackingUrl, width: 100, height: 100 });
-        document.getElementById('qrInfoContainer').innerHTML = `<small>Cek Status: ${trackingUrl}</small>`;
-        setTimeout(() => { window.print(); }, 500);
+    if(data.items && data.items.length > 0) {
+        h += `<hr><table>`;
+        data.items.forEach(i => h += `<tr><td>${i.desc}</td><td style="text-align:right;">Rp ${parseInt(i.price).toLocaleString()}</td></tr>`);
+        h += `</table><h4>TOTAL: Rp ${parseInt(data.total).toLocaleString()}</h4>`;
     }
+    
+    document.getElementById('notaKonten').innerHTML = h;
+    
+    // 2. Bagian Barcode (Kotak Hitam Putih)
+    document.getElementById('qrPrint').innerHTML = "";
+    new QRCode(document.getElementById("qrPrint"), { 
+        text: trackingUrl, 
+        width: 110, 
+        height: 110 
+    });
+
+    // 3. Bagian Link & Tulisan Instruksi di paling bawah
+    document.getElementById('qrInfoContainer').innerHTML = `
+        <div style="margin-top: 10px; font-size: 10px; text-align:center;">
+            <span style="word-break: break-all; font-weight: bold;">${trackingUrl}</span>
+            <p style="margin-top: 8px; font-weight: bold; border-top: 1px dashed #ccc; pt-5;">
+                Scan kode QR atau kunjungi link di atas untuk cek progres service
+            </p>
+        </div>`;
+
+    setTimeout(() => { window.print(); }, 500);
+}
 
     async function hapusData(id) { if(confirm("Hapus?")) { await sbClient.from('layanan').delete().eq('id', id); fetchData(); } }
     function closeModal() { document.getElementById('modalNota').style.display = 'none'; }
