@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Layanan - ARIF EDU TECH</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #fcfdfe; }
+        .hero-mesh {
+            background-color: #0f172a;
+            background-image: radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0, transparent 50%), 
+                              radial-gradient(at 100% 100%, rgba(37, 99, 235, 0.1) 0, transparent 50%);
+        }
+        .card-service {
+            transition: all 0.3s ease;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        .card-service:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
+        }
+        .text-gradient {
+            background: linear-gradient(to py, #3b82f6, #2563eb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <header class="hero-mesh pt-24 pb-20 px-6 text-center text-white">
+        <div class="max-w-4xl mx-auto">
+            <a href="index.html" class="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 mb-8 transition font-semibold">
+                <i class="fas fa-arrow-left"></i> Kembali ke Beranda
+            </a>
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-6 tracking-tight">Solusi IT Profesional</h1>
+            <p class="text-slate-400 text-lg md:text-xl font-light">Ekspertis teknis untuk menunjang produktivitas digital Anda.</p>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6 py-16">
+        <div class="grid grid-cols-1 gap-12">
+
+            <section class="grid md:grid-cols-3 gap-8 items-start">
+                <div class="md:col-span-1 sticky top-24">
+                    <span class="text-blue-600 font-bold tracking-tighter text-sm uppercase">Layanan Utama</span>
+                    <h2 class="text-3xl font-extrabold mt-2 mb-4">Service Hardware & Software</h2>
+                    <p class="text-slate-500 text-sm leading-relaxed">Pemulihan perangkat digital dengan standar teknisi berpengalaman dan komponen berkualitas.</p>
+                </div>
+                <div class="md:col-span-2 grid gap-4">
+                    <div class="bg-white p-6 rounded-2xl card-service">
+                        <h4 class="font-bold flex items-center gap-3 mb-2"><i class="fas fa-laptop-medical text-blue-500"></i> Perbaikan Unit (Laptop/PC)</h4>
+                        <p class="text-slate-600 text-sm">Menangani kerusakan mulai dari hardware (Mati total, No Display, Engsel patah, Ganti Keyboard/LCD) hingga upgrade performa menggunakan SSD & RAM High-End.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl card-service">
+                        <h4 class="font-bold flex items-center gap-3 mb-2"><i class="fas fa-print text-blue-500"></i> Spesialis Printer Inkjet</h4>
+                        <p class="text-slate-600 text-sm">Perbaikan intensif untuk Printer Epson, Canon, dan HP. Meliputi penanganan Head mampet, mekanik berisik, hingga reset counter tinta.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl card-service">
+                        <h4 class="font-bold flex items-center gap-3 mb-2"><i class="fas fa-compact-disc text-blue-500"></i> Sistem & Optimasi</h4>
+                        <p class="text-slate-600 text-sm">Instalasi OS Windows legal, pembersihan virus/malware, aktivasi aplikasi perkantoran, dan optimasi startup agar boot lebih cepat.</p>
+                    </div>
+                </div>
+            </section>
+
+            <hr class="border-slate-200">
+
+            <section class="grid md:grid-cols-3 gap-8 items-start">
+                <div class="md:col-span-1 sticky top-24">
+                    <span class="text-indigo-600 font-bold tracking-tighter text-sm uppercase">Infrastruktur</span>
+                    <h2 class="text-3xl font-extrabold mt-2 mb-4">Instalasi & Maintenance Lab</h2>
+                    <p class="text-slate-500 text-sm leading-relaxed">Spesialis pembangunan ekosistem komputasi terpadu untuk efisiensi instansi.</p>
+                </div>
+                <div class="md:col-span-2">
+                    <div class="bg-white rounded-[2.5rem] p-8 md:p-10 border border-slate-200 relative overflow-hidden">
+                        <div class="relative z-10">
+                            <h3 class="text-2xl font-bold mb-6">Pembangunan Lab Komputer Modern</h3>
+                            <p class="text-slate-600 mb-8 leading-relaxed">Kami melayani perancangan Lab Komputer dari nol hingga siap digunakan untuk operasional harian maupun ujian nasional.</p>
+                            
+                            <div class="grid sm:grid-cols-2 gap-6 mb-8">
+                                <div class="space-y-4">
+                                    <div class="flex gap-4">
+                                        <i class="fas fa-school text-indigo-500 mt-1"></i>
+                                        <div>
+                                            <h5 class="font-bold text-sm">Lab Sekolah (ANBK Ready)</h5>
+                                            <p class="text-xs text-slate-500 mt-1">Konfigurasi Server Lokal, manajemen Client, dan jaringan LAN yang stabil untuk simulasi maupun ujian utama.</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex gap-4">
+                                        <i class="fas fa-building text-indigo-500 mt-1"></i>
+                                        <div>
+                                            <h5 class="font-bold text-sm">Lab Kantor & Instansi</h5>
+                                            <p class="text-xs text-slate-500 mt-1">Penyusunan workstation yang ergonomis dengan integrasi penyimpanan data terpusat.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bg-slate-50 p-6 rounded-3xl border border-dashed border-slate-300">
+                                    <h5 class="font-bold text-indigo-600 text-xs mb-3 uppercase tracking-widest">Maintenance Rutin</h5>
+                                    <p class="text-[11px] text-slate-500 leading-relaxed italic">"Perawatan berkala meliputi pengecekan hardware, update sistem keamanan, dan pembersihan fisik perangkat agar aset instansi tetap awet dalam jangka panjang."</p>
+                                </div>
+                            </div>
+                            <a href="https://wa.me/6287758018426" class="inline-block bg-indigo-600 text-white px-8 py-3 rounded-full font-bold text-sm shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition">Konsultasi Proyek Lab</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr class="border-slate-200">
+
+            <section class="grid md:grid-cols-3 gap-8 items-start">
+                <div class="md:col-span-1 sticky top-24">
+                    <span class="text-emerald-600 font-bold tracking-tighter text-sm uppercase">Shopping</span>
+                    <h2 class="text-3xl font-extrabold mt-2 mb-4">Pengadaan Barang</h2>
+                    <p class="text-slate-500 text-sm leading-relaxed">Unit perangkat IT pilihan dengan garansi dan kualitas terjamin.</p>
+                </div>
+                <div class="md:col-span-2">
+                    <div class="bg-emerald-600 rounded-3xl p-10 text-white flex flex-col md:flex-row items-center gap-8 shadow-xl shadow-emerald-100">
+                        <div class="flex-1 text-center md:text-left">
+                            <h3 class="text-2xl font-bold mb-3">Unit Laptop & Printer Baru</h3>
+                            <p class="text-emerald-100 text-sm mb-6">Kami menyediakan unit terbaik untuk kebutuhan administrasi, sekolah, hingga bisnis Anda.</p>
+                            <a href="katalog.html" class="inline-block bg-white text-emerald-600 px-10 py-3 rounded-full font-extrabold text-sm hover:scale-105 transition shadow-lg">BUKA KATALOG <i class="fas fa-external-link-alt ml-2"></i></a>
+                        </div>
+                        <div class="hidden md:block w-32 h-32 bg-emerald-500 rounded-full flex items-center justify-center text-5xl">
+                            <i class="fas fa-shopping-basket"></i>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr class="border-slate-200">
+
+            <section class="grid md:grid-cols-3 gap-8 items-start">
+                <div class="md:col-span-1 sticky top-24">
+                    <span class="text-orange-600 font-bold tracking-tighter text-sm uppercase">Performance</span>
+                    <h2 class="text-3xl font-extrabold mt-2 mb-4">Custom Build PC</h2>
+                    <p class="text-slate-500 text-sm leading-relaxed">Rakit PC impian dengan pemilihan komponen yang presisi.</p>
+                </div>
+                <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="p-6 bg-white rounded-2xl card-service border-b-4 border-b-orange-500">
+                        <h4 class="font-bold text-slate-800 mb-2 underline decoration-orange-300">Gaming PC Series</h4>
+                        <p class="text-xs text-slate-500 leading-relaxed mb-4">Rakit PC khusus gaming untuk mengejar FPS tinggi di resolusi Full HD hingga 4K. Estetik dengan pencahayaan RGB yang sinkron.</p>
+                        <div class="text-[10px] font-bold text-orange-600 flex gap-2"><span>#HighFPS</span> <span>#RayTracingReady</span></div>
+                    </div>
+                    <div class="p-6 bg-white rounded-2xl card-service border-b-4 border-b-blue-500">
+                        <h4 class="font-bold text-slate-800 mb-2 underline decoration-blue-300">Editing Workstation</h4>
+                        <p class="text-xs text-slate-500 leading-relaxed mb-4">Fokus pada kestabilan render video 4K dan desain grafis berat. Menggunakan prosesor multi-core dan RAM kapasitas besar.</p>
+                        <div class="text-[10px] font-bold text-blue-600 flex gap-2"><span>#RenderSpeed</span> <span>#NoLag</span></div>
+                    </div>
+                    <div class="p-6 bg-white rounded-2xl card-service border-b-4 border-b-slate-800">
+                        <h4 class="font-bold text-slate-800 mb-2 underline decoration-slate-300">Office Pro Unit</h4>
+                        <p class="text-xs text-slate-500 leading-relaxed mb-4">PC kantor yang awet dan cepat untuk multitasking ribuan baris excel dan aplikasi akuntansi. Hemat daya dan responsif.</p>
+                        <div class="text-[10px] font-bold text-slate-800 flex gap-2"><span>#Durability</span> <span>#Efficiency</span></div>
+                    </div>
+                    <div class="p-6 bg-white rounded-2xl card-service border-b-4 border-b-purple-500">
+                        <h4 class="font-bold text-slate-800 mb-2 underline decoration-purple-300">Custom Request</h4>
+                        <p class="text-xs text-slate-500 leading-relaxed mb-4">Punya budget tertentu? Kami buatkan spek paling "Worth it" dengan budget yang Anda miliki tanpa mengorbankan kualitas.</p>
+                        <div class="text-[10px] font-bold text-purple-600 flex gap-2"><span>#BudgetBuild</span> <span>#SmartPick</span></div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <footer class="bg-slate-900 py-12 text-center">
+        <p class="text-slate-500 text-sm italic">"Your Trusted IT Partner for Quality Services"</p>
+        <p class="text-slate-600 text-xs mt-2">© 2024 ARIF EDU TECH</p>
+    </footer>
+
+</body>
+</html>
