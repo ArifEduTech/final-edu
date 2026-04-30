@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Katalog - ARIF EDU TECH</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
+
+    <style>
+        .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(8px); }
+        .gradient-bg { background: linear-gradient(135deg, #007bff 0%, #00d4ff 100%); }
+        .product-card:hover { transform: translateY(-8px); transition: 0.3s; box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+        .category-btn.active { background: #007bff; color: white; }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+
+    <nav class="glass sticky top-0 z-50 border-b border-gray-200 p-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="w-10 h-10 gradient-bg rounded-lg flex items-center justify-center text-white">
+                    <i class="fas fa-shopping-bag"></i>
+                </div>
+                <h1 class="text-xl font-bold text-gray-800">ARIF EDU <span class="text-blue-600">TECH</span></h1>
+            </div>
+            <button onclick="toggleAdmin()" id="adminBtn" class="text-sm bg-gray-100 px-4 py-2 rounded-full font-medium hover:bg-gray-200 transition">
+                <i class="fas fa-lock mr-2"></i>Admin
+            </button>
+        </div>
+    </nav>
+
+    <div id="adminForm" class="hidden max-w-4xl mx-auto mt-8 px-4">
+        <div class="bg-white p-6 rounded-2xl shadow-lg border border-blue-100">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="font-bold text-lg"><i class="fas fa-plus mr-2 text-blue-500"></i>Tambah Produk</h2>
+                <button onclick="logoutAdmin()" class="text-red-500 text-sm">Keluar Admin</button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input type="text" id="pNama" placeholder="Nama Barang" class="border p-2 rounded-lg outline-none focus:border-blue-500">
+                <select id="pKategori" class="border p-2 rounded-lg outline-none">
+                    <option value="Rak Belanja">Rak Belanja</option>
+                    <option value="Laptop">Laptop</option>
+                    <option value="Komputer">Komputer</option>
+                    <option value="Printer">Printer</option>
+                    <option value="Accessories">Accessories</option>
+                </select>
+                <input type="number" id="pHarga" placeholder="Harga (Rp)" class="border p-2 rounded-lg outline-none">
+                <select id="pLayanan" class="border p-2 rounded-lg outline-none">
+                    <option value="Ready">Ready Stock</option>
+                    <option value="Indent">Indent</option>
+                </select>
+                <textarea id="pDeskripsi" placeholder="Deskripsi Singkat" class="md:col-span-2 border p-2 rounded-lg h-20 outline-none"></textarea>
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-bold text-gray-500 mb-1">FOTO PRODUK:</label>
+                    <input type="file" id="pGambar" accept="image/*" class="w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-blue-50 file:text-blue-700">
+                </div>
+                <button onclick="saveProduct()" id="btnSave" class="md:col-span-2 gradient-bg text-white font-bold py-3 rounded-lg shadow-lg">
+                    POSTING KE KATALOG
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <main class="max-w-7xl mx-auto px-4 mt-8 pb-20">
+        <div class="flex overflow-x-auto gap-3 pb-6 no-scrollbar">
+            <button onclick="filterBy('Semua')" class="category-btn active px-6 py-2 rounded-full border bg-white whitespace-nowrap shadow-sm">Semua</button>
+            <button onclick="filterBy('Rak Belanja')" class="category-btn px-6 py-2 rounded-full border bg-white whitespace-nowrap shadow-sm">Rak</button>
+            <button onclick="filterBy('Laptop')" class="category-btn px-6 py-2 rounded-full border bg-white whitespace-nowrap shadow-sm">Laptop</button>
+            <button onclick="filterBy('Printer')" class="category-btn px-6 py-2 rounded-full border bg-white whitespace-nowrap shadow-sm">Printer</button>
+            <button onclick="filterBy('Accessories')" class="category-btn px-6 py-2 rounded-full border bg-white whitespace-nowrap shadow-sm">Accessories</button>
+        </div>
+
+        <div id="katalogGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="col-span-full text-center py-20 text-gray-400">Memuat katalog...</div>
+        </div>
+    </main>
+
+    <script>
+        // --- KONFIGURASI SUPABASE ---
+        const _URL = "https://plwpgjwozugznrlwgtwc.supabase.co";
+        const _KEY = "sb_publishable_IudfuYPNAbYypJ5_YQ-zng_SJ6tDNYP";
+        const sbClient = window.supabase.createClient(_URL, _KEY);
+
+        let isAdmin = false;
+        let dataMaster = [];
+
+        // --- FUNGSI ADMIN ---
+        function toggleAdmin() {
+            if(!isAdmin) {
+                const pass = prompt("Password Admin:");
+                if(pass === "adminarif") {
+                    isAdmin = true;
+                    document.getElementById('adminForm').classList.remove('hidden');
+                    document.getElementById('adminBtn').innerHTML = "Mode: Admin";
+                    renderKatalog(dataMaster);
+                } else {
+                    alert("Akses ditolak!");
+                }
+            }
+        }
+
+        function logoutAdmin() {
+            isAdmin = false;
+            document.getElementById('adminForm').classList.add('hidden');
+            document.getElementById('adminBtn').innerHTML = '<i class="fas fa-lock mr-2"></i>Admin';
+            renderKatalog(dataMaster);
+        }
+
+        // --- LOAD DATA ---
+        async function fetchKatalog() {
+            const { data, error } = await sbClient.from('katalog').select('*').order('created_at', { ascending: false });
+            if (!error) {
+                dataMaster = data;
+                renderKatalog(data);
+            }
+        }
+
+        function renderKatalog(items) {
+            const grid = document.getElementById('katalogGrid');
+            if(items.length === 0) {
+                grid.innerHTML = '<p class="col-span-full text-center py-10">Belum ada barang di kategori ini.</p>';
+                return;
+            }
+            grid.innerHTML = '';
+            items.forEach(p => {
+                grid.innerHTML += `
+                    <div class="bg-white rounded-2xl overflow-hidden border border-gray-100 product-card flex flex-col">
+                        <div class="relative">
+                            <img src="${p.gambar}" class="w-full h-52 object-cover" onerror="this.src='https://via.placeholder.com/400x300?text=No+Image'">
+                            <div class="absolute top-2 right-2 ${p.layanan === 'Ready' ? 'bg-green-500' : 'bg-orange-500'} text-white text-[10px] px-3 py-1 rounded-full font-bold">
+                                ${p.layanan.toUpperCase()}
+                            </div>
+                        </div>
+                        <div class="p-4 flex-grow">
+                            <p class="text-[10px] text-blue-500 font-bold uppercase">${p.kategori}</p>
+                            <h3 class="font-bold text-gray-800 text-lg mb-1">${p.nama}</h3>
+                            <p class="text-gray-500 text-xs line-clamp-2 mb-4">${p.deskripsi || ''}</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-lg font-black text-gray-900">Rp ${parseInt(p.harga).toLocaleString()}</span>
+                                ${isAdmin ? `<button onclick="deleteProduct('${p.id}')" class="text-red-400 p-2"><i class="fas fa-trash-alt"></i></button>` : ''}
+                            </div>
+                        </div>
+                        <a href="https://wa.me/6287758018426?text=Halo Arif Edu Tech, saya tertarik dengan: ${p.nama}" target="_blank" class="block w-full text-center py-3 bg-blue-50 text-blue-600 font-bold hover:bg-blue-600 hover:text-white transition uppercase text-sm">
+                            <i class="fab fa-whatsapp mr-2"></i>Tanya Barang
+                        </a>
+                    </div>
+                `;
+            });
+        }
+
+        // --- SIMPAN DENGAN KOMPRESI ---
+        async function saveProduct() {
+            const btn = document.getElementById('btnSave');
+            const file = document.getElementById('pGambar').files[0];
+            const nama = document.getElementById('pNama').value;
+            const harga = document.getElementById('pHarga').value;
+
+            if(!file || !nama || !harga) return alert("Lengkapi data!");
+
+            try {
+                btn.disabled = true;
+                btn.innerHTML = "MENGOMPRES & UPLOAD...";
+
+                // Kompresi Gambar (Max 400KB)
+                const options = { maxSizeMB: 0.4, maxWidthOrHeight: 1200, useWebWorker: true };
+                const compressedFile = await imageCompression(file, options);
+
+                // Upload ke Supabase Storage
+                const fileName = `katalog/${Date.now()}_${file.name}`;
+                const { data: upData, error: upError } = await sbClient.storage.from('dokumentasi').upload(fileName, compressedFile);
+                if(upError) throw upError;
+
+                const { data: { publicUrl } } = sbClient.storage.from('dokumentasi').getPublicUrl(fileName);
+
+                // Insert ke Table
+                const { error } = await sbClient.from('katalog').insert([{
+                    nama: nama,
+                    kategori: document.getElementById('pKategori').value,
+                    harga: harga,
+                    layanan: document.getElementById('pLayanan').value,
+                    deskripsi: document.getElementById('pDeskripsi').value,
+                    gambar: publicUrl
+                }]);
+
+                if(!error) {
+                    alert("Produk berhasil ditambahkan!");
+                    location.reload();
+                }
+            } catch (e) {
+                alert("Error: " + e.message);
+                btn.disabled = false;
+                btn.innerHTML = "POSTING KE KATALOG";
+            }
+        }
+
+        // --- FILTER ---
+        function filterBy(kat) {
+            // Update UI tombol
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if(btn.innerText === kat || (kat === 'Semua' && btn.innerText === 'Semua')) btn.classList.add('active');
+            });
+
+            if(kat === 'Semua') {
+                renderKatalog(dataMaster);
+            } else {
+                const filtered = dataMaster.filter(i => i.kategori === kat);
+                renderKatalog(filtered);
+            }
+        }
+
+        async function deleteProduct(id) {
+            if(confirm("Hapus produk ini?")) {
+                await sbClient.from('katalog').delete().eq('id', id);
+                fetchKatalog();
+            }
+        }
+
+        window.onload = fetchKatalog;
+    </script>
+</body>
+</html>
