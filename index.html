@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-     <!-- 🚀 BAGIAN SEO TERSEMBUNYI - TIDAK ADA YANG TERLIHAT DI SITUS -->
-    <meta name="description" content="Jasa perbaikan dan servis laptop, komputer, serta printer profesional. Pengerjaan teliti, jujur, bergaransi, dan harga terjangkau. Solusi masalah teknis perangkat Anda.">
+     <meta name="description" content="Jasa perbaikan dan servis laptop, komputer, serta printer profesional. Pengerjaan teliti, jujur, bergaransi, dan harga terjangkau. Solusi masalah teknis perangkat Anda.">
     <meta name="keywords" content="servis laptop, servis komputer, servis printer, perbaikan laptop, perbaikan komputer, perawatan komputer, tukang servis laptop, tukang servis komputer, jasa servis komputer, jasa servis printer, arif edu tech, it solutions">
     <meta name="author" content="Arif Edu Tech">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://final-edu-seven.vercel.app/">
     
-    <!-- Meta untuk Media Sosial -->
     <meta property="og:title" content="Arif Edu Tech | Jasa Servis Laptop Komputer Printer Profesional">
     <meta property="og:description" content="Jasa perbaikan dan servis laptop, komputer, serta printer profesional. Pengerjaan teliti, jujur, dan bergaransi.">
     <meta property="og:url" content="https://final-edu-seven.vercel.app/">
@@ -120,6 +118,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             gap: 10px;
             backdrop-filter: blur(5px);
         }
@@ -279,23 +278,26 @@
         <a href="javascript:void(0)" class="btn-wa" onclick="showWaModal()">
             <i class="fab fa-whatsapp"></i> Konsultasi Sekarang
         </a>
-<div id="music-container" style="position: fixed; bottom: 20px; left: 20px; z-index: 9999; background: rgba(11, 83, 69, 0.8); padding: 10px; border-radius: 50px; display: flex; align-items: center; gap: 10px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2);">
-    <button id="music-btn" onclick="toggleMusic()" style="background: var(--accent-color); border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;">
-        <i id="music-icon" class="fas fa-play" style="color: #000; font-size: 14px;"></i>
-    </button>
-    <span id="music-status" style="color: white; font-size: 12px; font-weight: bold; padding-right: 10px;">Musik: OFF</span>
-    <audio id="bg-music" loop>
-        <source src="tech-ambient.mp3" type="audio/mpeg">
-    </audio>
-</div>
-       <div class="menu-grid" style="grid-template-columns: repeat(3, 1fr);">
+
+        <div id="music-container" style="position: fixed; bottom: 20px; left: 20px; z-index: 9999; background: rgba(11, 83, 69, 0.8); padding: 10px; border-radius: 50px; display: flex; align-items: center; gap: 10px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2);">
+            <button id="music-btn" onclick="toggleMusic()" style="background: var(--accent-color); border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                <i id="music-icon" class="fas fa-play" style="color: #000; font-size: 14px;"></i>
+            </button>
+            <span id="music-status" style="color: white; font-size: 12px; font-weight: bold; padding-right: 10px;">Musik: OFF</span>
+            <audio id="bg-music" loop>
+                <source src="tech-ambient.mp3" type="audio/mpeg">
+            </audio>
+        </div>
+
+        <div class="menu-grid" style="grid-template-columns: repeat(3, 1fr);">
             <a href="tentang.html" class="nav-card">
                 <i class="fas fa-info-circle"></i>
                 <span>Tentang Kami</span>
-           <a href="daftar.html" class="flex flex-col items-center justify-center p-6 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all duration-300 group">
-    <i class="fas fa-list-ul text-white text-2xl mb-3"></i>
-    <span class="text-white font-medium text-sm">Daftar Layanan</span>
-</a>
+            </a>
+            <a href="daftar.html" class="nav-card">
+                <i class="fas fa-list-ul"></i>
+                <span>Daftar Layanan</span>
+            </a>
             <a href="katalog.html" class="nav-card">
                 <i class="fas fa-box-open"></i>
                 <span>Sparepart / Katalog</span>
@@ -407,7 +409,6 @@
     const musicIcon = document.getElementById('music-icon');
     const musicStatus = document.getElementById('music-status');
 
-    // Atur volume agar lirih (0.2 = 20% volume)
     music.volume = 0.2;
 
     function toggleMusic() {
@@ -424,15 +425,13 @@
         }
     }
 
-    // Trik agar musik seolah-olah autoplay saat user klik pertama kali di web
     document.body.addEventListener('click', function() {
         if (music.paused && musicStatus.innerText === "Musik: OFF") {
-            // Uncomment baris di bawah jika ingin langsung putar saat klik pertama di mana saja
             // toggleMusic(); 
         }
     }, { once: true });
 </script>
-  <!-- BAGIAN JUMLAH PENGUNJUNG - POSISI DI TENGAH BAWAH, TIDAK TERTUTUP -->
+
 <div style="
     width: 100%;
     display: flex;
