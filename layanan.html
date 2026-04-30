@@ -153,7 +153,7 @@
         const { data, error } = await sbClient.from('layanan').select('*').order('created_at', { ascending: false });
         if (!error) {
             fullData = data;
-            renderTable(data);
+            Table(data);
         }
     }
 
