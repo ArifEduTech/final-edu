@@ -117,8 +117,6 @@
         if (!error) { 
             fullData = data; 
             renderTable(data); 
-        } else {
-            console.error("Fetch error:", error);
         }
     }
 
@@ -146,7 +144,7 @@
                         </button>
                     </td>
                     <td>
-                        <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                        <div style="display: flex; gap: 4px;">
                             <button class="btn btn-yellow" style="padding:5px 8px;" onclick="editData('${d.id}')">✏️</button>
                             <button class="btn btn-green" style="padding:5px 8px;" onclick="openModal('${d.id}')">📝</button>
                             <button class="btn btn-blue" style="padding:5px 8px;" onclick="reprint('${d.id}')">🖨️</button>
@@ -228,7 +226,6 @@
         const next = cur === 'checking' ? 'proses' : (cur === 'proses' ? 'selesai' : 'checking');
         const updatePayload = { status: next };
         if(next === 'selesai') updatePayload.dokumentasi_proses = null;
-        
         const { error } = await sbClient.from('layanan').update(updatePayload).eq('id', id);
         if(!error) fetchData();
     }
@@ -255,20 +252,29 @@
             const d = r.querySelector('.i-desc').value, p = r.querySelector('.i-price').value;
             if(d && p) { items.push({desc: d, price: p}); total += parseInt(p); }
         });
-        await sbClient.from('layanan').update({ items, total, status: 'selesai', dokumentasi_proses: null }).eq('id', activeId);
+        await sbClient.from('layanan').update({ items, total, status: 'selesai' }).eq('id', activeId);
         closeModal(); fetchData(); reprint(activeId);
     }
 
     async function reprint(id) {
         const { data } = await sbClient.from('layanan').select('*').eq('id', id).single();
         const trackingUrl = window.location.origin + window.location.pathname + "?id=" + id;
+        
         let h = `<h3>${data.items && data.items.length > 0 ? 'NOTA LUNAS' : 'TANDA TERIMA'}</h3>
-                 <p>Pelanggan: ${data.nama}<br>Unit: ${data.barang}<br>Keluhan: ${data.keluhan}</p>`;
+                 <div style="text-align:left; font-size:12px;">
+                    <p>Tgl Masuk: ${data.tgl}<br>
+                    Nama: ${data.nama}<br>
+                    Unit: ${data.barang}<br>
+                    Kelengkapan: ${data.kelengkapan || '-'}<br>
+                    Keluhan: ${data.keluhan}</p>
+                 </div>`;
+
         if(data.items && data.items.length > 0) {
             h += `<hr><table>`;
             data.items.forEach(i => h += `<tr><td>${i.desc}</td><td style="text-align:right;">Rp ${parseInt(i.price).toLocaleString()}</td></tr>`);
             h += `</table><h4>TOTAL: Rp ${parseInt(data.total).toLocaleString()}</h4>`;
         }
+        
         document.getElementById('notaKonten').innerHTML = h;
         document.getElementById('qrPrint').innerHTML = "";
         new QRCode(document.getElementById("qrPrint"), { text: trackingUrl, width: 100, height: 100 });
@@ -292,14 +298,13 @@
                     <div style="text-align:left; max-width:400px; margin:auto; border:1px solid #ddd; padding:20px; border-radius:10px; background:white;">
                         <p><strong>Nama:</strong> ${data.nama}</p>
                         <p><strong>Unit:</strong> ${data.barang}</p>
+                        <p><strong>Keluhan:</strong> ${data.keluhan}</p>
                         <p><strong>Progres:</strong> ${data.tindakan || '-'}</p>
                         ${data.dokumentasi_proses ? `<img src="${data.dokumentasi_proses}" style="max-width:100%; border-radius:10px; margin-top:10px;">` : ''}
                     </div>
                 </div>`;
             }
-        } else { 
-            fetchData(); 
-        }
+        } else { fetchData(); }
     }
 </script>
 </body>
