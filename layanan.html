@@ -22,12 +22,11 @@
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
         th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
         th { background: #f1f1f1; }
-        .badge { padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; color: white; text-transform: uppercase; cursor: pointer; display: inline-block; }
+        .badge { padding: 8px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; color: white; text-transform: uppercase; cursor: pointer; display: inline-block; border: none; min-width: 80px; text-align: center; }
         #modalNota { display:none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:100; overflow-y: auto; }
         .modal-content { background:white; max-width:700px; margin: 40px auto; padding:25px; border-radius:12px; }
         @media print { .no-print { display: none !important; } #printArea { display: block !important; } }
         #printArea { display: none; padding: 20px; font-family: monospace; border: 1px solid #000; }
-        .qr-link { color: #007bff; text-decoration: none; word-break: break-all; font-size: 11px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -117,76 +116,77 @@
         const { data, error } = await sbClient.from('layanan').select('*').order('created_at', { ascending: false });
         if (!error) { 
             fullData = data; 
-            Table(data); 
+            renderTable(data); 
+        } else {
+            console.error("Fetch error:", error);
         }
     }
 
     function renderTable(data) {
-    const body = document.getElementById('dbBody');
-    body.innerHTML = '';
-    // Simpan data ke variabel global agar bisa diakses editData
-    fullData = data; 
+        const body = document.getElementById('dbBody');
+        body.innerHTML = '';
+        data.forEach(d => {
+            const uploadHtml = d.status !== 'selesai' ? `
+                <div style="margin-top:8px; border-top:1px solid #eee; padding-top:5px;">
+                    <label style="font-size:10px; font-weight:bold; color:#666;">FOTO PROGRES:</label>
+                    <input type="file" accept="image/*" onchange="uploadFoto('${d.id}', this)" style="font-size:11px;">
+                    ${d.dokumentasi_proses ? `<br><small style="color:green;">✅ Ada Foto</small>` : ''}
+                </div>` : '';
 
-    data.forEach(d => {
-        const uploadHtml = d.status !== 'selesai' ? `
-            <div style="margin-top:8px; border-top:1px solid #eee; padding-top:5px;">
-                <label style="font-size:10px; font-weight:bold; color:#666;">UPLOAD FOTO PROGRES:</label>
-                <input type="file" accept="image/*" onchange="uploadFoto('${d.id}', this)" style="font-size:11px; border:none;">
-                ${d.dokumentasi_proses ? `<br><small style="color:green;">✅ Foto terpasang</small>` : ''}
-            </div>` : '';
-
-        body.innerHTML += `
-            <tr>
-                <td><strong>${d.nama}</strong><br><small>${d.barang}</small></td>
-                <td>
-                    <input type="text" value="${d.tindakan || ''}" onchange="updateTindakan('${d.id}', this.value)" placeholder="Tindakan...">
-                    ${uploadHtml}
-                </td>
-                <td><span class="badge" style="background:${getStatusColor(d.status)}" onclick="updateProgres('${d.id}','${d.status}')">${d.status}</span></td>
-                <td>
-                    <div style="display: flex; gap: 5px; flex-wrap: wrap;">
-                        <button class="btn btn-yellow" style="padding:5px 10px; min-width:60px;" onclick="editData('${d.id}')">✏️ Edit</button>
-                        <button class="btn btn-green" style="padding:5px 10px;" onclick="openModal('${d.id}')">📝</button>
-                        <button class="btn btn-blue" style="padding:5px 10px;" onclick="reprint('${d.id}')">🖨️</button>
-                        <button class="btn btn-red" style="padding:5px 10px;" onclick="hapusData('${d.id}')">🗑️</button>
-                    </div>
-                </td>
-            </tr>`;
-    });
-}
-
-async function editData(id) {
-    // Cari data di fullData
-    const item = fullData.find(i => i.id == id);
-    
-    if (!item) {
-        // Jika tidak ketemu di memori, kita ambil langsung dari Supabase
-        const { data, error } = await sbClient.from('layanan').select('*').eq('id', id).single();
-        if (data) fillFormEdit(data);
-    } else {
-        fillFormEdit(item);
+            body.innerHTML += `
+                <tr>
+                    <td><strong>${d.nama}</strong><br><small>${d.barang}</small></td>
+                    <td>
+                        <input type="text" value="${d.tindakan || ''}" onchange="updateTindakan('${d.id}', this.value)" placeholder="Tindakan...">
+                        ${uploadHtml}
+                    </td>
+                    <td>
+                        <button class="badge" style="background:${getStatusColor(d.status)}" onclick="updateProgres('${d.id}','${d.status}')">
+                            ${d.status}
+                        </button>
+                    </td>
+                    <td>
+                        <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                            <button class="btn btn-yellow" style="padding:5px 8px;" onclick="editData('${d.id}')">✏️</button>
+                            <button class="btn btn-green" style="padding:5px 8px;" onclick="openModal('${d.id}')">📝</button>
+                            <button class="btn btn-blue" style="padding:5px 8px;" onclick="reprint('${d.id}')">🖨️</button>
+                            <button class="btn btn-red" style="padding:5px 8px;" onclick="hapusData('${d.id}')">🗑️</button>
+                        </div>
+                    </td>
+                </tr>`;
+        });
     }
-}
 
-function fillFormEdit(item) {
-    activeId = item.id; 
-    document.getElementById('custName').value = item.nama || '';
-    document.getElementById('entryDate').value = item.tgl || '';
-    document.getElementById('serviceType').value = item.tipe || 'Service';
-    document.getElementById('devName').value = item.barang || '';
-    document.getElementById('kelengkapan').value = item.kelengkapan || '';
-    document.getElementById('keluhan').value = item.keluhan || '';
-    
-    const btn = document.getElementById('btnSimpanUtama');
-    btn.innerHTML = "🆙 UPDATE DATA PELANGGAN";
-    btn.style.background = "#ffc107";
-    btn.style.color = "black";
-    
-    document.getElementById('formTitle').innerText = "✏️ Sedang Mengedit: " + item.nama;
-    
-    // Scroll otomatis ke atas agar form kelihatan
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+    async function uploadFoto(id, input) {
+        const file = input.files[0];
+        if (!file) return;
+        const fileName = `${id}-${Date.now()}.${file.name.split('.').pop()}`;
+        const { data, error } = await sbClient.storage.from('dokumentasi').upload(fileName, file);
+        if (error) return alert("Gagal upload: " + error.message);
+        const { data: { publicUrl } } = sbClient.storage.from('dokumentasi').getPublicUrl(fileName);
+        await sbClient.from('layanan').update({ dokumentasi_proses: publicUrl }).eq('id', id);
+        alert("Foto berhasil diunggah!");
+        fetchData();
+    }
+
+    function editData(id) {
+        const item = fullData.find(i => i.id == id);
+        if (item) {
+            activeId = id;
+            document.getElementById('custName').value = item.nama;
+            document.getElementById('entryDate').value = item.tgl;
+            document.getElementById('serviceType').value = item.tipe;
+            document.getElementById('devName').value = item.barang;
+            document.getElementById('kelengkapan').value = item.kelengkapan || '';
+            document.getElementById('keluhan').value = item.keluhan || '';
+            
+            const btn = document.getElementById('btnSimpanUtama');
+            btn.innerHTML = "🆙 UPDATE DATA";
+            btn.className = "btn btn-yellow";
+            document.getElementById('formTitle').innerText = "✏️ Mode Edit: " + item.nama;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }
 
     async function saveToCloud() {
         const p = {
@@ -201,25 +201,12 @@ function fillFormEdit(item) {
         if (!p.nama || !p.barang) return alert("Isi Nama & Unit!");
 
         if (activeId) {
-            // Mode Update
             const { error } = await sbClient.from('layanan').update(p).eq('id', activeId);
-            if (!error) {
-                alert("Data berhasil di-update!");
-                resetForm();
-                fetchData();
-            } else {
-                alert("Gagal update: " + error.message);
-            }
+            if (!error) { alert("Updated!"); resetForm(); fetchData(); }
         } else {
-            // Mode Simpan Baru
             p.status = 'checking'; p.tindakan = '-'; p.items = []; p.total = 0;
             const { data, error } = await sbClient.from('layanan').insert([p]).select();
-            if (!error) { 
-                alert("Data berhasil disimpan!");
-                fetchData(); 
-                reprint(data[0].id); 
-                resetForm(); 
-            }
+            if (!error) { fetchData(); reprint(data[0].id); resetForm(); }
         }
     }
 
@@ -240,11 +227,10 @@ function fillFormEdit(item) {
     async function updateProgres(id, cur) {
         const next = cur === 'checking' ? 'proses' : (cur === 'proses' ? 'selesai' : 'checking');
         const updatePayload = { status: next };
-        // Jika selesai, hapus link dokumentasi agar tidak tampil di user sesuai ketentuan
         if(next === 'selesai') updatePayload.dokumentasi_proses = null;
         
-        await sbClient.from('layanan').update(updatePayload).eq('id', id);
-        fetchData();
+        const { error } = await sbClient.from('layanan').update(updatePayload).eq('id', id);
+        if(!error) fetchData();
     }
 
     function getStatusColor(s) { return s === 'checking' ? '#6c757d' : (s === 'proses' ? '#ffc107' : '#28a745'); }
@@ -255,7 +241,6 @@ function fillFormEdit(item) {
     }
 
     function openModal(id) { activeId = id; document.getElementById('itemRows').innerHTML = ''; addRow(); document.getElementById('modalNota').style.display = 'block'; }
-    
     function addRow() {
         const div = document.createElement('div');
         div.className = 'grid'; div.style.gridTemplateColumns = '2fr 1fr';
@@ -291,8 +276,8 @@ function fillFormEdit(item) {
         setTimeout(() => { window.print(); }, 500);
     }
 
-    async function hapusData(id) { if(confirm("Hapus data ini selamanya?")) { await sbClient.from('layanan').delete().eq('id', id); fetchData(); } }
-    function closeModal() { document.getElementById('modalNota').style.display = 'none'; activeId = null; }
+    async function hapusData(id) { if(confirm("Hapus?")) { await sbClient.from('layanan').delete().eq('id', id); fetchData(); } }
+    function closeModal() { document.getElementById('modalNota').style.display = 'none'; }
 
     window.onload = async () => {
         const p = new URLSearchParams(window.location.search);
@@ -303,23 +288,18 @@ function fillFormEdit(item) {
                 document.body.innerHTML = `
                 <div style="text-align:center; padding:30px; font-family: sans-serif;">
                     <h1 style="color:#007bff;">ARIF EDU TECH</h1>
-                    <p>Status Perbaikan:</p>
                     <h2 style="color:${getStatusColor(data.status)}; text-transform: uppercase;">${data.status}</h2>
                     <div style="text-align:left; max-width:400px; margin:auto; border:1px solid #ddd; padding:20px; border-radius:10px; background:white;">
                         <p><strong>Nama:</strong> ${data.nama}</p>
                         <p><strong>Unit:</strong> ${data.barang}</p>
                         <p><strong>Progres:</strong> ${data.tindakan || '-'}</p>
-                        ${data.dokumentasi_proses ? `
-                            <div style="margin-top:15px; text-align:center; border-top:1px solid #eee; padding-top:15px;">
-                                <p style="font-size:12px; font-weight:bold; color:#555;">FOTO PENGERJAAN:</p>
-                                <img src="${data.dokumentasi_proses}" style="max-width:100%; border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
-                            </div>
-                        ` : ''}
+                        ${data.dokumentasi_proses ? `<img src="${data.dokumentasi_proses}" style="max-width:100%; border-radius:10px; margin-top:10px;">` : ''}
                     </div>
-                    <p style="margin-top:30px; color:#28a745;">Terimakasih atas kepercayaannya.</p>
                 </div>`;
             }
-        } else { fetchData(); }
+        } else { 
+            fetchData(); 
+        }
     }
 </script>
 </body>
