@@ -117,34 +117,29 @@
 
     // Fungsi Edit Data (Mengembalikan data ke form atas untuk diperbaiki)
     async function editData(id) {
-        const item = fullData.find(i => i.id === id);
-        if(item) {
-            document.getElementById('custName').value = item.nama;
-            document.getElementById('entryDate').value = item.tgl;
-            document.getElementById('serviceType').value = item.tipe;
-            document.getElementById('devName').value = item.barang;
-            document.getElementById('kelengkapan').value = item.kelengkapan;
-            document.getElementById('keluhan').value = item.keluhan;
-            
-            // Ubah tombol simpan jadi mode update
-            const btn = document.querySelector('.btn-blue');
-            btn.innerHTML = "🆙 UPDATE DATA";
-            btn.onclick = async () => {
-                const up = {
-                    nama: document.getElementById('custName').value,
-                    tgl: document.getElementById('entryDate').value,
-                    tipe: document.getElementById('serviceType').value,
-                    barang: document.getElementById('devName').value,
-                    kelengkapan: document.getElementById('kelengkapan').value,
-                    keluhan: document.getElementById('keluhan').value
-                };
-                await sbClient.from('layanan').update(up).eq('id', id);
-                alert("Data diperbarui!");
-                location.reload();
-            };
-            window.scrollTo(0,0);
-        }
+    // Cari data di variabel fullData berdasarkan ID
+    const item = fullData.find(i => i.id === id);
+    if (item) {
+        // Isi form input dengan data yang akan diedit
+        document.getElementById('custName').value = item.nama;
+        document.getElementById('entryDate').value = item.tgl;
+        document.getElementById('serviceType').value = item.tipe;
+        document.getElementById('devName').value = item.barang;
+        document.getElementById('kelengkapan').value = item.kelengkapan || '';
+        document.getElementById('keluhan').value = item.keluhan || '';
+
+        // Simpan ID yang sedang diedit ke variabel global activeId
+        activeId = id;
+
+        // Ubah tampilan tombol utama
+        const btnSimpan = document.querySelector('.btn-blue');
+        btnSimpan.innerHTML = "🆙 UPDATE DATA PELANGGAN";
+        btnSimpan.classList.replace('btn-blue', 'btn-yellow'); // Opsional: ubah warna jadi kuning saat edit
+
+        // Scroll otomatis ke atas agar admin tahu form sudah terisi
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+}
     const _URL = "https://plwpgjwozugznrlwgtwc.supabase.co";
     const _KEY = "sb_publishable_IudfuYPNAbYypJ5_YQ-zng_SJ6tDNYP";
     const sbClient = window.supabase.createClient(_URL, _KEY);
@@ -208,20 +203,48 @@
         return '#28a745';
     }
 
-    async function saveToCloud() {
-        const p = {
-            nama: document.getElementById('custName').value,
-            tgl: document.getElementById('entryDate').value,
-            tipe: document.getElementById('serviceType').value,
-            barang: document.getElementById('devName').value,
-            kelengkapan: document.getElementById('kelengkapan').value,
-            keluhan: document.getElementById('keluhan').value,
-            status: 'checking', tindakan: '-', items: [], total: 0
-        };
-        if(!p.nama || !p.barang) return alert("Nama & Unit wajib diisi!");
+   async function saveToCloud() {
+    const p = {
+        nama: document.getElementById('custName').value,
+        tgl: document.getElementById('entryDate').value,
+        tipe: document.getElementById('serviceType').value,
+        barang: document.getElementById('devName').value,
+        kelengkapan: document.getElementById('kelengkapan').value,
+        keluhan: document.getElementById('keluhan').value,
+    };
+
+    if (!p.nama || !p.barang) return alert("Nama & Unit wajib diisi!");
+
+    if (activeId) {
+        // MODE UPDATE (Jika sedang edit)
+        const { error } = await sbClient.from('layanan').update(p).eq('id', activeId);
+        if (!error) {
+            alert("Data berhasil diperbarui!");
+            activeId = null; // Reset ID setelah selesai
+            location.reload(); // Refresh halaman
+        } else {
+            alert("Gagal update: " + error.message);
+        }
+    } else {
+        // MODE TAMBAH BARU (Jika tidak sedang edit)
+        p.status = 'checking';
+        p.tindakan = '-';
+        p.items = [];
+        p.total = 0;
+        
         const { data, error } = await sbClient.from('layanan').insert([p]).select();
-        if(!error) { fetchData(); reprint(data[0].id); }
+        if (!error) { 
+            alert("Data berhasil disimpan!");
+            fetchData(); 
+            reprint(data[0].id); 
+            // Reset form
+            document.getElementById('custName').value = '';
+            document.getElementById('devName').value = '';
+            document.getElementById('kelengkapan').value = '';
+            document.getElementById('keluhan').value = '';
+        }
     }
+}
 
     async function updateProgres(id, cur) {
         const next = cur === 'checking' ? 'proses' : (cur === 'proses' ? 'selesai' : 'checking');
