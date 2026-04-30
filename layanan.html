@@ -25,62 +25,56 @@
         .badge { padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; color: white; text-transform: uppercase; cursor: pointer; display: inline-block; }
         #modalNota { display:none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:100; overflow-y: auto; }
         .modal-content { background:white; max-width:700px; margin: 40px auto; padding:25px; border-radius:12px; }
-        .search-box { margin-bottom: 15px; display: flex; gap: 10px; }
         @media print { .no-print { display: none !important; } #printArea { display: block !important; } }
         #printArea { display: none; padding: 20px; font-family: monospace; border: 1px solid #000; }
-        .qr-info { text-align: center; margin-top: 10px; font-family: sans-serif; }
         .qr-link { color: #007bff; text-decoration: none; word-break: break-all; font-size: 11px; font-weight: bold; }
     </style>
 </head>
 <body>
-    <div style="background: #0b5345; padding: 10px; text-align: left;">
+
+<div style="background: #0b5345; padding: 10px; text-align: left;" class="no-print">
     <a href="index.html" style="color: white; text-decoration: none; font-weight: bold;">⬅️ Keluar ke Menu Utama</a>
 </div>
 
 <div id="mainContent" class="container no-print">
     <header>
-         <img src="logo.png" alt="Logo" class="logo-main" width="150" onerror="this.src='https://via.placeholder.com/120x80?text=LOGO+ERROR'">
+        <img src="logo.png" alt="Logo" width="150" onerror="this.src='https://via.placeholder.com/120x80?text=LOGO'">
         <h1 style="color:var(--primary); margin:0;">ARIF EDU TECH 🌐 ONLINE</h1>
-        <p style="margin:5px 0;">Manajemen Servis & Nota Digital Real-time</p>
-        <p style="font-size: 12px;">Dsn. Blabak, Kec. Kandat (HP: 087758018426/081805305278)</p>
+        <p style="margin:5px 0;">Manajemen Servis & Dokumentasi Foto</p>
     </header>
 
     <div class="card">
-        <h3>1. Registrasi Pelanggan Baru</h3>
+        <h3 id="formTitle">1. Registrasi / Edit Pelanggan</h3>
         <div class="grid">
-            <div><label>Nama Pelanggan</label><input type="text" id="custName" placeholder="Nama..."></div>
-            <div><label>Tanggal Masuk</label><input type="date" id="entryDate"></div>
+            <div><label>Nama</label><input type="text" id="custName"></div>
+            <div><label>Tanggal</label><input type="date" id="entryDate"></div>
             <div><label>Tipe</label>
                 <select id="serviceType">
                     <option value="Service">Service</option>
                     <option value="Produk">Produk</option>
                 </select>
             </div>
-            <div><label>Unit/Barang</label><input type="text" id="devName" placeholder="Contoh: Acer Laptop"></div>
+            <div><label>Unit</label><input type="text" id="devName"></div>
         </div>
-        <input type="text" id="kelengkapan" placeholder="Kelengkapan Unit (Contoh: Charger, Tas, Baterai...)">
-        <textarea id="keluhan" placeholder="Keluhan atau Keterangan..."></textarea>
-        <button class="btn btn-blue" onclick="saveToCloud()">💾 SIMPAN & PRINT TANDA TERIMA</button>
+        <input type="text" id="kelengkapan" placeholder="Kelengkapan...">
+        <textarea id="keluhan" placeholder="Keluhan..."></textarea>
+        <button id="btnSimpanUtama" class="btn btn-blue" onclick="saveToCloud()">💾 SIMPAN DATA & PRINT</button>
     </div>
 
     <div class="card">
-        <h3>2. Database & Riwayat</h3>
-        <div class="search-box">
-            <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Cari nama atau unit...">
-        </div>
+        <h3>2. Database Pelanggan</h3>
+        <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Cari nama/unit...">
         <div style="overflow-x:auto;">
             <table>
                 <thead>
                     <tr>
                         <th>Pelanggan</th>
-                        <th>Tindakan Teknisi (Ketik Langsung)</th>
+                        <th>Tindakan & Foto Progres</th>
                         <th>Status</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
-                <tbody id="dbBody">
-                    <tr><td colspan="4" style="text-align:center;">Memuat data...</td></tr>
-                </tbody>
+                <tbody id="dbBody"></tbody>
             </table>
         </div>
     </div>
@@ -90,10 +84,10 @@
     <div class="modal-content">
         <h2>Rincian Biaya</h2>
         <div id="itemRows"></div>
-        <button class="btn btn-yellow" onclick="addRow()">+ Tambah Item</button>
+        <button class="btn btn-yellow" onclick="addRow()">+ Item</button>
         <hr>
         <div style="display:flex; gap:10px;">
-            <button class="btn btn-green" style="flex:1;" onclick="finalizeNota()">SIMPAN & CETAK NOTA</button>
+            <button class="btn btn-green" style="flex:1;" onclick="finalizeNota()">CETAK NOTA LUNAS</button>
             <button class="btn btn-red" onclick="closeModal()">BATAL</button>
         </div>
     </div>
@@ -101,45 +95,15 @@
 
 <div id="printArea">
     <div style="text-align:center; border-bottom: 2px dashed #000; padding-bottom:10px;">
-        <h2 style="margin:0;">ARIF EDU TECH</h2>
-        <p style="font-size: 10px; margin: 5px 0;">Dsn. Blabak, Kec. Kandat | HP: 087758018426</p>
+        <h2>ARIF EDU TECH</h2>
+        <p>Dsn. Blabak, Kec. Kandat | HP: 087758018426</p>
     </div>
-    <div id="notaKonten" style="margin-top:15px; font-size: 12px;"></div>
+    <div id="notaKonten"></div>
     <div id="qrPrint" style="display:flex; justify-content:center; margin:15px 0;"></div>
-    <div id="qrInfoContainer" class="qr-info"></div>
+    <div id="qrInfoContainer" style="text-align:center;"></div>
 </div>
 
 <script>
-    // Fungsi simpan dokumentasi
-    async function updateDokumentasi(id, teks) {
-        await sbClient.from('layanan').update({ dokumentasi_proses: teks }).eq('id', id);
-    }
-
-    // Fungsi Edit Data (Mengembalikan data ke form atas untuk diperbaiki)
-    async function editData(id) {
-    // Cari data di variabel fullData berdasarkan ID
-    const item = fullData.find(i => i.id === id);
-    if (item) {
-        // Isi form input dengan data yang akan diedit
-        document.getElementById('custName').value = item.nama;
-        document.getElementById('entryDate').value = item.tgl;
-        document.getElementById('serviceType').value = item.tipe;
-        document.getElementById('devName').value = item.barang;
-        document.getElementById('kelengkapan').value = item.kelengkapan || '';
-        document.getElementById('keluhan').value = item.keluhan || '';
-
-        // Simpan ID yang sedang diedit ke variabel global activeId
-        activeId = id;
-
-        // Ubah tampilan tombol utama
-        const btnSimpan = document.querySelector('.btn-blue');
-        btnSimpan.innerHTML = "🆙 UPDATE DATA PELANGGAN";
-        btnSimpan.classList.replace('btn-blue', 'btn-yellow'); // Opsional: ubah warna jadi kuning saat edit
-
-        // Scroll otomatis ke atas agar admin tahu form sudah terisi
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-}
     const _URL = "https://plwpgjwozugznrlwgtwc.supabase.co";
     const _KEY = "sb_publishable_IudfuYPNAbYypJ5_YQ-zng_SJ6tDNYP";
     const sbClient = window.supabase.createClient(_URL, _KEY);
@@ -151,30 +115,26 @@
 
     async function fetchData() {
         const { data, error } = await sbClient.from('layanan').select('*').order('created_at', { ascending: false });
-        if (!error) {
-            fullData = data;
-            Table(data);
-        }
+        if (!error) { fullData = data; renderTable(data); }
     }
 
-  function renderTable(data) {
+    function renderTable(data) {
         const body = document.getElementById('dbBody');
         body.innerHTML = '';
         data.forEach(d => {
-            // Logika: Dokumentasi hanya muncul di input jika status BUKAN selesai
-            const inputDokumen = d.status !== 'selesai' ? 
-                `<textarea style="width:100%; margin-top:5px; font-size:11px;" 
-                  onchange="updateDokumentasi('${d.id}', this.value)" 
-                  placeholder="Input Dokumentasi Proses...">${d.dokumentasi_proses || ''}</textarea>` : '';
+            const uploadHtml = d.status !== 'selesai' ? `
+                <div style="margin-top:8px; border-top:1px solid #eee; padding-top:5px;">
+                    <label style="font-size:10px; font-weight:bold; color:#666;">UPLOAD FOTO PROGRES:</label>
+                    <input type="file" accept="image/*" onchange="uploadFoto('${d.id}', this)" style="font-size:11px;">
+                    ${d.dokumentasi_proses ? `<br><small style="color:green;">✅ Foto sudah ada</small>` : ''}
+                </div>` : '';
 
             body.innerHTML += `
                 <tr>
-                    <td><strong>${d.nama}</strong><br><small>${d.tgl}</small><br><small>(${d.barang})</small></td>
+                    <td><strong>${d.nama}</strong><br><small>${d.barang}</small></td>
                     <td>
-                        <input type="text" value="${d.tindakan || ''}" 
-                               style="width:100%; padding:5px; border:1px solid #ddd;"
-                               onchange="updateTindakan('${d.id}', this.value)" placeholder="Ketik tindakan...">
-                        ${inputDokumen}
+                        <input type="text" value="${d.tindakan || ''}" onchange="updateTindakan('${d.id}', this.value)" placeholder="Tindakan...">
+                        ${uploadHtml}
                     </td>
                     <td><span class="badge" style="background:${getStatusColor(d.status)}" onclick="updateProgres('${d.id}','${d.status}')">${d.status}</span></td>
                     <td>
@@ -187,75 +147,87 @@
         });
     }
 
-    function filterTable() {
-        const input = document.getElementById('searchInput').value.toLowerCase();
-        const filtered = fullData.filter(i => i.nama.toLowerCase().includes(input) || i.barang.toLowerCase().includes(input));
-        renderTable(filtered);
-    }
-
-    async function updateTindakan(id, teks) {
-        await sbClient.from('layanan').update({ tindakan: teks }).eq('id', id);
-    }
-
-    function getStatusColor(s) {
-        if(s === 'checking') return '#6c757d';
-        if(s === 'proses') return '#ffc107';
-        return '#28a745';
-    }
-
-   async function saveToCloud() {
-    const p = {
-        nama: document.getElementById('custName').value,
-        tgl: document.getElementById('entryDate').value,
-        tipe: document.getElementById('serviceType').value,
-        barang: document.getElementById('devName').value,
-        kelengkapan: document.getElementById('kelengkapan').value,
-        keluhan: document.getElementById('keluhan').value,
-    };
-
-    if (!p.nama || !p.barang) return alert("Nama & Unit wajib diisi!");
-
-    if (activeId) {
-        // MODE UPDATE (Jika sedang edit)
-        const { error } = await sbClient.from('layanan').update(p).eq('id', activeId);
-        if (!error) {
-            alert("Data berhasil diperbarui!");
-            activeId = null; // Reset ID setelah selesai
-            location.reload(); // Refresh halaman
-        } else {
-            alert("Gagal update: " + error.message);
-        }
-    } else {
-        // MODE TAMBAH BARU (Jika tidak sedang edit)
-        p.status = 'checking';
-        p.tindakan = '-';
-        p.items = [];
-        p.total = 0;
+    async function uploadFoto(id, input) {
+        const file = input.files[0];
+        if (!file) return;
         
-        const { data, error } = await sbClient.from('layanan').insert([p]).select();
-        if (!error) { 
-            alert("Data berhasil disimpan!");
-            fetchData(); 
-            reprint(data[0].id); 
-            // Reset form
-            document.getElementById('custName').value = '';
-            document.getElementById('devName').value = '';
-            document.getElementById('kelengkapan').value = '';
-            document.getElementById('keluhan').value = '';
+        const fileName = `${id}-${Date.now()}.${file.name.split('.').pop()}`;
+        const { data: upData, error: upErr } = await sbClient.storage.from('dokumentasi').upload(fileName, file);
+        
+        if (upErr) return alert("Gagal upload: " + upErr.message);
+
+        const { data: { publicUrl } } = sbClient.storage.from('dokumentasi').getPublicUrl(fileName);
+        await sbClient.from('layanan').update({ dokumentasi_proses: publicUrl }).eq('id', id);
+        
+        alert("Foto berhasil diunggah!");
+        fetchData();
+    }
+
+    function editData(id) {
+        const item = fullData.find(i => i.id === id);
+        if (item) {
+            activeId = id;
+            document.getElementById('custName').value = item.nama;
+            document.getElementById('entryDate').value = item.tgl;
+            document.getElementById('serviceType').value = item.tipe;
+            document.getElementById('devName').value = item.barang;
+            document.getElementById('kelengkapan').value = item.kelengkapan || '';
+            document.getElementById('keluhan').value = item.keluhan || '';
+            
+            const btn = document.getElementById('btnSimpanUtama');
+            btn.innerHTML = "🆙 UPDATE DATA PELANGGAN";
+            btn.className = "btn btn-yellow";
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     }
-}
 
+    async function saveToCloud() {
+        const p = {
+            nama: document.getElementById('custName').value,
+            tgl: document.getElementById('entryDate').value,
+            tipe: document.getElementById('serviceType').value,
+            barang: document.getElementById('devName').value,
+            kelengkapan: document.getElementById('kelengkapan').value,
+            keluhan: document.getElementById('keluhan').value
+        };
+        if (!p.nama || !p.barang) return alert("Isi Nama & Unit!");
+
+        if (activeId) {
+            await sbClient.from('layanan').update(p).eq('id', activeId);
+            alert("Data diperbarui!");
+            location.reload();
+        } else {
+            p.status = 'checking'; p.tindakan = '-'; p.items = []; p.total = 0;
+            const { data, error } = await sbClient.from('layanan').insert([p]).select();
+            if (!error) { fetchData(); reprint(data[0].id); resetForm(); }
+        }
+    }
+
+    function resetForm() {
+        document.getElementById('custName').value = '';
+        document.getElementById('devName').value = '';
+        document.getElementById('kelengkapan').value = '';
+        document.getElementById('keluhan').value = '';
+        activeId = null;
+    }
+
+    async function updateTindakan(id, teks) { await sbClient.from('layanan').update({ tindakan: teks }).eq('id', id); }
     async function updateProgres(id, cur) {
         const next = cur === 'checking' ? 'proses' : (cur === 'proses' ? 'selesai' : 'checking');
         await sbClient.from('layanan').update({ status: next }).eq('id', id);
         fetchData();
     }
 
+    function getStatusColor(s) { return s === 'checking' ? '#6c757d' : (s === 'proses' ? '#ffc107' : '#28a745'); }
+    function filterTable() {
+        const input = document.getElementById('searchInput').value.toLowerCase();
+        renderTable(fullData.filter(i => i.nama.toLowerCase().includes(input) || i.barang.toLowerCase().includes(input)));
+    }
+
     function openModal(id) { activeId = id; document.getElementById('itemRows').innerHTML = ''; addRow(); document.getElementById('modalNota').style.display = 'block'; }
     function addRow() {
         const div = document.createElement('div');
-        div.className = 'grid'; div.style.gridTemplateColumns = '2fr 1fr'; div.style.marginBottom = '5px';
+        div.className = 'grid'; div.style.gridTemplateColumns = '2fr 1fr';
         div.innerHTML = `<input type="text" class="i-desc" placeholder="Item"><input type="number" class="i-price" placeholder="Harga">`;
         document.getElementById('itemRows').appendChild(div);
     }
@@ -274,89 +246,51 @@
     async function reprint(id) {
         const { data } = await sbClient.from('layanan').select('*').eq('id', id).single();
         const trackingUrl = window.location.origin + window.location.pathname + "?id=" + id;
-        const tglCetak = new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
-
-        let h = `<div style="text-align:right; font-size:10px; margin-bottom:10px;">Tanggal: ${tglCetak}</div>
-                 <h3 style="text-align:center; margin:10px 0;">${data.items.length > 0 ? 'NOTA LUNAS' : 'TANDA TERIMA'}</h3>
-                 <div style="line-height:1.6; font-size: 13px;">
-                    <strong>Pelanggan :</strong> ${data.nama}<br>
-                    <strong>Tgl Masuk :</strong> ${data.tgl}<br>
-                    <strong>Unit      :</strong> ${data.barang}<br>
-                    <strong>Kelengkapan:</strong> ${data.kelengkapan || '-'}<br>
-                    <strong>Keluhan   :</strong> ${data.keluhan}
-                 </div>`;
-        
-        if(data.items.length > 0) {
-            h += `<table style="margin-top:10px; border-top: 1px solid #000;">`;
+        let h = `<h3>${data.items && data.items.length > 0 ? 'NOTA LUNAS' : 'TANDA TERIMA'}</h3>
+                 <p>Pelanggan: ${data.nama}<br>Unit: ${data.barang}<br>Keluhan: ${data.keluhan}</p>`;
+        if(data.items && data.items.length > 0) {
+            h += `<hr><table>`;
             data.items.forEach(i => h += `<tr><td>${i.desc}</td><td style="text-align:right;">Rp ${parseInt(i.price).toLocaleString()}</td></tr>`);
-            h += `</table><h4 style="text-align:right; margin-top:10px; border-top: 1px dashed #000; padding-top:5px;">TOTAL: Rp ${parseInt(data.total).toLocaleString()}</h4>`;
+            h += `</table><h4>TOTAL: Rp ${parseInt(data.total).toLocaleString()}</h4>`;
         }
-        
         document.getElementById('notaKonten').innerHTML = h;
         document.getElementById('qrPrint').innerHTML = "";
-        
         new QRCode(document.getElementById("qrPrint"), { text: trackingUrl, width: 100, height: 100 });
-
-        document.getElementById('qrInfoContainer').innerHTML = `
-            <div style="margin-bottom:8px;">
-                <span style="font-size:10px;">Cek Status Online:</span><br>
-                <a href="${trackingUrl}" class="qr-link">${trackingUrl}</a>
-            </div>
-            <div style="font-size:9px; font-style:italic; color:#444; line-height:1.2; padding:0 20px;">
-                "Scan untuk melihat progres servis"
-            </div>
-        `;
-
+        document.getElementById('qrInfoContainer').innerHTML = `<small>Cek Status: ${trackingUrl}</small>`;
         setTimeout(() => { window.print(); }, 500);
     }
 
-    async function hapusData(id) { if(confirm("Hapus data ini?")) { await sbClient.from('layanan').delete().eq('id', id); fetchData(); } }
+    async function hapusData(id) { if(confirm("Hapus?")) { await sbClient.from('layanan').delete().eq('id', id); fetchData(); } }
     function closeModal() { document.getElementById('modalNota').style.display = 'none'; }
 
     window.onload = async () => {
-    const p = new URLSearchParams(window.location.search);
-    if(p.has('id')) {
-        document.getElementById('mainContent').style.display = 'none';
-        const { data } = await sbClient.from('layanan').select('*').eq('id', p.get('id')).single();
-        if(data) {
-            document.body.innerHTML = `
-            <div style="text-align:center; padding:50px; font-family: sans-serif; background: #fff; min-height: 100vh;">
-                <h1 style="color:#007bff;">ARIF EDU TECH</h1>
-                <hr style="width:100px; border:2px solid #007bff; margin:20px auto;">
-                <p style="font-size: 1.1em; color: #555;">Status Perbaikan Unit Anda:</p>
-                <h2 style="color:${data.status === 'selesai' ? '#28a745' : '#ffc107'}; text-transform: uppercase; background: #f8f9fa; display: inline-block; padding: 10px 30px; border-radius: 50px; border: 2px solid currentColor;">
-                    ${data.status}
-                </h2>
-                
-                <div style="margin: 30px auto; max-width: 500px; background:#fdfdfd; padding:25px; border-radius:15px; text-align:left; border:1px solid #eee; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
-                    <p><strong>Nama Pelanggan:</strong> ${data.nama}</p>
-                    <p><strong>Unit Barang:</strong> ${data.barang}</p>
-                    <p><strong>Tanggal Masuk:</strong> ${data.tgl}</p>
-                    <p><strong>Kelengkapan:</strong> ${data.kelengkapan || '-'}</p>
-                    <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
-                    <p style="color:#007bff; font-weight: bold; margin-bottom: 5px;">Update Progres Teknisi:</p>
-                    <p style="font-size:1.2em; font-weight:bold; color: #333; line-height: 1.4;">${data.tindakan || 'Sedang dalam pengecekan...'}</p>
-                    
-                    ${data.dokumentasi_proses ? `
-                        <div style="margin-top:20px; padding:15px; background:#fff9e6; border-left:4px solid #ffc107; border-radius:4px;">
-                            <p style="margin:0 0 5px 0; font-size:12px; color:#856404; font-weight:bold; text-transform:uppercase;">Dokumentasi Pengerjaan:</p>
-                            <p style="margin:0; font-size:14px; color:#333; white-space: pre-line;">${data.dokumentasi_proses}</p>
-                        </div>
-                    ` : ''}
+        const p = new URLSearchParams(window.location.search);
+        if(p.has('id')) {
+            document.getElementById('mainContent').style.display = 'none';
+            const { data } = await sbClient.from('layanan').select('*').eq('id', p.get('id')).single();
+            if(data) {
+                document.body.innerHTML = `
+                <div style="text-align:center; padding:30px; font-family: sans-serif;">
+                    <h1 style="color:#007bff;">ARIF EDU TECH</h1>
+                    <p>Status Perbaikan:</p>
+                    <h2 style="color:${data.status === 'selesai' ? '#28a745' : '#ffc107'}; text-transform: uppercase;">${data.status}</h2>
+                    <div style="text-align:left; max-width:400px; margin:auto; border:1px solid #ddd; padding:20px; border-radius:10px;">
+                        <p><strong>Nama:</strong> ${data.nama}</p>
+                        <p><strong>Unit:</strong> ${data.barang}</p>
+                        <p><strong>Progres:</strong> ${data.tindakan || '-'}</p>
+                        
+                        ${data.dokumentasi_proses ? `
+                            <div style="margin-top:15px; text-align:center;">
+                                <p style="font-size:12px; font-weight:bold;">FOTO PENGERJAAN:</p>
+                                <img src="${data.dokumentasi_proses}" style="max-width:100%; border-radius:10px; border:3px solid #eee;">
+                            </div>
+                        ` : ''}
                     </div>
-
-                <div style="margin-top:40px; padding: 0 20px;">
-                    <p style="font-size: 1.1em; color: #28a745; font-weight: 500;">
-                        Terimakasih atas kunjungan dan kepercayaannya,<br>kami akan melayani dengan sepenuh hati.
-                    </p>
-                </div>
-                <div style="margin-top: 30px; font-size: 12px; color: #999;">
-                    &copy; 2024 ARIF EDU TECH - Layanan Servis Transparan
-                </div>
-            </div>`;
-        }
-    } else { fetchData(); }
-}
+                    <p style="margin-top:30px; color:#28a745;">Terimakasih atas kepercayaannya.</p>
+                </div>`;
+            }
+        } else { fetchData(); }
+    }
 </script>
 </body>
 </html>
