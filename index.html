@@ -226,19 +226,70 @@
         .slide.active { opacity: 1; }
         .slide img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* SERTIFIKAT ELEGAN FIXED */
+        /* PERBAIKAN: SERTIFIKAT ESTETIK & ELEGAN */
         .card-certificate {
-            background: linear-gradient(145deg, #ffffff, #fffdf0);
+            background: linear-gradient(145deg, #ffffff, #fffdf0) !important;
             border: 2px solid var(--accent-color) !important;
-            box-shadow: 0 10px 30px rgba(241, 196, 15, 0.1);
+        }
+        .cert-frame {
+            padding: 10px;
+            background: white;
+            border: 1px solid #eee;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-radius: 4px;
+            display: inline-block;
+            transition: 0.5s;
+            transform: rotate(-1deg);
         }
         .cert-img {
-            border: 5px solid white;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-            transform: rotate(-1deg);
-            transition: 0.4s;
+            max-width: 100%;
+            height: auto;
+            display: block;
+            border: 1px solid #ddd;
         }
-        .card-certificate:hover .cert-img { transform: rotate(0deg) scale(1.05); }
+        .card-certificate:hover .cert-frame {
+            transform: rotate(0deg) scale(1.05);
+            box-shadow: 0 20px 40px rgba(181, 148, 16, 0.2);
+        }
+
+        /* BARU: TESTIMONI DENGAN BACKGROUND PROFESIONAL */
+        .testimoni-section {
+            padding: 100px 20px;
+            background: linear-gradient(var(--dark-overlay), var(--dark-overlay)), 
+                        url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: white;
+            text-align: center;
+        }
+
+        .testimoni-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 50px auto 0;
+        }
+
+        .testi-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px 30px;
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: 0.3s;
+            text-align: left;
+        }
+
+        .testi-card:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-10px);
+        }
+
+        .stars { color: var(--accent-color); margin-bottom: 15px; font-size: 14px; }
+        .user-info { display: flex; align-items: center; gap: 15px; margin-top: 20px; }
+        .user-name { font-weight: bold; color: var(--accent-color); }
 
         /* Modal Styles */
         #pwModal, #waModal {
@@ -381,20 +432,43 @@
                 </div>
                 
                 <div class="gallery-card card-certificate">
-                    <div style="background:var(--accent-color); color:#000; font-size:10px; font-weight:bold; padding:4px 12px; border-radius:20px; display:inline-block; margin-bottom:15px; text-transform:uppercase;">Verified Specialist</div>
-                    <div class="img-container" style="overflow:visible;">
+                    <div style="background:var(--accent-color); color:#000; font-size:10px; font-weight:bold; padding:4px 12px; border-radius:20px; display:inline-block; margin-bottom:20px; text-transform:uppercase; letter-spacing: 1px;">Verified Specialist</div>
+                    <div class="cert-frame">
                         <img src="certificate1.jpeg" class="cert-img" alt="Sertifikat">
                     </div>
-                    <div class="card-title" style="color:#b59410;">Sertifikat Kompetensi</div>
-                    <p class="card-desc">Bukti keahlian teknis standar industri Arif Edu Tech.</p>
+                    <div class="card-title" style="color:#b59410; margin-top: 15px;">Sertifikat Kompetensi</div>
+                    <p class="card-desc">Bukti keahlian teknis standar industri Arif Edu Tech yang diakui.</p>
                 </div>
 
             </div>
+        </div>
+    </section>
 
-            <div style="text-align: center;">
-                <a href="kontak.html" class="btn-gallery-cta">
-                    <i class="fas fa-comments"></i> Lihat Galeri Lengkap & Testimoni
-                </a>
+    <section class="testimoni-section">
+        <h2 class="section-title" style="color: var(--accent-color);">Testimoni Pelanggan</h2>
+        <p style="color: #e0e0e0; max-width: 600px; margin: 0 auto;">Kepuasan pelanggan adalah bukti nyata dedikasi dan profesionalisme kami dalam bekerja.</p>
+        
+        <div class="testimoni-grid">
+            <div class="testi-card">
+                <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                <p>"Sangat puas servis laptop di sini. Selain pengerjaannya cepat, Mas Arif juga sangat jujur menjelaskan kerusakan komponennya. Harganya pun sangat transparan!"</p>
+                <div class="user-info">
+                    <span class="user-name">- Rian Hidayat</span>
+                </div>
+            </div>
+            <div class="testi-card">
+                <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                <p>"Printer saya yang macet total bisa diperbaiki dengan sempurna. Penjelasannya mudah dimengerti untuk saya yang awam. Sukses terus Arif Edu Tech!"</p>
+                <div class="user-info">
+                    <span class="user-name">- Siti Aminah</span>
+                </div>
+            </div>
+            <div class="testi-card">
+                <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                <p>"Tempat servis paling terpercaya di wilayah ini. Laptop gaming saya kembali dingin setelah maintenance di sini. Benar-benar ahli di bidangnya."</p>
+                <div class="user-info">
+                    <span class="user-name">- Budi Santoso</span>
+                </div>
             </div>
         </div>
     </section>
@@ -447,9 +521,9 @@
                 const res = await fetch('/api/visitor');
                 if (!res.ok) throw new Error();
                 const data = await res.json();
-                elemen.textContent = data.count || '1.240'; // Fallback angka jika API kosong
+                elemen.textContent = data.count || '1.240'; 
             } catch (err) {
-                elemen.textContent = '1.240'; // Angka simulasi jika API belum aktif
+                elemen.textContent = '1.240'; 
             }
         }
 
