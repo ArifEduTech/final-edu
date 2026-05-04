@@ -171,6 +171,8 @@
             box-shadow: 0 15px 35px rgba(0,0,0,0.04);
             border: 1px solid #f0f0f0;
             transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative; /* For slider positioning */
+            overflow: hidden; /* For certificate shine */
         }
 
         .gallery-card:hover {
@@ -185,14 +187,26 @@
             align-items: center;
             justify-content: center;
             margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px; /* Added border-radius for cleaner look */
         }
 
-        .img-container img {
+        .img-container img, 
+        .img-container video {
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
             filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
             transition: 0.5s;
+        }
+
+        /* Video specific fit */
+        .img-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Fill container for video */
+            border-radius: 15px;
         }
 
         .gallery-card:hover img {
@@ -205,12 +219,112 @@
             font-weight: 700;
             color: var(--primary-color);
             margin-bottom: 10px;
+            position: relative; z-index: 2;
         }
 
         .card-desc {
             font-size: 0.95rem;
             color: #666;
+            position: relative; z-index: 2;
         }
+
+        /* --- STYLING KHUSUS MAINTENANCE SLIDER --- */
+        .slider-container {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0; left: 0;
+        }
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0; left: 0;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .slide.active {
+            opacity: 1;
+        }
+
+        /* --- STYLING KHUSUS SERTIFIKAT ELEGAN --- */
+        .card-certificate {
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            border: 2px solid #e0e0e0;
+        }
+
+        .card-certificate:hover {
+            border-color: var(--accent-color); /* Highlight with gold on hover */
+            background: linear-gradient(145deg, #ffffff, #fffdf5);
+        }
+
+        .card-certificate .img-container {
+            border: 3px solid #fff;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transform: rotate(-2deg); /* Slight professional tilt */
+            transition: 0.5s;
+            overflow: visible; /* To not cut shadow */
+        }
+
+        .card-certificate:hover .img-container {
+            transform: rotate(0deg) scale(1.02);
+            box-shadow: 0 10px 25px rgba(241, 196, 15, 0.3);
+        }
+
+        .card-certificate .card-title {
+            color: #b59410; /* Goldish text */
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 1.1rem;
+            margin-top: 15px;
+        }
+        
+        .card-certificate .card-desc {
+            font-style: italic;
+            color: #888;
+        }
+
+        /* Badge "Verified" */
+        .cert-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--accent-color);
+            color: #000;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 3;
+        }
+
+        /* Shine Effect */
+        .card-certificate::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(to bottom right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 40%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.1) 60%, rgba(255,255,255,0) 100%);
+            transform: rotate(45deg);
+            transition: cubic-bezier(0.19, 1, 0.22, 1) 1.5s;
+            opacity: 0;
+            z-index: 1;
+        }
+
+        .card-certificate:hover::after {
+            left: 25%;
+            top: 25%;
+            opacity: 1;
+        }
+
+        /* --- END STYLING KHUSUS --- */
 
         .btn-gallery-cta {
             display: inline-block;
@@ -338,26 +452,45 @@
                     <div class="card-title">System Solutions</div>
                     <p class="card-desc">Optimasi sistem operasi agar performa kembali seperti baru.</p>
                 </div>
+                
                 <div class="gallery-card">
-                    <div class="img-container"><img src="servis4.png" alt="Device Maintenance"></div>
+                    <div class="img-container" id="maintenance-slider">
+                        <div class="slider-container">
+                            <div class="slide active"><img src="servis4.png" alt="Maintenence1.jpeg"></div>
+                            <div class="slide"><img src="servis4b.png" alt="Maintenence2.jpeg" onerror="this.src='https://via.placeholder.com/300x180?text=Gambar+2'"></div>
+                            <div class="slide"><img src="servis4c.png" alt="Maintenence3.jpeg" onerror="this.src='https://via.placeholder.com/300x180?text=Gambar+3'"></div>
+                        </div>
+                    </div>
                     <div class="card-title">Maintenance</div>
                     <p class="card-desc">Pembersihan debu dan penggantian thermal paste secara rutin.</p>
                 </div>
+                
                 <div class="gallery-card">
                     <div class="img-container"><img src="servis5.png" alt="Setup & Installation"></div>
                     <div class="card-title">Setup & Install</div>
                     <p class="card-desc">Konfigurasi jaringan dan instalasi perangkat baru Anda.</p>
                 </div>
+                
                 <div class="gallery-card">
-                    <div class="img-container"><img src="servis6.png" alt="Printer Repair"></div>
+                    <div class="img-container">
+                        <video autoplay muted loop playsinline poster="servis6.png">
+                            <source src="printer-servis.mp4" type="video/mp4">
+                            <img src="servis6.png" alt="Printer Repair Fallback">
+                        </video>
+                    </div>
                     <div class="card-title">Printer Services</div>
                     <p class="card-desc">Penanganan masalah mekanis maupun tinta pada berbagai merk printer.</p>
                 </div>
-                   <div class="gallery-card">
-                    <div class="img-container"><img src="certificate1.jpeg" alt="Certificate of Competency"></div>
-                    <div class="card-title">Certificate of Competency</div>
-                    <p class="card-desc">sertifikat kompetensi keahlian</p>
+                
+                <div class="gallery-card card-certificate">
+                    <div class="cert-badge"><i class="fas fa-check-circle"></i> Verified</div>
+                    <div class="img-container">
+                        <img src="certificate1.jpeg" alt="Certificate of Competency">
+                    </div>
+                    <div class="card-title">Sertifikat Kompetensi</div>
+                    <p class="card-desc">Bukti keahlian teknis standar industri.</p>
                 </div>
+
             </div>
 
             <div style="text-align: center;">
@@ -435,6 +568,29 @@
             // toggleMusic(); 
         }
     }, { once: true });
+</script>
+
+<script>
+    function startMaintenanceSlider() {
+        const slider = document.getElementById('maintenance-slider');
+        const slides = slider.querySelectorAll('.slide');
+        let currentSlide = 0;
+        
+        // Hanya jalan jika ada lebih dari 1 gambar
+        if (slides.length <= 1) return;
+
+        function nextSlide() {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide + 1) % slides.length;
+            slides[currentSlide].classList.add('active');
+        }
+
+        // Ganti gambar setiap 3 detik (3000ms)
+        setInterval(nextSlide, 3000);
+    }
+    
+    // Jalankan slider saat halaman dimuat
+    window.addEventListener('load', startMaintenanceSlider);
 </script>
 
 <div style="
