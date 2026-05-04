@@ -256,11 +256,22 @@
         closeModal(); fetchData(); reprint(activeId);
     }
 
-  async function reprint(id) {
+ async function reprint(id) {
     const { data } = await sbClient.from('layanan').select('*').eq('id', id).single();
-    const trackingUrl = window.location.origin + window.location.pathname + "?id=" + id;
     
-    // 1. Bagian isi Nota (Tanggal, Nama, Unit, Kelengkapan muncul di sini)
+    // Logika URL QR Code: Jika selesai arahkan ke web utama, jika belum arahkan ke tracking
+    let qrUrl;
+    let qrLabel;
+    
+    if (data.status === 'selesai') {
+        qrUrl = "https://final-edu-seven.vercel.app/";
+        qrLabel = "Scan QR code untuk mengunjungi WEB Arif_Edu_Tech";
+    } else {
+        qrUrl = window.location.origin + window.location.pathname + "?id=" + id;
+        qrLabel = "Scan kode QR atau kunjungi link di atas untuk cek progres service";
+    }
+    
+    // 1. Bagian isi Nota
     let h = `<h3>${data.items && data.items.length > 0 ? 'NOTA LUNAS' : 'TANDA SERVICE'}</h3>
              <div style="text-align:left; font-size:12px;">
                 <p>Tgl Masuk: ${data.tgl}<br>
@@ -278,26 +289,25 @@
     
     document.getElementById('notaKonten').innerHTML = h;
     
-    // 2. Bagian Barcode (Kotak Hitam Putih)
+    // 2. Bagian Barcode (Menggunakan qrUrl yang sudah ditentukan di atas)
     document.getElementById('qrPrint').innerHTML = "";
     new QRCode(document.getElementById("qrPrint"), { 
-        text: trackingUrl, 
+        text: qrUrl, 
         width: 110, 
         height: 110 
     });
 
-    // 3. Bagian Link & Tulisan Instruksi di paling bawah
+    // 3. Bagian Link & Tulisan Instruksi
     document.getElementById('qrInfoContainer').innerHTML = `
         <div style="margin-top: 10px; font-size: 10px; text-align:center;">
-            <span style="word-break: break-all; font-weight: bold;">${trackingUrl}</span>
-            <p style="margin-top: 8px; font-weight: bold; border-top: 1px dashed #ccc; pt-5;">
-                Scan kode QR atau kunjungi link di atas untuk cek progres service
+            <span style="word-break: break-all; font-weight: bold;">${qrUrl}</span>
+            <p style="margin-top: 8px; font-weight: bold; border-top: 1px dashed #ccc; padding-top: 5px;">
+                ${qrLabel}
             </p>
         </div>`;
 
     setTimeout(() => { window.print(); }, 500);
 }
-
     async function hapusData(id) { if(confirm("Hapus?")) { await sbClient.from('layanan').delete().eq('id', id); fetchData(); } }
     function closeModal() { document.getElementById('modalNota').style.display = 'none'; }
 
