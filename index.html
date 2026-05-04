@@ -14,7 +14,7 @@
     <meta property="og:image" content="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1350&q=80">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <title>Arif Edu Tech | Jasa Servis Laptop Komputer Printer Profesional</title>
+    <title>Arif Edu Tech | Jasa Servis Laptop Komputer Printer Profesional</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -55,27 +55,9 @@
             filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
         }
 
-        .hero h1 {
-            font-size: 2.8rem;
-            margin: 10px 0;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .hero h2 {
-            font-size: 1.4rem;
-            color: var(--accent-color);
-            margin-bottom: 20px;
-        }
-
-        .hero p.deskripsi {
-            max-width: 800px;
-            font-size: 1.05rem;
-            margin-bottom: 35px;
-            color: #e0e0e0;
-            text-align: center;
-            line-height: 1.8;
-        }
+        .hero h1 { font-size: 2.8rem; margin: 10px 0; text-transform: uppercase; letter-spacing: 2px; }
+        .hero h2 { font-size: 1.4rem; color: var(--accent-color); margin-bottom: 20px; }
+        .hero p.deskripsi { max-width: 800px; font-size: 1.05rem; margin-bottom: 35px; color: #e0e0e0; text-align: center; line-height: 1.8; }
 
         .btn-wa {
             background-color: #25d366;
@@ -90,11 +72,6 @@
             transition: 0.3s;
             margin-bottom: 40px;
             box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
-        }
-
-        .btn-wa:hover {
-            transform: scale(1.05);
-            background-color: #1ebe57;
         }
 
         .menu-grid {
@@ -120,161 +97,95 @@
             gap: 10px;
             backdrop-filter: blur(5px);
         }
+        .nav-card:hover { background: var(--accent-color); color: #000; transform: translateY(-5px); }
 
-        .nav-card:hover {
-            background: var(--accent-color);
-            color: #000;
-            transform: translateY(-5px);
-        }
+        /* GALERI */
+        .home-gallery { padding: 100px 20px; background-color: var(--gallery-bg); }
+        .gallery-wrapper { max-width: 1200px; margin: 0 auto; }
+        .section-title { color: var(--primary-color); font-size: 2.5rem; font-weight: 800; margin-bottom: 15px; text-align: center; text-transform: uppercase; }
+        .section-subtitle { color: #777; font-size: 1.1rem; max-width: 700px; margin: 0 auto 50px auto; text-align: center; }
 
-        .home-gallery {
-            padding: 100px 20px;
-            background-color: var(--gallery-bg);
-        }
-
-        .gallery-wrapper {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .section-title {
-            color: var(--primary-color);
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 15px;
-            text-align: center;
-            text-transform: uppercase;
-        }
-
-        .section-subtitle {
-            color: #777;
-            font-size: 1.1rem;
-            max-width: 700px;
-            margin: 0 auto 50px auto;
-            text-align: center;
-        }
-
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 30px;
-        }
-
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; }
         .gallery-card {
             background: #ffffff;
-            border-radius: 30px;
-            padding: 40px 30px;
+            border-radius: 25px;
+            padding: 35px 25px;
             text-align: center;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.04);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
             border: 1px solid #f0f0f0;
-            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            transition: 0.4s;
             position: relative;
             overflow: hidden;
         }
-
-        .gallery-card:hover {
-            transform: translateY(-15px);
-            box-shadow: 0 25px 50px rgba(11, 83, 69, 0.12);
-            border-color: var(--primary-color);
-        }
+        .gallery-card:hover { transform: translateY(-10px); border-color: var(--primary-color); }
 
         .img-container {
-            height: 180px;
+            height: 200px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             position: relative;
             overflow: hidden;
             border-radius: 15px;
         }
 
-        .img-container img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
-            transition: 0.5s;
-        }
-
-        .card-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            margin-bottom: 10px;
-            position: relative; z-index: 2;
-        }
-
-        .card-desc {
-            font-size: 0.95rem;
-            color: #666;
-            position: relative; z-index: 2;
-        }
-
-        /* MAINTENANCE SLIDER FIXED */
-        .slide {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0; left: 0;
-            opacity: 0;
-            transition: opacity 1s ease-in-out;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        /* MAINTENANCE SLIDER */
+        .slide { position: absolute; width: 100%; height: 100%; opacity: 0; transition: 1s; }
         .slide.active { opacity: 1; }
         .slide img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* SERTIFIKAT ELEGAN FIXED */
+        /* SERTIFIKAT ELEGAN & PRESISI */
         .card-certificate {
-            background: linear-gradient(145deg, #ffffff, #fffdf0);
-            border: 2px solid var(--accent-color) !important;
-            box-shadow: 0 10px 30px rgba(241, 196, 15, 0.1);
+            background: #fff;
+            border: 2px solid #d4af37 !important; /* Gold Border */
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .cert-frame {
+            padding: 10px;
+            background: #fdfcf0;
+            border: 1px solid #eee;
+            box-shadow: inset 0 0 15px rgba(212, 175, 55, 0.1);
+            display: inline-block;
+            margin-bottom: 15px;
+            border-radius: 5px;
         }
         .cert-img {
-            border: 5px solid white;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-            transform: rotate(-1deg);
-            transition: 0.4s;
+            max-width: 100%;
+            height: auto;
+            border: 2px solid #fff;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: 0.5s;
         }
-        .card-certificate:hover .cert-img { transform: rotate(0deg) scale(1.05); }
+        .card-certificate:hover .cert-img { transform: scale(1.03); }
 
-        /* Modal Styles */
-        #pwModal, #waModal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
-            z-index: 2000;
-            backdrop-filter: blur(8px);
-        }
-
-        .modal-content {
-            background: white;
-            width: 320px;
-            margin: 20vh auto;
-            padding: 35px;
-            border-radius: 20px;
+        /* TESTIMONI / CTA SECTION */
+        .cta-container {
             text-align: center;
-        }
-
-        .btn-login {
-            background: var(--primary-color);
+            margin-top: 60px;
+            padding: 40px;
+            background: linear-gradient(135deg, var(--primary-color), #16a085);
+            border-radius: 30px;
             color: white;
-            border: none;
-            padding: 12px;
-            width: 100%;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
+            box-shadow: 0 15px 35px rgba(11, 83, 69, 0.2);
         }
+        .btn-gallery-cta {
+            display: inline-block;
+            padding: 16px 35px;
+            background-color: var(--accent-color);
+            color: #000;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 700;
+            transition: 0.3s;
+            margin-top: 20px;
+        }
+        .btn-gallery-cta:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(241, 196, 15, 0.4); }
 
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 2rem; }
-            .section-title { font-size: 1.8rem; }
-            .gallery-grid { grid-template-columns: 1fr; }
-        }
+        /* Modals */
+        #pwModal, #waModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; backdrop-filter: blur(8px); }
+        .modal-content { background: white; width: 320px; margin: 20vh auto; padding: 35px; border-radius: 20px; text-align: center; }
+        .btn-login { background: var(--primary-color); color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -283,93 +194,42 @@
         <img src="logo.png" alt="Logo" class="logo-main">
         <h1>ARIF EDU TECH</h1>
         <h2>Expert IT Repair & Digital Solutions</h2>
+        <p class="deskripsi">Menghadapi kendala teknis pada perangkat kesayangan seringkali menghambat langkah Anda. Di Arif Edu Tech, kami menyambut Anda dengan solusi perbaikan menyeluruh.</p>
         
-        <p class="deskripsi">
-            Menghadapi kendala teknis pada perangkat kesayangan seringkali menghambat langkah Anda. 
-            Di Arif Edu Tech, kami menyambut Anda dengan solusi perbaikan menyeluruh untuk laptop, 
-            komputer, dan printer dengan standar pengerjaan yang teliti dan jujur.
-        </p>
-
-        <a href="javascript:void(0)" class="btn-wa" onclick="showWaModal()">
-            <i class="fab fa-whatsapp"></i> Konsultasi Sekarang
-        </a>
-
-        <div id="music-container" style="position: fixed; bottom: 20px; left: 20px; z-index: 9999; background: rgba(11, 83, 69, 0.8); padding: 10px; border-radius: 50px; display: flex; align-items: center; gap: 10px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2);">
-            <button id="music-btn" onclick="toggleMusic()" style="background: var(--accent-color); border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;">
-                <i id="music-icon" class="fas fa-play" style="color: #000; font-size: 14px;"></i>
-            </button>
-            <span id="music-status" style="color: white; font-size: 12px; font-weight: bold; padding-right: 10px;">Musik: OFF</span>
-            <audio id="bg-music" loop>
-                <source src="tech-ambient.mp3" type="audio/mpeg">
-            </audio>
-        </div>
+        <a href="javascript:void(0)" class="btn-wa" onclick="showWaModal()"><i class="fab fa-whatsapp"></i> Konsultasi Sekarang</a>
 
         <div class="menu-grid" style="grid-template-columns: repeat(3, 1fr);">
-            <a href="tentang.html" class="nav-card">
-                <i class="fas fa-info-circle"></i>
-                <span>Tentang Kami</span>
-            </a>
-            <a href="daftar.html" class="nav-card">
-                <i class="fas fa-list-ul"></i>
-                <span>Daftar Layanan</span>
-            </a>
-            <a href="katalog.html" class="nav-card">
-                <i class="fas fa-box-open"></i>
-                <span>Sparepart / Katalog</span>
-            </a>
-            <a href="javascript:void(0)" class="nav-card" onclick="showPwModal()" style="background: var(--accent-color); color: #000;">
-                <i class="fas fa-database"></i>
-                <span>Data Layanan</span>
-            </a>
-            <a href="antrian.html" class="nav-card" style="background: #e67e22; color: #fff;">
-                <i class="fas fa-clock-rotate-left"></i>
-                <span>Antrian Service</span>
-            </a>
-            <a href="kontak.html" class="nav-card">
-                <i class="fas fa-id-card"></i>
-                <span>Kontak Kami</span>
-            </a>
+            <a href="tentang.html" class="nav-card"><i class="fas fa-info-circle"></i><span>Tentang</span></a>
+            <a href="daftar.html" class="nav-card"><i class="fas fa-list-ul"></i><span>Layanan</span></a>
+            <a href="katalog.html" class="nav-card"><i class="fas fa-box-open"></i><span>Katalog</span></a>
+            <a href="javascript:void(0)" class="nav-card" onclick="showPwModal()" style="background: var(--accent-color); color: #000;"><i class="fas fa-database"></i><span>Data</span></a>
+            <a href="antrian.html" class="nav-card" style="background: #e67e22; color: #fff;"><i class="fas fa-clock-rotate-left"></i><span>Antrian</span></a>
+            <a href="kontak.html" class="nav-card"><i class="fas fa-id-card"></i><span>Kontak</span></a>
         </div>
     </section>
 
     <section class="home-gallery">
         <div class="gallery-wrapper">
             <h2 class="section-title">Dokumentasi Profesional</h2>
-            <p class="section-subtitle">Melihat lebih dekat dedikasi kami dalam merawat perangkat Anda secara transparan dan ahli.</p>
+            <p class="section-subtitle">Dedikasi teknisi dalam merawat perangkat Anda secara transparan.</p>
 
             <div class="gallery-grid">
                 <div class="gallery-card">
-                    <div class="img-container"><img src="servis1.png" alt="Hardware Repair"></div>
+                    <div class="img-container"><img src="servis1.png" style="width:100%; height:100%; object-fit:cover; border-radius:15px;"></div>
                     <div class="card-title">Hardware Repair</div>
-                    <p class="card-desc">Perbaikan komponen fisik laptop dan PC dengan presisi tinggi.</p>
+                    <p class="card-desc">Perbaikan komponen fisik laptop dan PC presisi tinggi.</p>
                 </div>
+
                 <div class="gallery-card">
-                    <div class="img-container"><img src="servis2.png" alt="Professional Consult"></div>
-                    <div class="card-title">Professional Consult</div>
-                    <p class="card-desc">Konsultasi jujur untuk solusi teknis yang paling efisien.</p>
-                </div>
-                <div class="gallery-card">
-                    <div class="img-container"><img src="servis3.png" alt="System Solutions"></div>
-                    <div class="card-title">System Solutions</div>
-                    <p class="card-desc">Optimasi sistem operasi agar performa kembali seperti baru.</p>
-                </div>
-                
-                <div class="gallery-card">
-                    <div class="img-container" id="maintenance-slider">
-                        <div class="slide active"><img src="maintenence1.jpeg" alt="Maintenance 1"></div>
-                        <div class="slide"><img src="maintenence2.jpeg" alt="Maintenance 2"></div>
-                        <div class="slide"><img src="maintenence3.jpeg" alt="Maintenance 3"></div>
+                    <div class="img-container" id="maint-slider">
+                        <div class="slide active"><img src="maintenence1.jpeg"></div>
+                        <div class="slide"><img src="maintenence2.jpeg"></div>
+                        <div class="slide"><img src="maintenence3.jpeg"></div>
                     </div>
                     <div class="card-title">Maintenance</div>
-                    <p class="card-desc">Pembersihan debu dan penggantian thermal paste secara rutin.</p>
+                    <p class="card-desc">Pembersihan debu dan penggantian thermal paste rutin.</p>
                 </div>
-                
-                <div class="gallery-card">
-                    <div class="img-container"><img src="servis5.png" alt="Setup & Installation"></div>
-                    <div class="card-title">Setup & Install</div>
-                    <p class="card-desc">Konfigurasi jaringan dan instalasi perangkat baru Anda.</p>
-                </div>
-                
+
                 <div class="gallery-card">
                     <div class="img-container" style="background:#000;">
                         <video autoplay muted loop playsinline style="width:100%; height:100%; object-fit:cover;">
@@ -377,109 +237,67 @@
                         </video>
                     </div>
                     <div class="card-title">Printer Services</div>
-                    <p class="card-desc">Penanganan masalah mekanis maupun tinta pada berbagai merk printer.</p>
+                    <p class="card-desc">Penanganan masalah mekanis dan tinta berbagai merk.</p>
                 </div>
-                
+
                 <div class="gallery-card card-certificate">
-                    <div style="background:var(--accent-color); color:#000; font-size:10px; font-weight:bold; padding:4px 12px; border-radius:20px; display:inline-block; margin-bottom:15px; text-transform:uppercase;">Verified Specialist</div>
-                    <div class="img-container" style="overflow:visible;">
-                        <img src="certificate1.jpeg" class="cert-img" alt="Sertifikat">
+                    <div style="color:#d4af37; font-weight:bold; font-size:12px; margin-bottom:10px; letter-spacing:2px;"><i class="fas fa-certificate"></i> OFFICIAL VERIFIED</div>
+                    <div class="cert-frame">
+                        <img src="certificate1.jpeg" class="cert-img" alt="Sertifikat Arif Edu Tech">
                     </div>
-                    <div class="card-title" style="color:#b59410;">Sertifikat Kompetensi</div>
+                    <div class="card-title" style="color:#b59410; margin-top:0;">Sertifikat Kompetensi</div>
                     <p class="card-desc">Bukti keahlian teknis standar industri Arif Edu Tech.</p>
                 </div>
-
             </div>
 
-            <div style="text-align: center;">
+            <div class="cta-container">
+                <h3 style="margin:0; font-size:1.8rem;">Kepuasan Anda Prioritas Kami</h3>
+                <p style="opacity:0.9;">Sudah ratusan perangkat kami tangani dengan hasil maksimal.</p>
                 <a href="kontak.html" class="btn-gallery-cta">
-                    <i class="fas fa-comments"></i> Lihat Galeri Lengkap & Testimoni
+                    <i class="fas fa-comments"></i> Lihat Testimoni & Galeri Lengkap
                 </a>
             </div>
         </div>
     </section>
 
-    <div id="pwModal">
-        <div class="modal-content">
-            <h3 style="margin:0;">Akses Admin</h3>
-            <p style="font-size:12px; color:gray;">Gunakan PIN untuk membuka database</p>
-            <input type="password" id="adminPw" placeholder="••••••" style="width:100%; padding:10px; margin:20px 0; border:1px solid #ddd; border-radius:5px; text-align:center;">
-            <button class="btn-login" onclick="checkPassword()">BUKA DATA</button>
-            <p onclick="hidePwModal()" style="color:red; cursor:pointer; margin-top:15px; font-size:13px;">Batal</p>
+    <div style="text-align: center; margin: 40px 0;">
+        <div style="display:inline-flex; align-items:center; gap:10px; background:var(--primary-color); color:white; padding:10px 25px; border-radius:50px;">
+            <i class="fas fa-users" style="color:var(--accent-color);"></i>
+            <span>Pengunjung: <b id="visitor-count" style="color:var(--accent-color);">1.240</b></span>
         </div>
     </div>
 
-    <div id="waModal">
-        <div class="modal-content">
-            <h3 style="margin:0;">Pilih Kontak</h3>
-            <p style="font-size:12px; color:gray; margin-bottom:20px;">Hubungi teknisi kami:</p>
-            <a href="https://wa.me/6287758018426" target="_blank" class="btn-wa" style="display:flex; margin-bottom:10px; justify-content:center;">Arif (Teknisi 1)</a>
-            <a href="https://wa.me/6281805305278" target="_blank" class="btn-wa" style="display:flex; justify-content:center; background-color:#128c7e;">Nafi (Teknisi 2)</a>
-            <p onclick="hideWaModal()" style="color:red; cursor:pointer; margin-top:15px; font-size:13px;">Tutup</p>
-        </div>
-    </div>
+    <div id="pwModal"><div class="modal-content"><h3>Akses Admin</h3><input type="password" id="adminPw" placeholder="••••••" style="width:100%; padding:10px; margin:20px 0;"><button class="btn-login" onclick="checkPassword()">BUKA DATA</button><p onclick="hidePwModal()" style="color:red; cursor:pointer;">Batal</p></div></div>
+    <div id="waModal"><div class="modal-content"><h3>Pilih Kontak</h3><a href="https://wa.me/6287758018426" class="btn-wa">Arif (Teknisi 1)</a><br><a href="https://wa.me/6281805305278" class="btn-wa" style="background:#128c7e;">Nafi (Teknisi 2)</a><p onclick="hideWaModal()" style="color:red; cursor:pointer;">Tutup</p></div></div>
 
-    <div style="width: 100%; display: flex; justify-content: center; margin: 50px 0 40px 0; padding: 0 20px;">
-        <div style="padding: 12px 25px; background-color: var(--primary-color); color: white; border-radius: 50px; display: inline-flex; align-items: center; gap: 10px; font-size: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-            <i class="fas fa-users" style="color: var(--accent-color);"></i>
-            <span>Jumlah Pengunjung:</span>
-            <span id="visitor-count" style="font-weight: bold; color: var(--accent-color); font-size: 17px;">0</span>
-        </div>
-    </div>
+    <audio id="bg-music" loop><source src="tech-ambient.mp3" type="audio/mpeg"></audio>
 
     <script>
-        // Maintenance Slider Logic
-        function startMaintenanceSlider() {
-            const slides = document.querySelectorAll('#maintenance-slider .slide');
-            let current = 0;
-            if (slides.length <= 1) return;
-            setInterval(() => {
-                slides[current].classList.remove('active');
-                current = (current + 1) % slides.length;
-                slides[current].classList.add('active');
-            }, 3000);
-        }
+        // Maintenance Slider
+        let currentS = 0;
+        const slides = document.querySelectorAll('#maint-slider .slide');
+        setInterval(() => {
+            slides[currentS].classList.remove('active');
+            currentS = (currentS + 1) % slides.length;
+            slides[currentS].classList.add('active');
+        }, 3000);
 
-        // Visitor Count Logic (With Fallback)
-        async function getVisitorCount() {
-            const elemen = document.getElementById('visitor-count');
+        // Visitor Count Fallback
+        async function getCount() {
             try {
                 const res = await fetch('/api/visitor');
-                if (!res.ok) throw new Error();
                 const data = await res.json();
-                elemen.textContent = data.count || '1.240'; // Fallback angka jika API kosong
-            } catch (err) {
-                elemen.textContent = '1.240'; // Angka simulasi jika API belum aktif
-            }
+                if(data.count) document.getElementById('visitor-count').innerText = data.count;
+            } catch(e) { /* Tetap pada angka default */ }
         }
+        getCount();
 
-        // General Scripts
+        // Modals & Pass
         function showPwModal() { document.getElementById('pwModal').style.display = 'block'; }
         function hidePwModal() { document.getElementById('pwModal').style.display = 'none'; }
         function showWaModal() { document.getElementById('waModal').style.display = 'block'; }
         function hideWaModal() { document.getElementById('waModal').style.display = 'none'; }
-        function checkPassword() {
-            if (document.getElementById('adminPw').value === 'admin123') window.location.href = 'layanan.html'; 
-            else alert('PIN Salah!');
-        }
-
-        const music = document.getElementById('bg-music');
-        function toggleMusic() {
-            if (music.paused) {
-                music.play();
-                document.getElementById('music-icon').classList.replace('fa-play', 'fa-pause');
-                document.getElementById('music-status').innerText = "Musik: ON";
-            } else {
-                music.pause();
-                document.getElementById('music-icon').classList.replace('fa-pause', 'fa-play');
-                document.getElementById('music-status').innerText = "Musik: OFF";
-            }
-        }
-
-        window.onload = () => {
-            startMaintenanceSlider();
-            getVisitorCount();
-        };
+        function checkPassword() { if(document.getElementById('adminPw').value === 'admin123') window.location.href = 'layanan.html'; else alert('Salah!'); }
     </script>
 </body>
 </html>
