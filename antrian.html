@@ -25,10 +25,7 @@
             justify-content: center;
         }
 
-        .app-container {
-            width: 100%;
-            max-width: 500px;
-        }
+        .app-container { width: 100%; max-width: 500px; }
 
         .btn-back {
             display: inline-flex;
@@ -52,18 +49,8 @@
             z-index: 2;
         }
 
-        .header-box h1 {
-            margin: 0;
-            font-size: 1.6rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .header-box p {
-            margin: 8px 0 0;
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
+        .header-box h1 { margin: 0; font-size: 1.6rem; text-transform: uppercase; letter-spacing: 2px; }
+        .header-box p { margin: 8px 0 0; font-size: 0.9rem; opacity: 0.8; }
 
         .content-area {
             background: var(--glass);
@@ -123,11 +110,7 @@
         .status-proses { background-color: var(--proses); color: #2d3436; }
         .status-selesai { background-color: var(--selesai); }
 
-        .loading-state, .empty-state {
-            text-align: center;
-            padding: 50px 0;
-            color: var(--primary-color);
-        }
+        .loading-state, .empty-state { text-align: center; padding: 50px 0; color: var(--primary-color); }
     </style>
 </head>
 <body>
@@ -166,31 +149,26 @@
         const queueContainer = document.getElementById('queue-list');
         
         try {
-            // Ambil data dan urutkan berdasarkan tanggal terbaru
             const { data, error } = await _supabase
                 .from('view_antrian_service')
-                .select('*')
-                .order('tgl', { ascending: false });
+                .select('*');
 
             if (error) throw error;
 
-            // LOGIKA FILTER:
-            // 1. Status 'checking' & 'proses' -> Tampil Selamanya
-            // 2. Status 'selesai' -> Tampil jika belum lewat 3 hari
             const filteredData = data.filter(item => {
                 const statusStr = item.status ? item.status.toLowerCase() : '';
                 
+                // 1. Selalu tampilkan Checking dan Proses
                 if (statusStr === 'checking' || statusStr === 'proses') {
                     return true;
                 }
                 
+                // 2. Tampilkan Selesai jika created_at masih dalam 3 hari terakhir
                 if (statusStr === 'selesai') {
-                    const tglData = new Date(item.tgl);
-                    const tglSekarang = new Date();
+                    const tglDibuat = new Date(item.created_at);
+                    const sekarang = new Date();
                     
-                    // Hitung selisih hari
-                    const selisihMilidetik = tglSekarang - tglData;
-                    const selisihHari = selisihMilidetik / (1000 * 60 * 60 * 24);
+                    const selisihHari = (sekarang - tglDibuat) / (1000 * 60 * 60 * 24);
                     
                     return selisihHari <= 3; 
                 }
@@ -226,20 +204,12 @@
 
         } catch (err) {
             console.error("Error:", err);
-            queueContainer.innerHTML = `
-                <div class="empty-state" style="color:#d63031">
-                    <i class="fas fa-exclamation-triangle fa-2x"></i>
-                    <p>Gagal memuat data.<br><small>${err.message}</small></p>
-                </div>`;
+            queueContainer.innerHTML = `<div class="empty-state"><p>Gagal memuat data.</p></div>`;
         }
     }
 
-    // Jalankan saat load pertama
     fetchQueue();
-    
-    // Auto refresh setiap 30 detik
     setInterval(fetchQueue, 30000);
 </script>
-
 </body>
 </html>
