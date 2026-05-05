@@ -25,7 +25,10 @@
             justify-content: center;
         }
 
-        .app-container { width: 100%; max-width: 500px; }
+        .app-container {
+            width: 100%;
+            max-width: 500px;
+        }
 
         .btn-back {
             display: inline-flex;
@@ -49,8 +52,18 @@
             z-index: 2;
         }
 
-        .header-box h1 { margin: 0; font-size: 1.6rem; text-transform: uppercase; letter-spacing: 2px; }
-        .header-box p { margin: 8px 0 0; font-size: 0.9rem; opacity: 0.8; }
+        .header-box h1 {
+            margin: 0;
+            font-size: 1.6rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .header-box p {
+            margin: 8px 0 0;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
 
         .content-area {
             background: var(--glass);
@@ -110,7 +123,11 @@
         .status-proses { background-color: var(--proses); color: #2d3436; }
         .status-selesai { background-color: var(--selesai); }
 
-        .loading-state, .empty-state { text-align: center; padding: 50px 0; color: var(--primary-color); }
+        .loading-state, .empty-state {
+            text-align: center;
+            padding: 50px 0;
+            color: var(--primary-color);
+        }
     </style>
 </head>
 <body>
@@ -149,26 +166,34 @@
         const queueContainer = document.getElementById('queue-list');
         
         try {
+            // Ambil data dari VIEW yang sudah mendukung updated_at
             const { data, error } = await _supabase
                 .from('view_antrian_service')
                 .select('*');
 
             if (error) throw error;
 
+            // --- LOGIKA FILTER ---
             const filteredData = data.filter(item => {
                 const statusStr = item.status ? item.status.toLowerCase() : '';
                 
-                // 1. Selalu tampilkan Checking dan Proses
+                // 1. Status checking & proses selalu muncul
                 if (statusStr === 'checking' || statusStr === 'proses') {
                     return true;
                 }
                 
-                // 2. Tampilkan Selesai jika created_at masih dalam 3 hari terakhir
+                // 2. Status selesai muncul selama 3 hari sejak UPDATED_AT (Status berubah)
                 if (statusStr === 'selesai') {
-                    const tglDibuat = new Date(item.created_at);
+                    // Pakai updated_at jika ada (dari trigger), fallback ke created_at
+                    const waktuRef = item.updated_at || item.created_at;
+                    
+                    if (!waktuRef) return true; // Munculkan saja jika waktu tidak terbaca
+
+                    const tglUpdate = new Date(waktuRef);
                     const sekarang = new Date();
                     
-                    const selisihHari = (sekarang - tglDibuat) / (1000 * 60 * 60 * 24);
+                    // Hitung selisih hari
+                    const selisihHari = (sekarang - tglUpdate) / (1000 * 60 * 60 * 24);
                     
                     return selisihHari <= 3; 
                 }
@@ -176,6 +201,7 @@
                 return false; 
             });
 
+            // Tampilkan pesan jika kosong
             if (!filteredData || filteredData.length === 0) {
                 queueContainer.innerHTML = `
                     <div class="empty-state">
@@ -185,6 +211,7 @@
                 return;
             }
 
+            // Bersihkan container dan render ulang
             queueContainer.innerHTML = '';
             filteredData.forEach(item => {
                 const statusSlug = item.status.toLowerCase();
@@ -203,13 +230,21 @@
             });
 
         } catch (err) {
-            console.error("Error:", err);
-            queueContainer.innerHTML = `<div class="empty-state"><p>Gagal memuat data.</p></div>`;
+            console.error("Error Fetching Queue:", err);
+            queueContainer.innerHTML = `
+                <div class="empty-state" style="color:#d63031">
+                    <i class="fas fa-exclamation-triangle fa-2x"></i>
+                    <p>Gagal memuat data.<br><small>${err.message}</small></p>
+                </div>`;
         }
     }
 
+    // Jalankan pertama kali
     fetchQueue();
+    
+    // Auto refresh setiap 30 detik
     setInterval(fetchQueue, 30000);
 </script>
+
 </body>
 </html>
