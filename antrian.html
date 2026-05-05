@@ -115,6 +115,8 @@
             border-radius: 12px;
             color: white;
             text-transform: uppercase;
+            min-width: 80px;
+            text-align: center;
         }
 
         .status-checking { background-color: var(--checking); }
@@ -156,7 +158,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-    // Menggunakan Kredensial yang Anda berikan
     const SB_URL = "https://plwpgjwozugznrlwgtwc.supabase.co"; 
     const SB_KEY = "sb_publishable_IudfuYPNAbYypJ5_YQ-zng_SJ6tDNYP";
     const _supabase = supabase.createClient(SB_URL, SB_KEY);
@@ -165,14 +166,39 @@
         const queueContainer = document.getElementById('queue-list');
         
         try {
-            // Memanggil data dari VIEW sesuai instruksi sebelumnya
+            // Ambil data dan urutkan berdasarkan tanggal terbaru
             const { data, error } = await _supabase
                 .from('view_antrian_service')
-                .select('*');
+                .select('*')
+                .order('tgl', { ascending: false });
 
             if (error) throw error;
 
-            if (!data || data.length === 0) {
+            // LOGIKA FILTER:
+            // 1. Status 'checking' & 'proses' -> Tampil Selamanya
+            // 2. Status 'selesai' -> Tampil jika belum lewat 3 hari
+            const filteredData = data.filter(item => {
+                const statusStr = item.status ? item.status.toLowerCase() : '';
+                
+                if (statusStr === 'checking' || statusStr === 'proses') {
+                    return true;
+                }
+                
+                if (statusStr === 'selesai') {
+                    const tglData = new Date(item.tgl);
+                    const tglSekarang = new Date();
+                    
+                    // Hitung selisih hari
+                    const selisihMilidetik = tglSekarang - tglData;
+                    const selisihHari = selisihMilidetik / (1000 * 60 * 60 * 24);
+                    
+                    return selisihHari <= 3; 
+                }
+                
+                return false; 
+            });
+
+            if (!filteredData || filteredData.length === 0) {
                 queueContainer.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-clipboard-list fa-3x" style="opacity:0.2; margin-bottom:15px; display:block;"></i>
@@ -182,8 +208,7 @@
             }
 
             queueContainer.innerHTML = '';
-            data.forEach(item => {
-                // Konversi status ke lower case untuk class CSS (checking, proses, selesai)
+            filteredData.forEach(item => {
                 const statusSlug = item.status.toLowerCase();
                 const card = document.createElement('div');
                 card.className = 'queue-card';
@@ -204,13 +229,15 @@
             queueContainer.innerHTML = `
                 <div class="empty-state" style="color:#d63031">
                     <i class="fas fa-exclamation-triangle fa-2x"></i>
-                    <p>Gagal memuat data.<br><small>Pastikan SQL View sudah dibuat di Supabase.</small></p>
+                    <p>Gagal memuat data.<br><small>${err.message}</small></p>
                 </div>`;
         }
     }
 
+    // Jalankan saat load pertama
     fetchQueue();
-    // Auto refresh setiap 30 detik agar benar-benar real-time
+    
+    // Auto refresh setiap 30 detik
     setInterval(fetchQueue, 30000);
 </script>
 
