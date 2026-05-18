@@ -47,13 +47,13 @@
         <div class="grid">
             <div><label>Nama</label><input type="text" id="custName"></div>
             <div><label>Tanggal</label><input type="date" id="entryDate"></div>
-            <div><label>Tipe</label>
-                <select id="serviceType">
+            <div><label>Tipe Layanan</label>
+                <select id="serviceType" onchange="sesuaikanPlaceholder()">
                     <option value="Service">Service</option>
-                    <option value="Produk">Produk</option>
+                    <option value="Produk">Produk (Pembelian Barang)</option>
                 </select>
             </div>
-            <div><label>Unit</label><input type="text" id="devName"></div>
+            <div><label id="labelUnit">Unit</label><input type="text" id="devName"></div>
         </div>
         <input type="text" id="kelengkapan" placeholder="Kelengkapan...">
         <textarea id="keluhan" placeholder="Keluhan..."></textarea>
@@ -112,6 +112,24 @@
 
     document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
 
+    // Fungsi interaktif mengubah label form berdasarkan tipe yang dipilih
+    function sesuaikanPlaceholder() {
+        const tipe = document.getElementById('serviceType').value;
+        const labelUnit = document.getElementById('labelUnit');
+        const kelengkapan = document.getElementById('kelengkapan');
+        const keluhan = document.getElementById('keluhan');
+
+        if (tipe === 'Produk') {
+            labelUnit.innerText = "Produk / Barang";
+            kelengkapan.placeholder = "Spesifikasi Produk...";
+            keluhan.placeholder = "Keterangan Pemesanan / Catatan Tambahan (Bisa dikosongkan)...";
+        } else {
+            labelUnit.innerText = "Unit";
+            kelengkapan.placeholder = "Kelengkapan...";
+            keluhan.placeholder = "Keluhan...";
+        }
+    }
+
     async function fetchData() {
         const { data, error } = await sbClient.from('layanan').select('*').order('created_at', { ascending: false });
         if (!error) { 
@@ -124,7 +142,8 @@
         const body = document.getElementById('dbBody');
         body.innerHTML = '';
         data.forEach(d => {
-            const uploadHtml = d.status !== 'selesai' ? `
+            const isProduk = d.tipe === 'Produk';
+            const uploadHtml = (d.status !== 'selesai' && !isProduk) ? `
                 <div style="margin-top:8px; border-top:1px solid #eee; padding-top:5px;">
                     <label style="font-size:10px; font-weight:bold; color:#666;">FOTO PROGRES:</label>
                     <input type="file" accept="image/*" onchange="uploadFoto('${d.id}', this)" style="font-size:11px;">
@@ -133,9 +152,9 @@
 
             body.innerHTML += `
                 <tr>
-                    <td><strong>${d.nama}</strong><br><small>${d.barang}</small></td>
+                    <td><strong>${d.nama}</strong> <span style="font-size:10px; padding:2px 5px; border-radius:4px; background:${isProduk ? '#28a745':'#007bff'}; color:white;">${d.tipe || 'Service'}</span><br><small>${d.barang}</small></td>
                     <td>
-                        <input type="text" value="${d.tindakan || ''}" onchange="updateTindakan('${d.id}', this.value)" placeholder="Tindakan...">
+                        <input type="text" value="${d.tindakan || ''}" onchange="updateTindakan('${d.id}', this.value)" placeholder="${isProduk ? 'Catatan/Keterangan...' : 'Tindakan...'}">
                         ${uploadHtml}
                     </td>
                     <td>
@@ -173,14 +192,17 @@
             activeId = id;
             document.getElementById('custName').value = item.nama;
             document.getElementById('entryDate').value = item.tgl;
-            document.getElementById('serviceType').value = item.tipe;
+            document.getElementById('serviceType').value = item.tipe || 'Service';
             document.getElementById('devName').value = item.barang;
             document.getElementById('kelengkapan').value = item.kelengkapan || '';
             document.getElementById('keluhan').value = item.keluhan || '';
             
-            const btn = document.getElementById('btnSimpanUtama');
-            btn.innerHTML = "🆙 UPDATE DATA";
-            btn.className = "btn btn-yellow";
+            sesuaikanPlaceholder();
+
+            const btn = document.getElementById('btnSimaranUtama');
+            const btnUtama = document.getElementById('btnSimpanUtama');
+            btnUtama.innerHTML = "🆙 UPDATE DATA";
+            btnUtama.className = "btn btn-yellow";
             document.getElementById('formTitle').innerText = "✏️ Mode Edit: " + item.nama;
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -196,13 +218,14 @@
             keluhan: document.getElementById('keluhan').value
         };
 
-        if (!p.nama || !p.barang) return alert("Isi Nama & Unit!");
+        if (!p.nama || !p.barang) return alert("Isi Nama & Produk/Unit!");
 
         if (activeId) {
             const { error } = await sbClient.from('layanan').update(p).eq('id', activeId);
             if (!error) { alert("Updated!"); resetForm(); fetchData(); }
         } else {
-            p.status = 'checking'; p.tindakan = '-'; p.items = []; p.total = 0;
+            p.status = p.tipe === 'Produk' ? 'selesai' : 'checking'; // Jika produk otomatis set selesai atau bisa disesuaikan
+            p.tindakan = '-'; p.items = []; p.total = 0;
             const { data, error } = await sbClient.from('layanan').insert([p]).select();
             if (!error) { fetchData(); reprint(data[0].id); resetForm(); }
         }
@@ -213,6 +236,8 @@
         document.getElementById('devName').value = '';
         document.getElementById('kelengkapan').value = '';
         document.getElementById('keluhan').value = '';
+        document.getElementById('serviceType').value = 'Service';
+        sesuaikanPlaceholder();
         document.getElementById('formTitle').innerText = "1. Registrasi / Edit Pelanggan";
         const btn = document.getElementById('btnSimpanUtama');
         btn.innerHTML = "💾 SIMPAN DATA & PRINT";
@@ -241,7 +266,7 @@
     function addRow() {
         const div = document.createElement('div');
         div.className = 'grid'; div.style.gridTemplateColumns = '2fr 1fr';
-        div.innerHTML = `<input type="text" class="i-desc" placeholder="Item"><input type="number" class="i-price" placeholder="Harga">`;
+        div.innerHTML = `<input type="text" class="i-desc" placeholder="Item/Nama Barang"><input type="number" class="i-price" placeholder="Harga">`;
         document.getElementById('itemRows').appendChild(div);
     }
 
@@ -256,58 +281,73 @@
         closeModal(); fetchData(); reprint(activeId);
     }
 
- async function reprint(id) {
-    const { data } = await sbClient.from('layanan').select('*').eq('id', id).single();
-    
-    // Logika URL QR Code: Jika selesai arahkan ke web utama, jika belum arahkan ke tracking
-    let qrUrl;
-    let qrLabel;
-    
-    if (data.status === 'selesai') {
-        qrUrl = "https://final-edu-seven.vercel.app/";
-        qrLabel = "Scan QR code untuk mengunjungi WEB Arif_Edu_Tech";
-    } else {
-        qrUrl = window.location.origin + window.location.pathname + "?id=" + id;
-        qrLabel = "Scan kode QR atau kunjungi link di atas untuk cek progres service";
+    async function reprint(id) {
+        const { data } = await sbClient.from('layanan').select('*').eq('id', id).single();
+        
+        let qrUrl;
+        let qrLabel;
+        
+        if (data.status === 'selesai') {
+            qrUrl = "https://final-edu-seven.vercel.app/";
+            qrLabel = "Scan QR code untuk mengunjungi WEB Arif_Edu_Tech";
+        } else {
+            qrUrl = window.location.origin + window.location.pathname + "?id=" + id;
+            qrLabel = "Scan kode QR atau kunjungi link di atas untuk cek progres service";
+        }
+        
+        let h = "";
+
+        // PEMISAHAN LOGIKA NOTA: PRODUK VS SERVICE
+        if (data.tipe === "Produk") {
+            // --- STRUKTUR NOTA PEMBELIAN PRODUK ---
+            h += `<h3>NOTA PEMBELIAN BARANG</h3>
+                  <div style="text-align:left; font-size:12px;">
+                    <p>Tanggal: ${data.tgl}<br>
+                    Nama Pembeli: ${data.nama}<br>
+                    Produk Utama: ${data.barang}<br>
+                    Spesifikasi: ${data.kelengkapan || '-'}<br>
+                    ${data.keluhan ? `Keterangan: ${data.keluhan}` : ''}</p>
+                  </div>`;
+        } else {
+            // --- STRUKTUR NOTA SERVICE (BAWAAN SEBELUMNYA) ---
+            h += `<h3>${data.items && data.items.length > 0 ? 'NOTA LUNAS' : 'TANDA SERVICE'}</h3>
+                  <div style="text-align:left; font-size:12px;">
+                    <p>Tgl Masuk: ${data.tgl}<br>
+                    Nama Pelanggan: ${data.nama}<br>
+                    Unit: ${data.barang}<br>
+                    Kelengkapan: ${data.kelengkapan || '-'}<br>
+                    Keluhan: ${data.keluhan}</p>
+                  </div>`;
+        }
+
+        // Tampilkan daftar rincian harga jika rincian item sudah di-input lewat modal (📝)
+        if(data.items && data.items.length > 0) {
+            h += `<hr><table>`;
+            data.items.forEach(i => h += `<tr><td>${i.desc}</td><td style="text-align:right;">Rp ${parseInt(i.price).toLocaleString()}</td></tr>`);
+            h += `</table><h4>TOTAL AKHIR: Rp ${parseInt(data.total).toLocaleString()}</h4>`;
+        }
+        
+        document.getElementById('notaKonten').innerHTML = h;
+        
+        // Pembuatan QR Code
+        document.getElementById('qrPrint').innerHTML = "";
+        new QRCode(document.getElementById("qrPrint"), { 
+            text: qrUrl, 
+            width: 110, 
+            height: 110  
+        });
+
+        document.getElementById('qrInfoContainer').innerHTML = `
+            <div style="margin-top: 10px; font-size: 10px; text-align:center;">
+                <span style="word-break: break-all; font-weight: bold; color: #007bff;">${qrUrl}</span>
+                <p style="margin-top: 8px; font-weight: bold; border-top: 1px dashed #ccc; padding-top: 5px;">
+                    ${qrLabel}
+                </p>
+            </div>`;
+
+        setTimeout(() => { window.print(); }, 500);
     }
-    
-    // 1. Bagian isi Nota
-    let h = `<h3>${data.items && data.items.length > 0 ? 'NOTA LUNAS' : 'TANDA SERVICE'}</h3>
-             <div style="text-align:left; font-size:12px;">
-                <p>Tgl Masuk: ${data.tgl}<br>
-                Nama: ${data.nama}<br>
-                Unit: ${data.barang}<br>
-                Kelengkapan: ${data.kelengkapan || '-'}<br>
-                Keluhan: ${data.keluhan}</p>
-             </div>`;
 
-    if(data.items && data.items.length > 0) {
-        h += `<hr><table>`;
-        data.items.forEach(i => h += `<tr><td>${i.desc}</td><td style="text-align:right;">Rp ${parseInt(i.price).toLocaleString()}</td></tr>`);
-        h += `</table><h4>TOTAL: Rp ${parseInt(data.total).toLocaleString()}</h4>`;
-    }
-    
-    document.getElementById('notaKonten').innerHTML = h;
-    
-    // 2. Bagian Barcode (Menggunakan qrUrl yang sudah ditentukan di atas)
-    document.getElementById('qrPrint').innerHTML = "";
-    new QRCode(document.getElementById("qrPrint"), { 
-        text: qrUrl, 
-        width: 110, 
-        height: 110 
-    });
-
-   // 3. Bagian Link & Tulisan Instruksi di paling bawah
-    document.getElementById('qrInfoContainer').innerHTML = `
-        <div style="margin-top: 10px; font-size: 10px; text-align:center;">
-            <span style="word-break: break-all; font-weight: bold; color: #007bff;">${qrUrl}</span>
-            <p style="margin-top: 8px; font-weight: bold; border-top: 1px dashed #ccc; padding-top: 5px;">
-                ${qrLabel}
-            </p>
-        </div>`;
-
-    setTimeout(() => { window.print(); }, 500);
-}
     async function hapusData(id) { if(confirm("Hapus?")) { await sbClient.from('layanan').delete().eq('id', id); fetchData(); } }
     function closeModal() { document.getElementById('modalNota').style.display = 'none'; }
 
@@ -317,20 +357,21 @@
             document.getElementById('mainContent').style.display = 'none';
             const { data } = await sbClient.from('layanan').select('*').eq('id', p.get('id')).single();
             if(data) {
+                const isProduk = data.tipe === 'Produk';
                 document.body.innerHTML = `
                 <div style="text-align:center; padding:30px; font-family: sans-serif;">
                     <h1 style="color:#007bff;">ARIF EDU TECH</h1>
                     <h2 style="color:${getStatusColor(data.status)}; text-transform: uppercase;">${data.status}</h2>
                     <div style="text-align:left; max-width:400px; margin:auto; border:1px solid #ddd; padding:20px; border-radius:10px; background:white;">
                         <p><strong>Nama:</strong> ${data.nama}</p>
-                        <p><strong>Unit:</strong> ${data.barang}</p>
-                        <p><strong>Keluhan:</strong> ${data.keluhan}</p>
-                        <p><strong>Progres:</strong> ${data.tindakan || '-'}</p>
+                        <p><strong>${isProduk ? 'Barang' : 'Unit'}:</strong> ${data.barang}</p>
+                        <p><strong>${isProduk ? 'Spesifikasi' : 'Keluhan'}:</strong> ${data.kelengkapan || '-'}</p>
+                        <p><strong>${isProduk ? 'Keterangan' : 'Progres'}:</strong> ${isProduk ? (data.keluhan || '-') : (data.tindakan || '-')}</p>
                         ${data.dokumentasi_proses ? `<img src="${data.dokumentasi_proses}" style="max-width:100%; border-radius:10px; margin-top:10px;">` : ''}
                     </div>
                 </div>`;
             }
-        } else { fetchData(); }
+        } else { fetchData(); sesuaikanPlaceholder(); }
     }
 </script>
 </body>
