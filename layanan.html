@@ -88,7 +88,7 @@
         <button class="btn btn-yellow" onclick="addRow()">+ Item</button>
         <hr>
         <div style="display:flex; gap:10px;">
-            <button class="btn btn-green" style="flex:1;" onclick="finalizeNota()">CETAK NOTA LUNAS</button>
+            <button class="btn btn-green" style="flex:1;" onclick="finalizeNota()">CETAK NOTA</button>
             <button class="btn btn-red" onclick="closeModal()">BATAL</button>
         </div>
     </div>
@@ -309,7 +309,7 @@
                     Kelengkapan / Keterangan: ${data.keluhan || '-'}</p>
                   </div>`;
         } else {
-            h += `<h3>${data.items && data.items.length > 0 ? 'NOTA LUNAS' : 'TANDA SERVICE'}</h3>
+            h += `<h3>${data.items && data.items.length > 0 ? 'NOTA' : 'TANDA SERVICE'}</h3>
                   <div style="text-align:left; font-size:12px;">
                     <p>Tgl Masuk: ${data.tgl}<br>
                     Nama Pelanggan: ${data.nama}<br>
