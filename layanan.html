@@ -55,8 +55,10 @@
             </div>
             <div><label id="labelUnit">Unit</label><input type="text" id="devName"></div>
         </div>
+        
         <input type="text" id="kelengkapan" placeholder="Kelengkapan...">
         <textarea id="keluhan" placeholder="Keluhan..."></textarea>
+        
         <button id="btnSimpanUtama" class="btn btn-blue" onclick="saveToCloud()">💾 SIMPAN DATA & PRINT</button>
     </div>
 
@@ -112,7 +114,7 @@
 
     document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
 
-    // Fungsi interaktif mengubah label form berdasarkan tipe yang dipilih
+    // Mengubah tampilan petunjuk form secara rapi saat tipe layanan diganti
     function sesuaikanPlaceholder() {
         const tipe = document.getElementById('serviceType').value;
         const labelUnit = document.getElementById('labelUnit');
@@ -121,8 +123,8 @@
 
         if (tipe === 'Produk') {
             labelUnit.innerText = "Produk / Barang";
-            kelengkapan.placeholder = "Spesifikasi Produk...";
-            keluhan.placeholder = "Keterangan Pemesanan / Catatan Tambahan (Bisa dikosongkan)...";
+            kelengkapan.placeholder = "Spesifikasi Produk (Contoh: Core i5, Ram 8GB, SSD 256GB)...";
+            keluhan.placeholder = "Kelengkapan Produk / Keterangan Pemesanan (Contoh: Dusbox, Charger, Indent)...";
         } else {
             labelUnit.innerText = "Unit";
             kelengkapan.placeholder = "Kelengkapan...";
@@ -199,7 +201,6 @@
             
             sesuaikanPlaceholder();
 
-            const btn = document.getElementById('btnSimaranUtama');
             const btnUtama = document.getElementById('btnSimpanUtama');
             btnUtama.innerHTML = "🆙 UPDATE DATA";
             btnUtama.className = "btn btn-yellow";
@@ -224,7 +225,7 @@
             const { error } = await sbClient.from('layanan').update(p).eq('id', activeId);
             if (!error) { alert("Updated!"); resetForm(); fetchData(); }
         } else {
-            p.status = p.tipe === 'Produk' ? 'selesai' : 'checking'; // Jika produk otomatis set selesai atau bisa disesuaikan
+            p.status = p.tipe === 'Produk' ? 'selesai' : 'checking';
             p.tindakan = '-'; p.items = []; p.total = 0;
             const { data, error } = await sbClient.from('layanan').insert([p]).select();
             if (!error) { fetchData(); reprint(data[0].id); resetForm(); }
@@ -297,30 +298,27 @@
         
         let h = "";
 
-        // PEMISAHAN LOGIKA NOTA: PRODUK VS SERVICE
+        // PERBAIKAN STRUKTUR TEKS PRINT NOTA PEMBELIAN BARANG VS SERVICE
         if (data.tipe === "Produk") {
-            // --- STRUKTUR NOTA PEMBELIAN PRODUK ---
             h += `<h3>NOTA PEMBELIAN BARANG</h3>
                   <div style="text-align:left; font-size:12px;">
                     <p>Tanggal: ${data.tgl}<br>
                     Nama Pembeli: ${data.nama}<br>
                     Produk Utama: ${data.barang}<br>
                     Spesifikasi: ${data.kelengkapan || '-'}<br>
-                    ${data.keluhan ? `Keterangan: ${data.keluhan}` : ''}</p>
+                    Kelengkapan / Keterangan: ${data.keluhan || '-'}</p>
                   </div>`;
         } else {
-            // --- STRUKTUR NOTA SERVICE (BAWAAN SEBELUMNYA) ---
             h += `<h3>${data.items && data.items.length > 0 ? 'NOTA LUNAS' : 'TANDA SERVICE'}</h3>
                   <div style="text-align:left; font-size:12px;">
                     <p>Tgl Masuk: ${data.tgl}<br>
                     Nama Pelanggan: ${data.nama}<br>
                     Unit: ${data.barang}<br>
                     Kelengkapan: ${data.kelengkapan || '-'}<br>
-                    Keluhan: ${data.keluhan}</p>
+                    Keluhan: ${data.keluhan || '-'}</p>
                   </div>`;
         }
 
-        // Tampilkan daftar rincian harga jika rincian item sudah di-input lewat modal (📝)
         if(data.items && data.items.length > 0) {
             h += `<hr><table>`;
             data.items.forEach(i => h += `<tr><td>${i.desc}</td><td style="text-align:right;">Rp ${parseInt(i.price).toLocaleString()}</td></tr>`);
@@ -329,7 +327,6 @@
         
         document.getElementById('notaKonten').innerHTML = h;
         
-        // Pembuatan QR Code
         document.getElementById('qrPrint').innerHTML = "";
         new QRCode(document.getElementById("qrPrint"), { 
             text: qrUrl, 
@@ -366,7 +363,7 @@
                         <p><strong>Nama:</strong> ${data.nama}</p>
                         <p><strong>${isProduk ? 'Barang' : 'Unit'}:</strong> ${data.barang}</p>
                         <p><strong>${isProduk ? 'Spesifikasi' : 'Keluhan'}:</strong> ${data.kelengkapan || '-'}</p>
-                        <p><strong>${isProduk ? 'Keterangan' : 'Progres'}:</strong> ${isProduk ? (data.keluhan || '-') : (data.tindakan || '-')}</p>
+                        <p><strong>${isProduk ? 'Kelengkapan / Keterangan' : 'Progres'}:</strong> ${isProduk ? (data.keluhan || '-') : (data.tindakan || '-')}</p>
                         ${data.dokumentasi_proses ? `<img src="${data.dokumentasi_proses}" style="max-width:100%; border-radius:10px; margin-top:10px;">` : ''}
                     </div>
                 </div>`;
