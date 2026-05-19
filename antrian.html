@@ -129,7 +129,6 @@
             color: var(--primary-color);
         }
 
-        /* STYLE BARU BADGE JENIS (SERVICE / PRODUK) */
         .jenis-container {
             display: flex;
             align-items: center;
@@ -184,42 +183,38 @@
         const queueContainer = document.getElementById('queue-list');
         
         try {
-            // Ambil data dari VIEW yang sudah mendukung updated_at
             const { data, error } = await _supabase
                 .from('view_antrian_service')
                 .select('*');
 
             if (error) throw error;
 
-            // --- LOGIKA FILTER ---
+            // --- PERBAIKAN LOGIKA FILTER ---
             const filteredData = data.filter(item => {
                 const statusStr = item.status ? item.status.toLowerCase() : '';
                 
-                // 1. Status checking & proses selalu muncul
                 if (statusStr === 'checking' || statusStr === 'proses') {
                     return true;
                 }
                 
-                // 2. Status selesai muncul selama 3 hari sejak UPDATED_AT (Status berubah)
                 if (statusStr === 'selesai') {
-                    // Pakai updated_at jika ada (dari trigger), fallback ke created_at
-                    const waktuRef = item.updated_at || item.created_at;
+                    // Gunakan created_at jika updated_at kosong (untuk data Produk yang baru diinput)
+                    const waktuRef = item.created_at || item.updated_at;
                     
-                    if (!waktuRef) return true; // Munculkan saja jika waktu tidak terbaca
+                    if (!waktuRef) return true; 
 
                     const tglUpdate = new Date(waktuRef);
                     const sekarang = new Date();
                     
-                    // Hitung selisih hari
                     const selisihHari = (sekarang - tglUpdate) / (1000 * 60 * 60 * 24);
                     
+                    // Munculkan jika umurnya di bawah atau sama dengan 3 hari
                     return selisihHari <= 3; 
                 }
                 
                 return false; 
             });
 
-            // Tampilkan pesan jika kosong
             if (!filteredData || filteredData.length === 0) {
                 queueContainer.innerHTML = `
                     <div class="empty-state">
@@ -229,12 +224,11 @@
                 return;
             }
 
-            // Bersihkan container dan render ulang
             queueContainer.innerHTML = '';
             filteredData.forEach(item => {
                 const statusSlug = item.status.toLowerCase();
                 
-                // --- STRATEGI PENGECEKAN HYBRID GANDA ---
+                // --- DETEKSI JENIS PRODUK / SERVICE ---
                 const tipeDirect = item.tipe ? item.tipe.toLowerCase() : '';
                 const namaBarang = item.barang ? item.barang.toLowerCase() : '';
                 const kelengkapanTeks = item.kelengkapan ? item.kelengkapan.toLowerCase() : '';
@@ -242,19 +236,15 @@
                 
                 let isProduk = false;
 
-                // 1. Cek langsung dari kolom tipe
                 if (tipeDirect === 'produk') {
                     isProduk = true;
-                } 
-                // 2. Antisipasi jika VIEW tidak memuat kolom 'tipe', cek indikator kata kunci produk
-                else if (
+                } else if (
                     namaBarang.includes('yoga') || 
                     namaBarang.includes('thinkpad') ||
                     kelengkapanTeks.includes('ram') || 
                     kelengkapanTeks.includes('ssd') || 
                     kelengkapanTeks.includes('core') ||
-                    keluhanTeks.includes('dusbox') ||
-                    keluhanTeks.includes('indent')
+                    keluhanTeks.includes('dusbox')
                 ) {
                     isProduk = true;
                 }
@@ -290,10 +280,7 @@
         }
     }
 
-    // Jalankan pertama kali
     fetchQueue();
-    
-    // Auto refresh setiap 30 detik
     setInterval(fetchQueue, 30000);
 </script>
 
