@@ -1,3 +1,8 @@
+Siap, Boss! Nama pelanggan (client) sudah saya hapus dari tampilan kartu antrian. Sekarang yang tampil hanya Badge Jenis (Service/Produk), Nama Unit/Barang, dan Tanggal Masuk, sehingga tampilan menjadi lebih ringkas dan privasi pelanggan lebih terjaga.
+
+Berikut adalah kode lengkap file antrian.html terbaru yang sudah disesuaikan. Langsung copy-paste saja:
+
+HTML
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -95,9 +100,9 @@
         .info .device-name {
             display: block;
             font-weight: 800;
-            font-size: 1.05rem;
+            font-size: 1.1rem;
             color: #2d3436;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
 
         .info .entry-date {
@@ -133,7 +138,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
         .jenis-badge {
             font-size: 0.65rem;
@@ -183,7 +188,6 @@
         const queueContainer = document.getElementById('queue-list');
         
         try {
-            // SOLUSI: Mengambil data langsung dari tabel 'layanan' dan diurutkan berdasarkan data terbaru
             const { data, error } = await _supabase
                 .from('layanan')
                 .select('*')
@@ -195,12 +199,10 @@
             const filteredData = data.filter(item => {
                 const statusStr = item.status ? item.status.toLowerCase() : '';
                 
-                // Munculkan status checking dan proses
                 if (statusStr === 'checking' || statusStr === 'proses') {
                     return true;
                 }
                 
-                // Munculkan status selesai maksimal berumur 3 hari dari tanggal dibuatnya
                 if (statusStr === 'selesai') {
                     const waktuRef = item.created_at;
                     if (!waktuRef) return true; 
@@ -228,7 +230,7 @@
             filteredData.forEach(item => {
                 const statusSlug = item.status ? item.status.toLowerCase() : 'checking';
                 
-                // --- SINKRONISASI 100% DENGAN TABEL UTAMA ---
+                // --- KATEGORI JALUR LAYANAN UTAMA ---
                 const isProduk = item.tipe === 'Produk';
                 const badgeClass = isProduk ? 'bg-produk' : 'bg-service';
                 const jenisLabel = isProduk ? 'Produk' : 'Service';
@@ -238,10 +240,9 @@
                 card.innerHTML = `
                     <div class="info">
                         <div class="jenis-container">
-                            <span class="device-name">${item.nama || ''}</span>
                             <span class="jenis-badge ${badgeClass}">${jenisLabel}</span>
                         </div>
-                        <span class="device-name" style="font-weight: 500; font-size: 0.95rem; color: #636e72;">${item.barang || ''}</span>
+                        <span class="device-name">${item.barang || ''}</span>
                         <span class="entry-date"><i class="far fa-calendar-check"></i> ${item.tgl || ''}</span>
                     </div>
                     <div class="status-badge status-${statusSlug}">
@@ -261,10 +262,7 @@
         }
     }
 
-    // Jalankan fungsi saat web dibuka
     fetchQueue();
-    
-    // Auto refresh data secara real-time setiap 30 detik
     setInterval(fetchQueue, 30000);
 </script>
 
