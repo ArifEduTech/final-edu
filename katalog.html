@@ -124,6 +124,22 @@
             }
             grid.innerHTML = '';
             items.forEach(p => {
+                const desc = p.deskripsi || '';
+                // Deteksi jika deskripsi panjang (lebih dari 60 karakter) untuk memunculkan opsi baca selengkapnya
+                const isLongText = desc.length > 60;
+                
+                let deskripsiHTML = `<p class="text-gray-500 text-xs mb-4">${desc}</p>`;
+                
+                if (isLongText) {
+                    deskripsiHTML = `
+                        <div class="text-gray-500 text-xs mb-4">
+                            <span class="short-text">${desc.substring(0, 60)}...</span>
+                            <span class="full-text hidden">${desc}</span>
+                            <button onclick="toggleDescription(this)" class="text-blue-500 font-bold ml-1 hover:underline focus:outline-none">Lihat lebih banyak</button>
+                        </div>
+                    `;
+                }
+
                 grid.innerHTML += `
                     <div class="bg-white rounded-2xl overflow-hidden border border-gray-100 product-card flex flex-col">
                         <div class="relative">
@@ -132,11 +148,13 @@
                                 ${p.layanan.toUpperCase()}
                             </div>
                         </div>
-                        <div class="p-4 flex-grow">
-                            <p class="text-[10px] text-blue-500 font-bold uppercase">${p.kategori}</p>
-                            <h3 class="font-bold text-gray-800 text-lg mb-1">${p.nama}</h3>
-                            <p class="text-gray-500 text-xs line-clamp-2 mb-4">${p.deskripsi || ''}</p>
-                            <div class="flex items-center justify-between">
+                        <div class="p-4 flex-grow flex flex-col justify-between">
+                            <div>
+                                <p class="text-[10px] text-blue-500 font-bold uppercase">${p.kategori}</p>
+                                <h3 class="font-bold text-gray-800 text-lg mb-1">${p.nama}</h3>
+                                ${deskripsiHTML}
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
                                 <span class="text-lg font-black text-gray-900">Rp ${parseInt(p.harga).toLocaleString()}</span>
                                 ${isAdmin ? `<button onclick="deleteProduct('${p.id}')" class="text-red-400 p-2"><i class="fas fa-trash-alt"></i></button>` : ''}
                             </div>
@@ -147,6 +165,23 @@
                     </div>
                 `;
             });
+        }
+
+        // --- FUNGSI INTERAKTIF LIHAT LEBIH BANYAK ---
+        function toggleDescription(btn) {
+            const container = btn.parentElement;
+            const shortText = container.querySelector('.short-text');
+            const fullText = container.querySelector('.full-text');
+            
+            if (fullText.classList.contains('hidden')) {
+                fullText.classList.remove('hidden');
+                shortText.classList.add('hidden');
+                btn.innerText = 'Sembunyikan';
+            } else {
+                fullText.classList.add('hidden');
+                shortText.classList.remove('hidden');
+                btn.innerText = 'Lihat lebih banyak';
+            }
         }
 
         // --- SIMPAN DENGAN KOMPRESI ---
@@ -196,7 +231,6 @@
 
         // --- FILTER ---
         function filterBy(kat) {
-            // Update UI tombol
             document.querySelectorAll('.category-btn').forEach(btn => {
                 btn.classList.remove('active');
                 if(btn.innerText === kat || (kat === 'Semua' && btn.innerText === 'Semua')) btn.classList.add('active');
