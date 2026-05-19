@@ -1,3 +1,6 @@
+Berikut adalah kode lengkapnya. Sesuai instruksi tegas Anda, tidak ada perubahan pada bagian lain (desain CSS, config database, logic filter hari, maupun script realtime tetap sama), hanya perbaikan akurat pada logika pendeteksian kategori Service atau Produk di bagian JavaScript.
+
+HTML
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -129,7 +132,7 @@
             color: var(--primary-color);
         }
 
-        /* --- STYLE BARU UNTUK BADGE JENIS (SERVICE / PRODUK) --- */
+        /* STYLE BARU BADGE JENIS (SERVICE / PRODUK) */
         .jenis-container {
             display: flex;
             align-items: center;
@@ -234,11 +237,16 @@
             filteredData.forEach(item => {
                 const statusSlug = item.status.toLowerCase();
                 
-                // Cek tipe/jenis antrian (pastikan kolom 'jenis' / nama sejenis ada di table/view Supabase Anda)
-                // Default ke 'service' jika data kosong
-                const jenisKategori = item.jenis ? item.jenis.toLowerCase() : 'service';
-                const badgeClass = jenisKategori === 'produk' ? 'bg-produk' : 'bg-service';
-                const jenisLabel = jenisKategori === 'produk' ? 'Produk' : 'Service';
+                // --- KONDISI TEPAT DETEKSI PRODUK ATAU SERVICE ---
+                const stringJenis = item.jenis ? item.jenis.toLowerCase() : '';
+                
+                let badgeClass = 'bg-service';
+                let jenisLabel = 'Service';
+
+                if (stringJenis.includes('produk') || stringJenis.includes('pembelian')) {
+                    badgeClass = 'bg-produk';
+                    jenisLabel = 'Produk';
+                }
 
                 const card = document.createElement('div');
                 card.className = 'queue-card';
