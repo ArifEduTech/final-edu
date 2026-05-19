@@ -183,32 +183,32 @@
         const queueContainer = document.getElementById('queue-list');
         
         try {
+            // SOLUSI: Mengambil data langsung dari tabel 'layanan' dan diurutkan berdasarkan data terbaru
             const { data, error } = await _supabase
-                .from('view_antrian_service')
-                .select('*');
+                .from('layanan')
+                .select('*')
+                .order('created_at', { ascending: false });
 
             if (error) throw error;
 
-            // --- PERBAIKAN LOGIKA FILTER ---
+            // --- LOGIKA FILTER STATUS ---
             const filteredData = data.filter(item => {
                 const statusStr = item.status ? item.status.toLowerCase() : '';
                 
+                // Munculkan status checking dan proses
                 if (statusStr === 'checking' || statusStr === 'proses') {
                     return true;
                 }
                 
+                // Munculkan status selesai maksimal berumur 3 hari dari tanggal dibuatnya
                 if (statusStr === 'selesai') {
-                    // Gunakan created_at jika updated_at kosong (untuk data Produk yang baru diinput)
-                    const waktuRef = item.created_at || item.updated_at;
-                    
+                    const waktuRef = item.created_at;
                     if (!waktuRef) return true; 
 
                     const tglUpdate = new Date(waktuRef);
                     const sekarang = new Date();
-                    
                     const selisihHari = (sekarang - tglUpdate) / (1000 * 60 * 60 * 24);
                     
-                    // Munculkan jika umurnya di bawah atau sama dengan 3 hari
                     return selisihHari <= 3; 
                 }
                 
@@ -226,29 +226,10 @@
 
             queueContainer.innerHTML = '';
             filteredData.forEach(item => {
-                const statusSlug = item.status.toLowerCase();
+                const statusSlug = item.status ? item.status.toLowerCase() : 'checking';
                 
-                // --- DETEKSI JENIS PRODUK / SERVICE ---
-                const tipeDirect = item.tipe ? item.tipe.toLowerCase() : '';
-                const namaBarang = item.barang ? item.barang.toLowerCase() : '';
-                const kelengkapanTeks = item.kelengkapan ? item.kelengkapan.toLowerCase() : '';
-                const keluhanTeks = item.keluhan ? item.keluhan.toLowerCase() : '';
-                
-                let isProduk = false;
-
-                if (tipeDirect === 'produk') {
-                    isProduk = true;
-                } else if (
-                    namaBarang.includes('yoga') || 
-                    namaBarang.includes('thinkpad') ||
-                    kelengkapanTeks.includes('ram') || 
-                    kelengkapanTeks.includes('ssd') || 
-                    kelengkapanTeks.includes('core') ||
-                    keluhanTeks.includes('dusbox')
-                ) {
-                    isProduk = true;
-                }
-
+                // --- SINKRONISASI 100% DENGAN TABEL UTAMA ---
+                const isProduk = item.tipe === 'Produk';
                 const badgeClass = isProduk ? 'bg-produk' : 'bg-service';
                 const jenisLabel = isProduk ? 'Produk' : 'Service';
 
@@ -260,11 +241,11 @@
                             <span class="device-name">${item.nama || ''}</span>
                             <span class="jenis-badge ${badgeClass}">${jenisLabel}</span>
                         </div>
-                        <span class="device-name" style="font-weight: 500; font-size: 0.95rem; color: #636e72;">${item.barang}</span>
-                        <span class="entry-date"><i class="far fa-calendar-check"></i> ${item.tgl}</span>
+                        <span class="device-name" style="font-weight: 500; font-size: 0.95rem; color: #636e72;">${item.barang || ''}</span>
+                        <span class="entry-date"><i class="far fa-calendar-check"></i> ${item.tgl || ''}</span>
                     </div>
                     <div class="status-badge status-${statusSlug}">
-                        ${item.status}
+                        ${item.status || 'checking'}
                     </div>
                 `;
                 queueContainer.appendChild(card);
@@ -280,7 +261,10 @@
         }
     }
 
+    // Jalankan fungsi saat web dibuka
     fetchQueue();
+    
+    // Auto refresh data secara real-time setiap 30 detik
     setInterval(fetchQueue, 30000);
 </script>
 
