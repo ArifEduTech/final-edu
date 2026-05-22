@@ -288,17 +288,14 @@
         let qrUrl;
         let qrLabel;
         
-        if (data.tipe === 'Produk') {
-            qrUrl = window.location.origin + window.location.pathname + "?id=" + id;
-            qrLabel = "Scan QR code untuk melihat Nota Digital Pembelian Barang";
+        // JIKA LAYANAN ADALAH PRODUK ATAU STATUSNYA SELESAI, MAKA ARAHKAN KE WEB UTAMA VERCEL
+        if (data.tipe === 'Produk' || data.status === 'selesai') {
+            qrUrl = "https://final-edu-seven.vercel.app/";
+            qrLabel = "Scan QR code untuk mengunjungi WEB Arif_Edu_Tech";
         } else {
-            if (data.status === 'selesai') {
-                qrUrl = "https://final-edu-seven.vercel.app/";
-                qrLabel = "Scan QR code untuk mengunjungi WEB Arif_Edu_Tech";
-            } else {
-                qrUrl = window.location.origin + window.location.pathname + "?id=" + id;
-                qrLabel = "Scan kode QR atau kunjungi link di atas untuk cek progres service";
-            }
+            // JIKA LAYANAN SERVICE YANG BELUM SELESAI, TAMPILKAN LINK TRACKING PROGRES
+            qrUrl = window.location.origin + window.location.pathname + "?id=" + id;
+            qrLabel = "Scan kode QR atau kunjungi link di atas untuk cek progres service";
         }
         
         let h = "";
