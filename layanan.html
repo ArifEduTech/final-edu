@@ -288,12 +288,12 @@
         let qrUrl;
         let qrLabel;
         
-        // JIKA LAYANAN ADALAH PRODUK ATAU STATUSNYA SELESAI, MAKA ARAHKAN KE WEB UTAMA VERCEL
+        // JIKA LAYANAN ADALAH PRODUK ATAU SERVICE YANG SUDAH SELESAI, BARCODE KE LINK BERANDA WEB UTAMA VERCEL
         if (data.tipe === 'Produk' || data.status === 'selesai') {
             qrUrl = "https://final-edu-seven.vercel.app/";
             qrLabel = "Scan QR code untuk mengunjungi WEB Arif_Edu_Tech";
         } else {
-            // JIKA LAYANAN SERVICE YANG BELUM SELESAI, TAMPILKAN LINK TRACKING PROGRES
+            // JIKA SERVICE BELUM SELESAI, BARCODE BARU BERUPA LINK TRACKING PROGRES
             qrUrl = window.location.origin + window.location.pathname + "?id=" + id;
             qrLabel = "Scan kode QR atau kunjungi link di atas untuk cek progres service";
         }
