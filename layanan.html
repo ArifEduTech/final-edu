@@ -29,14 +29,16 @@
         .modal { display:none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:100; overflow-y: auto; }
         .modal-content { background:white; max-width:950px; margin: 30px auto; padding:25px; border-radius:12px; }
         
-        /* Layout Print & KOP Surat */
+        /* Layout Print & KOP Surat dengan Logo */
         @media print { .no-print { display: none !important; } #printArea { display: block !important; } }
         #printArea { display: none; padding: 20px; font-family: 'Segoe UI', Tahoma, Arial, sans-serif; }
         
-        .kop-surat { text-align: center; border-bottom: 3px double #000; padding-bottom: 10px; margin-bottom: 20px; position: relative; }
-        .kop-surat h2 { margin: 0; font-size: 20px; font-weight: bold; letter-spacing: 1px; }
-        .kop-surat h4 { margin: 2px 0; font-size: 12px; font-weight: bold; letter-spacing: 0.5px; }
-        .kop-surat p { margin: 2px 0; font-size: 11px; }
+        .kop-container { display: flex; align-items: center; justify-content: center; border-bottom: 3px double #000; padding-bottom: 10px; margin-bottom: 20px; position: relative; }
+        .kop-logo { width: 100px; height: auto; position: absolute; left: 10px; top: 0; }
+        .kop-text { text-align: center; width: 100%; padding: 0 110px; }
+        .kop-text h2 { margin: 0; font-size: 20px; font-weight: bold; letter-spacing: 1px; }
+        .kop-text h4 { margin: 2px 0; font-size: 12px; font-weight: bold; letter-spacing: 0.5px; }
+        .kop-text p { margin: 2px 0; font-size: 11px; }
         
         .rab-section { margin-bottom: 20px; }
         .rab-header-info { display: flex; justify-content: space-between; font-weight: bold; font-size: 12px; background: #eee; padding: 5px 10px; border: 1px solid #ccc; margin-bottom: 5px; }
@@ -45,10 +47,13 @@
         .rab-table th { text-align: center; background-color: #f9f9f9; }
         .rab-total-row { font-weight: bold; background: #f2f2f2; }
         
-        /* Layout Grid Input RAB Baru */
+        /* Layout Grid Input RAB */
         .grid-rab-input { display: grid; grid-template-columns: 40px 2.5fr 1fr 1.5fr 1.5fr 1.5fr; gap: 6px; margin-bottom: 6px; align-items: center; }
         .grid-rab-input input { margin-bottom: 0; }
         .r-no { text-align: center; font-weight: bold; background: #e9ecef; border: 1px solid #ccc; padding: 10px 0; border-radius: 6px; font-size: 13px; }
+        
+        .subtotal-box { text-align: right; font-weight: bold; font-size: 13px; padding: 8px 12px; background: #e8f4f8; border-radius: 6px; margin-top: 8px; border: 1px solid #bee5eb; color: #0c5460; }
+        .grandtotal-box { background: #d4edda; border: 1px solid #c3e6cb; border-radius: 8px; padding: 15px; margin-top: 15px; color: #155724; }
     </style>
 </head>
 <body>
@@ -124,6 +129,18 @@
         <h2>📋 Input RAB / Nota Khusus Projek</h2>
         <div id="rabTahapContainer"></div>
         <button class="btn btn-yellow" onclick="addRabTahap()">+ Tambah Tahap / Bagian</button>
+        
+        <!-- BOX KALKULASI REKAPITULASI REALTIME -->
+        <div class="grandtotal-box">
+            <h4 style="margin:0 0 10px 0;">📊 Rekapitulasi & Grand Total Biaya</h4>
+            <div id="rabRekapSummary" style="font-size:13px;"></div>
+            <hr style="border: 0.5px solid #c3e6cb; margin: 10px 0;">
+            <div style="display:flex; justify-content:space-between; font-size:16px; font-weight:bold;">
+                <span>GRAND TOTAL KESELURUHAN:</span>
+                <span id="rabGrandTotalDisplay" style="color:#28a745;">Rp 0</span>
+            </div>
+        </div>
+
         <hr>
         <div style="display:flex; gap:10px;">
             <button class="btn btn-purple" style="flex:1;" onclick="finalizeRAB()">💾 SIMPAN & CETAK RAB</button>
@@ -134,11 +151,15 @@
 
 <!-- AREA CETAK / PRINT -->
 <div id="printArea">
-    <div class="kop-surat">
-        <h2>ARIF EDU TECH</h2>
-        <h4>HARDWARE - SOFTWARE - APLIKASI</h4>
-        <p>SERVICE LAPTOP, PC, PRINTER, DAN PEMBELIAN SPAREPART/PHERIFERAL</p>
-        <p>Jl. Winongsari, RT/RW 01/04 Ds. Blabak, Dsn. Blabak, Kec. Kandat, Kediri | HP: 081805305278 / 087758018426</p>
+    <!-- KOP SURAT DENGAN LOGO.PNG -->
+    <div class="kop-container">
+        <img src="logo.png" alt="Logo" class="kop-logo" onerror="this.src='https://via.placeholder.com/100x80?text=LOGO'">
+        <div class="kop-text">
+            <h2>ARIF EDU TECH</h2>
+            <h4>HARDWARE - SOFTWARE - APLIKASI</h4>
+            <p>SERVICE LAPTOP, PC, PRINTER, DAN PEMBELIAN SPAREPART/PHERIFERAL</p>
+            <p>Jl. Winongsari, RT/RW 01/04 Ds. Blabak, Dsn. Blabak, Kec. Kandat, Kediri | HP: 081805305278 / 087758018426</p>
+        </div>
     </div>
 
     <div id="notaKonten"></div>
@@ -258,7 +279,7 @@
             sesuaikanPlaceholder();
 
             const btnUtama = document.getElementById('btnSimpanUtama');
-            btnUtama.innerHTML = "🆙 UPDATE DATA";
+            btnUtama.innerHTML = "UP UPDATE DATA";
             btnUtama.className = "btn btn-yellow";
             document.getElementById('formTitle').innerText = "✏️ Mode Edit: " + item.nama;
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -363,6 +384,7 @@
         }
         
         document.getElementById('modalRAB').style.display = 'block';
+        updateGrandTotalRAB();
     }
 
     function addRabTahap(judul = '', tgl = '', items = []) {
@@ -374,11 +396,12 @@
         card.style.border = '1px solid #17a2b8';
         card.innerHTML = `
             <div style="display:flex; gap:10px; margin-bottom:10px;">
-                <input type="text" class="rab-judul" placeholder="Judul Bagian/Tahap (Contoh: RAB TAHAP I)" value="${judul || 'RAB TAHAP ' + tId}">
+                <input type="text" class="rab-judul" placeholder="Judul Bagian/Tahap" value="${judul || 'RAB TAHAP ' + tId}" oninput="updateGrandTotalRAB()">
                 <input type="date" class="rab-tgl" value="${tgl || new Date().toISOString().split('T')[0]}">
             </div>
             <div class="rab-items-container" id="rabItems_${tId}"></div>
             <button class="btn btn-yellow" style="font-size:11px; padding:5px 10px;" onclick="addRabRow(${tId})">+ Item Bahan</button>
+            <div class="subtotal-box" id="subtotalBox_${tId}">SUBTOTAL ${judul || 'TAHAP ' + tId}: Rp 0</div>
         `;
         document.getElementById('rabTahapContainer').appendChild(card);
 
@@ -387,6 +410,7 @@
         } else {
             addRabRow(tId);
         }
+        updateGrandTotalRAB();
     }
 
     function addRabRow(tId, bahan='', jumlah='', satuan='', harga='') {
@@ -398,16 +422,17 @@
         div.innerHTML = `
             <div class="r-no">${currentRowsCount}</div>
             <input type="text" class="r-bahan" placeholder="Bahan / Unit" value="${bahan}">
-            <input type="number" class="r-jumlah" placeholder="Jumlah" value="${jumlah}" oninput="hitungRowTotal(this)">
+            <input type="number" class="r-jumlah" placeholder="Jumlah" value="${jumlah}" oninput="hitungRowTotal(this, ${tId})">
             <input type="text" class="r-satuan" placeholder="Satuan / Ket" value="${satuan}">
-            <input type="number" class="r-harga" placeholder="Harga Satuan" value="${harga}" oninput="hitungRowTotal(this)">
+            <input type="number" class="r-harga" placeholder="Harga Satuan" value="${harga}" oninput="hitungRowTotal(this, ${tId})">
             <input type="text" class="r-total-view" placeholder="Total Harga" readonly style="background:#f8f9fa; font-weight:bold; color:#28a745;" value="${(jumlah && harga) ? 'Rp ' + (jumlah * harga).toLocaleString() : ''}">
         `;
         container.appendChild(div);
         renumberRabRows(tId);
+        hitungRowTotal(div.querySelector('.r-jumlah'), tId);
     }
 
-    function hitungRowTotal(input) {
+    function hitungRowTotal(input, tId) {
         const parent = input.closest('.grid-rab-input');
         const jml = parseFloat(parent.querySelector('.r-jumlah').value) || 0;
         const hrg = parseFloat(parent.querySelector('.r-harga').value) || 0;
@@ -415,6 +440,8 @@
         
         const total = jml * hrg;
         totalInput.value = total > 0 ? 'Rp ' + total.toLocaleString() : '';
+        
+        updateGrandTotalRAB();
     }
 
     function renumberRabRows(tId) {
@@ -422,6 +449,41 @@
         rows.forEach((r, idx) => {
             r.querySelector('.r-no').innerText = idx + 1;
         });
+    }
+
+    function updateGrandTotalRAB() {
+        const tahapBlocks = document.querySelectorAll('.rab-tahap-block');
+        let grandTotal = 0;
+        let summaryHtml = '';
+
+        tahapBlocks.forEach((block, idx) => {
+            const judul = block.querySelector('.rab-judul').value || `TAHAP ${idx + 1}`;
+            const rows = block.querySelectorAll('.grid-rab-input');
+            let subtotalTahap = 0;
+
+            rows.forEach(r => {
+                const j = parseFloat(r.querySelector('.r-jumlah').value) || 0;
+                const h = parseFloat(r.querySelector('.r-harga').value) || 0;
+                subtotalTahap += (j * h);
+            });
+
+            // Update subtotal per tahap
+            const subtotalBox = block.querySelector('.subtotal-box');
+            if (subtotalBox) {
+                subtotalBox.innerText = `SUBTOTAL ${judul.toUpperCase()}: Rp ${subtotalTahap.toLocaleString()}`;
+            }
+
+            grandTotal += subtotalTahap;
+
+            summaryHtml += `
+                <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                    <span>${judul}:</span>
+                    <strong>Rp ${subtotalTahap.toLocaleString()}</strong>
+                </div>`;
+        });
+
+        document.getElementById('rabRekapSummary').innerHTML = summaryHtml || 'Belum ada data tahap.';
+        document.getElementById('rabGrandTotalDisplay').innerText = `Rp ${grandTotal.toLocaleString()}`;
     }
 
     async function finalizeRAB() {
