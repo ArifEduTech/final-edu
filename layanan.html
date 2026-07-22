@@ -27,7 +27,7 @@
         
         /* Modal Style */
         .modal { display:none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:100; overflow-y: auto; }
-        .modal-content { background:white; max-width:850px; margin: 30px auto; padding:25px; border-radius:12px; }
+        .modal-content { background:white; max-width:950px; margin: 30px auto; padding:25px; border-radius:12px; }
         
         /* Layout Print & KOP Surat */
         @media print { .no-print { display: none !important; } #printArea { display: block !important; } }
@@ -45,7 +45,10 @@
         .rab-table th { text-align: center; background-color: #f9f9f9; }
         .rab-total-row { font-weight: bold; background: #f2f2f2; }
         
-        .grid-rab-input { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 2fr; gap: 5px; margin-bottom: 5px; }
+        /* Layout Grid Input RAB Baru */
+        .grid-rab-input { display: grid; grid-template-columns: 40px 2.5fr 1fr 1.5fr 1.5fr 1.5fr; gap: 6px; margin-bottom: 6px; align-items: center; }
+        .grid-rab-input input { margin-bottom: 0; }
+        .r-no { text-align: center; font-weight: bold; background: #e9ecef; border: 1px solid #ccc; padding: 10px 0; border-radius: 6px; font-size: 13px; }
     </style>
 </head>
 <body>
@@ -131,7 +134,6 @@
 
 <!-- AREA CETAK / PRINT -->
 <div id="printArea">
-    <!-- KOP SURAT FORMAL -->
     <div class="kop-surat">
         <h2>ARIF EDU TECH</h2>
         <h4>HARDWARE - SOFTWARE - APLIKASI</h4>
@@ -381,24 +383,45 @@
         document.getElementById('rabTahapContainer').appendChild(card);
 
         if (items && items.length > 0) {
-            items.forEach(it => addRabRow(tId, it.bahan, it.jumlah, it.harga, it.satuan, it.ket));
+            items.forEach(it => addRabRow(tId, it.bahan, it.jumlah, it.satuan, it.harga));
         } else {
             addRabRow(tId);
         }
     }
 
-    function addRabRow(tId, bahan='', jumlah='', harga='', satuan='', ket='') {
+    function addRabRow(tId, bahan='', jumlah='', satuan='', harga='') {
         const container = document.getElementById(`rabItems_${tId}`);
+        const currentRowsCount = container.querySelectorAll('.grid-rab-input').length + 1;
+        
         const div = document.createElement('div');
         div.className = 'grid-rab-input';
         div.innerHTML = `
+            <div class="r-no">${currentRowsCount}</div>
             <input type="text" class="r-bahan" placeholder="Bahan / Unit" value="${bahan}">
-            <input type="number" class="r-jumlah" placeholder="Jumlah" value="${jumlah}">
-            <input type="number" class="r-harga" placeholder="Harga Satuan" value="${harga}">
-            <input type="text" class="r-satuan" placeholder="Satuan (Pcs/Meter/dll)" value="${satuan}">
-            <input type="text" class="r-ket" placeholder="Keterangan" value="${ket}">
+            <input type="number" class="r-jumlah" placeholder="Jumlah" value="${jumlah}" oninput="hitungRowTotal(this)">
+            <input type="text" class="r-satuan" placeholder="Satuan / Ket" value="${satuan}">
+            <input type="number" class="r-harga" placeholder="Harga Satuan" value="${harga}" oninput="hitungRowTotal(this)">
+            <input type="text" class="r-total-view" placeholder="Total Harga" readonly style="background:#f8f9fa; font-weight:bold; color:#28a745;" value="${(jumlah && harga) ? 'Rp ' + (jumlah * harga).toLocaleString() : ''}">
         `;
         container.appendChild(div);
+        renumberRabRows(tId);
+    }
+
+    function hitungRowTotal(input) {
+        const parent = input.closest('.grid-rab-input');
+        const jml = parseFloat(parent.querySelector('.r-jumlah').value) || 0;
+        const hrg = parseFloat(parent.querySelector('.r-harga').value) || 0;
+        const totalInput = parent.querySelector('.r-total-view');
+        
+        const total = jml * hrg;
+        totalInput.value = total > 0 ? 'Rp ' + total.toLocaleString() : '';
+    }
+
+    function renumberRabRows(tId) {
+        const rows = document.querySelectorAll(`#rabItems_${tId} .grid-rab-input`);
+        rows.forEach((r, idx) => {
+            r.querySelector('.r-no').innerText = idx + 1;
+        });
     }
 
     async function finalizeRAB() {
@@ -416,14 +439,13 @@
             rows.forEach(r => {
                 const b = r.querySelector('.r-bahan').value;
                 const j = parseFloat(r.querySelector('.r-jumlah').value) || 0;
-                const h = parseFloat(r.querySelector('.r-harga').value) || 0;
                 const s = r.querySelector('.r-satuan').value;
-                const k = r.querySelector('.r-ket').value;
+                const h = parseFloat(r.querySelector('.r-harga').value) || 0;
 
                 if (b) {
                     const totalHarga = j * h;
                     subtotal += totalHarga;
-                    items.push({ bahan: b, jumlah: j, harga: h, satuan: s, ket: k, total: totalHarga });
+                    items.push({ bahan: b, jumlah: j, satuan: s, harga: h, total: totalHarga });
                 }
             });
 
@@ -468,11 +490,10 @@
                                 <tr>
                                     <th style="width:30px;">NO</th>
                                     <th>BAHAN</th>
-                                    <th style="width:50px;">JUMLAH</th>
-                                    <th style="width:90px;">HARGA SATUAN</th>
-                                    <th style="width:60px;">SATUAN</th>
-                                    <th>KETERANGAN</th>
-                                    <th style="width:100px;">HARGA</th>
+                                    <th style="width:60px;">JUMLAH</th>
+                                    <th style="width:90px;">SATUAN / KET</th>
+                                    <th style="width:100px;">HARGA SATUAN</th>
+                                    <th style="width:110px;">HARGA</th>
                                 </tr>
                             </thead>
                             <tbody>`;
@@ -483,16 +504,15 @@
                             <td style="text-align:center;">${idx + 1}</td>
                             <td>${it.bahan}</td>
                             <td style="text-align:center;">${it.jumlah}</td>
-                            <td style="text-align:right;">Rp ${parseInt(it.harga).toLocaleString()}</td>
                             <td style="text-align:center;">${it.satuan || '-'}</td>
-                            <td>${it.ket || '-'}</td>
+                            <td style="text-align:right;">Rp ${parseInt(it.harga).toLocaleString()}</td>
                             <td style="text-align:right;">Rp ${parseInt(it.total).toLocaleString()}</td>
                         </tr>`;
                     });
 
                     h += `
                         <tr class="rab-total-row">
-                            <td colspan="6" style="text-align:right;">TOTAL</td>
+                            <td colspan="5" style="text-align:right;">TOTAL</td>
                             <td style="text-align:right;">Rp ${parseInt(tahap.subtotal).toLocaleString()}</td>
                         </tr>
                         </tbody>
@@ -500,7 +520,6 @@
                     </div>`;
                 });
 
-                // TABEL REKAPITULASI TOTAL DI BAWAH
                 h += `
                 <div style="margin-top:20px;">
                     <table class="rab-table" style="width:100%;">
