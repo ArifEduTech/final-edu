@@ -7,7 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-        :root { --primary: #007bff; --success: #28a745; --warning: #ffc107; --danger: #dc3545; --dark: #343a40; }
+        :root { --primary: #007bff; --success: #28a745; --warning: #ffc107; --danger: #dc3545; --dark: #343a40; --purple: #6f42c1; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f8f9fa; margin: 0; padding: 15px; }
         .container { max-width: 1000px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         header { text-align: center; border-bottom: 4px solid var(--primary); margin-bottom: 25px; padding-bottom: 10px; }
@@ -19,14 +19,33 @@
         .btn-green { background: var(--success); color: white; }
         .btn-yellow { background: var(--warning); color: black; }
         .btn-red { background: var(--danger); color: white; }
+        .btn-purple { background: var(--purple); color: white; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
         th { background: #f1f1f1; }
         .badge { padding: 8px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; color: white; text-transform: uppercase; cursor: pointer; display: inline-block; border: none; min-width: 80px; text-align: center; }
-        #modalNota { display:none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:100; overflow-y: auto; }
-        .modal-content { background:white; max-width:700px; margin: 40px auto; padding:25px; border-radius:12px; }
+        
+        /* Modal Style */
+        .modal { display:none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:100; overflow-y: auto; }
+        .modal-content { background:white; max-width:850px; margin: 30px auto; padding:25px; border-radius:12px; }
+        
+        /* Layout Print & KOP Surat */
         @media print { .no-print { display: none !important; } #printArea { display: block !important; } }
-        #printArea { display: none; padding: 20px; font-family: monospace; border: 1px solid #000; }
+        #printArea { display: none; padding: 20px; font-family: 'Segoe UI', Tahoma, Arial, sans-serif; }
+        
+        .kop-surat { text-align: center; border-bottom: 3px double #000; padding-bottom: 10px; margin-bottom: 20px; position: relative; }
+        .kop-surat h2 { margin: 0; font-size: 20px; font-weight: bold; letter-spacing: 1px; }
+        .kop-surat h4 { margin: 2px 0; font-size: 12px; font-weight: bold; letter-spacing: 0.5px; }
+        .kop-surat p { margin: 2px 0; font-size: 11px; }
+        
+        .rab-section { margin-bottom: 20px; }
+        .rab-header-info { display: flex; justify-content: space-between; font-weight: bold; font-size: 12px; background: #eee; padding: 5px 10px; border: 1px solid #ccc; margin-bottom: 5px; }
+        .rab-table { width: 100%; border-collapse: collapse; margin-bottom: 5px; }
+        .rab-table th, .rab-table td { border: 1px solid #000; padding: 5px; font-size: 11px; }
+        .rab-table th { text-align: center; background-color: #f9f9f9; }
+        .rab-total-row { font-weight: bold; background: #f2f2f2; }
+        
+        .grid-rab-input { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 2fr; gap: 5px; margin-bottom: 5px; }
     </style>
 </head>
 <body>
@@ -45,12 +64,13 @@
     <div class="card">
         <h3 id="formTitle">1. Registrasi / Edit Pelanggan</h3>
         <div class="grid">
-            <div><label>Nama</label><input type="text" id="custName"></div>
+            <div><label>Nama / Instansi</label><input type="text" id="custName"></div>
             <div><label>Tanggal</label><input type="date" id="entryDate"></div>
             <div><label>Tipe Layanan</label>
                 <select id="serviceType" onchange="sesuaikanPlaceholder()">
                     <option value="Service">Service</option>
                     <option value="Produk">Produk (Pembelian Barang)</option>
+                    <option value="RAB Spesial">RAB / Layanan Khusus (Proyek)</option>
                 </select>
             </div>
             <div><label id="labelUnit">Unit</label><input type="text" id="devName"></div>
@@ -81,7 +101,8 @@
     </div>
 </div>
 
-<div id="modalNota" class="no-print">
+<!-- MODAL NOTA STANDAR -->
+<div id="modalNota" class="modal no-print">
     <div class="modal-content">
         <h2>Rincian Biaya</h2>
         <div id="itemRows"></div>
@@ -94,11 +115,30 @@
     </div>
 </div>
 
-<div id="printArea">
-    <div style="text-align:center; border-bottom: 2px dashed #000; padding-bottom:10px;">
-        <h2>ARIF EDU TECH</h2>
-        <p>Dsn. Blabak, Kec. Kandat | HP: 087758018426/081805305278</p>
+<!-- MODAL RAB SPESIAL -->
+<div id="modalRAB" class="modal no-print">
+    <div class="modal-content">
+        <h2>📋 Input RAB / Nota Khusus Projek</h2>
+        <div id="rabTahapContainer"></div>
+        <button class="btn btn-yellow" onclick="addRabTahap()">+ Tambah Tahap / Bagian</button>
+        <hr>
+        <div style="display:flex; gap:10px;">
+            <button class="btn btn-purple" style="flex:1;" onclick="finalizeRAB()">💾 SIMPAN & CETAK RAB</button>
+            <button class="btn btn-red" onclick="closeRabModal()">BATAL</button>
+        </div>
     </div>
+</div>
+
+<!-- AREA CETAK / PRINT -->
+<div id="printArea">
+    <!-- KOP SURAT FORMAL -->
+    <div class="kop-surat">
+        <h2>ARIF EDU TECH</h2>
+        <h4>HARDWARE - SOFTWARE - APLIKASI</h4>
+        <p>SERVICE LAPTOP, PC, PRINTER, DAN PEMBELIAN SPAREPART/PHERIFERAL</p>
+        <p>Jl. Winongsari, RT/RW 01/04 Ds. Blabak, Dsn. Blabak, Kec. Kandat, Kediri | HP: 081805305278 / 087758018426</p>
+    </div>
+
     <div id="notaKonten"></div>
     <div id="qrPrint" style="display:flex; justify-content:center; margin:15px 0;"></div>
     <div id="qrInfoContainer" style="text-align:center;"></div>
@@ -111,10 +151,10 @@
 
     let activeId = null; 
     let fullData = [];
+    let rabTahapCount = 0;
 
     document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
 
-    // Mengubah tampilan petunjuk form secara rapi saat tipe layanan diganti
     function sesuaikanPlaceholder() {
         const tipe = document.getElementById('serviceType').value;
         const labelUnit = document.getElementById('labelUnit');
@@ -124,7 +164,11 @@
         if (tipe === 'Produk') {
             labelUnit.innerText = "Produk / Barang";
             kelengkapan.placeholder = "Spesifikasi Produk (Contoh: Core i5, Ram 8GB, SSD 256GB)...";
-            keluhan.placeholder = "Kelengkapan Produk / Keterangan Pemesanan (Contoh: Dusbox, Charger, Indent)...";
+            keluhan.placeholder = "Kelengkapan Produk / Keterangan Pemesanan...";
+        } else if (tipe === 'RAB Spesial') {
+            labelUnit.innerText = "Nama Proyek / Instansi";
+            kelengkapan.placeholder = "Lokasi / Sub-Judul Proyek...";
+            keluhan.placeholder = "Catatan Khusus RAB...";
         } else {
             labelUnit.innerText = "Unit";
             kelengkapan.placeholder = "Kelengkapan...";
@@ -145,18 +189,28 @@
         body.innerHTML = '';
         data.forEach(d => {
             const isProduk = d.tipe === 'Produk';
-            const uploadHtml = (d.status !== 'selesai' && !isProduk) ? `
+            const isRAB = d.tipe === 'RAB Spesial';
+            
+            let colorBadge = '#007bff';
+            if (isProduk) colorBadge = '#28a745';
+            if (isRAB) colorBadge = '#6f42c1';
+
+            const uploadHtml = (d.status !== 'selesai' && !isProduk && !isRAB) ? `
                 <div style="margin-top:8px; border-top:1px solid #eee; padding-top:5px;">
                     <label style="font-size:10px; font-weight:bold; color:#666;">FOTO PROGRES:</label>
                     <input type="file" accept="image/*" onchange="uploadFoto('${d.id}', this)" style="font-size:11px;">
                     ${d.dokumentasi_proses ? `<br><small style="color:green;">✅ Ada Foto</small>` : ''}
                 </div>` : '';
 
+            const btnInputNota = isRAB ? 
+                `<button class="btn btn-purple" style="padding:5px 8px;" onclick="openRabModal('${d.id}')" title="Edit Detail RAB">📋</button>` : 
+                `<button class="btn btn-green" style="padding:5px 8px;" onclick="openModal('${d.id}')" title="Nota Standar">📝</button>`;
+
             body.innerHTML += `
                 <tr>
-                    <td><strong>${d.nama}</strong> <span style="font-size:10px; padding:2px 5px; border-radius:4px; background:${isProduk ? '#28a745':'#007bff'}; color:white;">${d.tipe || 'Service'}</span><br><small>${d.barang}</small></td>
+                    <td><strong>${d.nama}</strong> <span style="font-size:10px; padding:2px 5px; border-radius:4px; background:${colorBadge}; color:white;">${d.tipe || 'Service'}</span><br><small>${d.barang}</small></td>
                     <td>
-                        <input type="text" value="${d.tindakan || ''}" onchange="updateTindakan('${d.id}', this.value)" placeholder="${isProduk ? 'Catatan/Keterangan...' : 'Tindakan...'}">
+                        <input type="text" value="${d.tindakan || ''}" onchange="updateTindakan('${d.id}', this.value)" placeholder="${isProduk || isRAB ? 'Catatan/Keterangan...' : 'Tindakan...'}">
                         ${uploadHtml}
                     </td>
                     <td>
@@ -167,7 +221,7 @@
                     <td>
                         <div style="display: flex; gap: 4px;">
                             <button class="btn btn-yellow" style="padding:5px 8px;" onclick="editData('${d.id}')">✏️</button>
-                            <button class="btn btn-green" style="padding:5px 8px;" onclick="openModal('${d.id}')">📝</button>
+                            ${btnInputNota}
                             <button class="btn btn-blue" style="padding:5px 8px;" onclick="reprint('${d.id}')">🖨️</button>
                             <button class="btn btn-red" style="padding:5px 8px;" onclick="hapusData('${d.id}')">🗑️</button>
                         </div>
@@ -219,16 +273,24 @@
             keluhan: document.getElementById('keluhan').value
         };
 
-        if (!p.nama || !p.barang) return alert("Isi Nama & Produk/Unit!");
+        if (!p.nama || !p.barang) return alert("Isi Nama & Produk/Unit/Proyek!");
 
         if (activeId) {
             const { error } = await sbClient.from('layanan').update(p).eq('id', activeId);
             if (!error) { alert("Updated!"); resetForm(); fetchData(); }
         } else {
-            p.status = p.tipe === 'Produk' ? 'selesai' : 'checking';
+            p.status = (p.tipe === 'Produk' || p.tipe === 'RAB Spesial') ? 'selesai' : 'checking';
             p.tindakan = '-'; p.items = []; p.total = 0;
             const { data, error } = await sbClient.from('layanan').insert([p]).select();
-            if (!error) { fetchData(); reprint(data[0].id); resetForm(); }
+            if (!error) { 
+                fetchData(); 
+                if (p.tipe === 'RAB Spesial') {
+                    openRabModal(data[0].id);
+                } else {
+                    reprint(data[0].id); 
+                }
+                resetForm(); 
+            }
         }
     }
 
@@ -263,6 +325,7 @@
         renderTable(fullData.filter(i => i.nama.toLowerCase().includes(input) || i.barang.toLowerCase().includes(input)));
     }
 
+    /* LOGIKA NOTA STANDAR */
     function openModal(id) { activeId = id; document.getElementById('itemRows').innerHTML = ''; addRow(); document.getElementById('modalNota').style.display = 'block'; }
     function addRow() {
         const div = document.createElement('div');
@@ -282,26 +345,192 @@
         closeModal(); fetchData(); reprint(activeId);
     }
 
+    /* LOGIKA KHUSUS RAB / NOTA SPESIAL */
+    function openRabModal(id) {
+        activeId = id;
+        rabTahapCount = 0;
+        document.getElementById('rabTahapContainer').innerHTML = '';
+        const item = fullData.find(i => i.id == id);
+        
+        if (item && item.rab_data && item.rab_data.length > 0) {
+            item.rab_data.forEach(tahap => {
+                addRabTahap(tahap.judul, tahap.tgl, tahap.items);
+            });
+        } else {
+            addRabTahap('RAB TAHAP I', item ? item.tgl : '');
+        }
+        
+        document.getElementById('modalRAB').style.display = 'block';
+    }
+
+    function addRabTahap(judul = '', tgl = '', items = []) {
+        rabTahapCount++;
+        const tId = rabTahapCount;
+        const card = document.createElement('div');
+        card.className = 'card rab-tahap-block';
+        card.style.background = '#fcfcfc';
+        card.style.border = '1px solid #17a2b8';
+        card.innerHTML = `
+            <div style="display:flex; gap:10px; margin-bottom:10px;">
+                <input type="text" class="rab-judul" placeholder="Judul Bagian/Tahap (Contoh: RAB TAHAP I)" value="${judul || 'RAB TAHAP ' + tId}">
+                <input type="date" class="rab-tgl" value="${tgl || new Date().toISOString().split('T')[0]}">
+            </div>
+            <div class="rab-items-container" id="rabItems_${tId}"></div>
+            <button class="btn btn-yellow" style="font-size:11px; padding:5px 10px;" onclick="addRabRow(${tId})">+ Item Bahan</button>
+        `;
+        document.getElementById('rabTahapContainer').appendChild(card);
+
+        if (items && items.length > 0) {
+            items.forEach(it => addRabRow(tId, it.bahan, it.jumlah, it.harga, it.satuan, it.ket));
+        } else {
+            addRabRow(tId);
+        }
+    }
+
+    function addRabRow(tId, bahan='', jumlah='', harga='', satuan='', ket='') {
+        const container = document.getElementById(`rabItems_${tId}`);
+        const div = document.createElement('div');
+        div.className = 'grid-rab-input';
+        div.innerHTML = `
+            <input type="text" class="r-bahan" placeholder="Bahan / Unit" value="${bahan}">
+            <input type="number" class="r-jumlah" placeholder="Jumlah" value="${jumlah}">
+            <input type="number" class="r-harga" placeholder="Harga Satuan" value="${harga}">
+            <input type="text" class="r-satuan" placeholder="Satuan (Pcs/Meter/dll)" value="${satuan}">
+            <input type="text" class="r-ket" placeholder="Keterangan" value="${ket}">
+        `;
+        container.appendChild(div);
+    }
+
+    async function finalizeRAB() {
+        const tahapBlocks = document.querySelectorAll('.rab-tahap-block');
+        let rabData = [];
+        let grandTotal = 0;
+
+        tahapBlocks.forEach(block => {
+            const judul = block.querySelector('.rab-judul').value;
+            const tgl = block.querySelector('.rab-tgl').value;
+            const rows = block.querySelectorAll('.grid-rab-input');
+            let items = [];
+            let subtotal = 0;
+
+            rows.forEach(r => {
+                const b = r.querySelector('.r-bahan').value;
+                const j = parseFloat(r.querySelector('.r-jumlah').value) || 0;
+                const h = parseFloat(r.querySelector('.r-harga').value) || 0;
+                const s = r.querySelector('.r-satuan').value;
+                const k = r.querySelector('.r-ket').value;
+
+                if (b) {
+                    const totalHarga = j * h;
+                    subtotal += totalHarga;
+                    items.push({ bahan: b, jumlah: j, harga: h, satuan: s, ket: k, total: totalHarga });
+                }
+            });
+
+            grandTotal += subtotal;
+            rabData.push({ judul, tgl, items, subtotal });
+        });
+
+        await sbClient.from('layanan').update({ rab_data: rabData, total: grandTotal, status: 'selesai' }).eq('id', activeId);
+        closeRabModal(); 
+        fetchData(); 
+        reprint(activeId);
+    }
+
     async function reprint(id) {
         const { data } = await sbClient.from('layanan').select('*').eq('id', id).single();
+        let qrUrl, qrLabel;
         
-        let qrUrl;
-        let qrLabel;
-        
-        // JIKA LAYANAN ADALAH PRODUK ATAU SERVICE YANG SUDAH SELESAI, BARCODE KE LINK BERANDA WEB UTAMA VERCEL
-        if (data.tipe === 'Produk' || data.status === 'selesai') {
+        if (data.tipe === 'Produk' || data.tipe === 'RAB Spesial' || data.status === 'selesai') {
             qrUrl = "https://final-edu-seven.vercel.app/";
             qrLabel = "Scan QR code untuk mengunjungi WEB Arif_Edu_Tech";
         } else {
-            // JIKA SERVICE BELUM SELESAI, BARCODE BARU BERUPA LINK TRACKING PROGRES
             qrUrl = window.location.origin + window.location.pathname + "?id=" + id;
             qrLabel = "Scan kode QR atau kunjungi link di atas untuk cek progres service";
         }
         
         let h = "";
 
-        // PERBAIKAN STRUKTUR TEKS PRINT NOTA PEMBELIAN BARANG VS SERVICE
-        if (data.tipe === "Produk") {
+        if (data.tipe === "RAB Spesial") {
+            h += `<h3 style="text-align:center; margin-bottom:5px; text-transform:uppercase;">${data.barang || 'RAB INSTALLASI & SERVICE'}</h3>`;
+            h += `<p style="text-align:center; font-weight:bold; margin-top:0; font-size:12px;">${data.nama || ''}</p>`;
+            
+            if (data.rab_data && data.rab_data.length > 0) {
+                data.rab_data.forEach(tahap => {
+                    h += `
+                    <div class="rab-section">
+                        <div class="rab-header-info">
+                            <span>${tahap.judul}</span>
+                            <span>Hari/Tanggal: ${tahap.tgl || '-'}</span>
+                        </div>
+                        <table class="rab-table">
+                            <thead>
+                                <tr>
+                                    <th style="width:30px;">NO</th>
+                                    <th>BAHAN</th>
+                                    <th style="width:50px;">JUMLAH</th>
+                                    <th style="width:90px;">HARGA SATUAN</th>
+                                    <th style="width:60px;">SATUAN</th>
+                                    <th>KETERANGAN</th>
+                                    <th style="width:100px;">HARGA</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+                    
+                    tahap.items.forEach((it, idx) => {
+                        h += `
+                        <tr>
+                            <td style="text-align:center;">${idx + 1}</td>
+                            <td>${it.bahan}</td>
+                            <td style="text-align:center;">${it.jumlah}</td>
+                            <td style="text-align:right;">Rp ${parseInt(it.harga).toLocaleString()}</td>
+                            <td style="text-align:center;">${it.satuan || '-'}</td>
+                            <td>${it.ket || '-'}</td>
+                            <td style="text-align:right;">Rp ${parseInt(it.total).toLocaleString()}</td>
+                        </tr>`;
+                    });
+
+                    h += `
+                        <tr class="rab-total-row">
+                            <td colspan="6" style="text-align:right;">TOTAL</td>
+                            <td style="text-align:right;">Rp ${parseInt(tahap.subtotal).toLocaleString()}</td>
+                        </tr>
+                        </tbody>
+                        </table>
+                    </div>`;
+                });
+
+                // TABEL REKAPITULASI TOTAL DI BAWAH
+                h += `
+                <div style="margin-top:20px;">
+                    <table class="rab-table" style="width:100%;">
+                        <thead>
+                            <tr>
+                                <th colspan="2">TOTAL RAB PEMBANGUNAN, SERVICE, DAN INSTALLASI</th>
+                                <th style="width:150px;">HARGA</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+                
+                data.rab_data.forEach(tahap => {
+                    h += `
+                    <tr>
+                        <td colspan="2" style="font-weight:bold;">${tahap.judul}</td>
+                        <td style="text-align:right; font-weight:bold;">Rp ${parseInt(tahap.subtotal).toLocaleString()}</td>
+                    </tr>`;
+                });
+
+                h += `
+                    <tr class="rab-total-row" style="font-size:13px; background:#e2e2e2;">
+                        <td colspan="2" style="text-align:right; font-weight:bold;">GRAND TOTAL</td>
+                        <td style="text-align:right; font-weight:bold;">Rp ${parseInt(data.total || 0).toLocaleString()}</td>
+                    </tr>
+                    </tbody>
+                    </table>
+                </div>`;
+            }
+
+        } else if (data.tipe === "Produk") {
             h += `<h3>NOTA PEMBELIAN BARANG</h3>
                   <div style="text-align:left; font-size:12px;">
                     <p>Tanggal: ${data.tgl}<br>
@@ -321,7 +550,7 @@
                   </div>`;
         }
 
-        if(data.items && data.items.length > 0) {
+        if(data.tipe !== "RAB Spesial" && data.items && data.items.length > 0) {
             h += `<hr><table>`;
             data.items.forEach(i => h += `<tr><td>${i.desc}</td><td style="text-align:right;">Rp ${parseInt(i.price).toLocaleString()}</td></tr>`);
             h += `</table><h4>TOTAL AKHIR: Rp ${parseInt(data.total).toLocaleString()}</h4>`;
@@ -332,8 +561,8 @@
         document.getElementById('qrPrint').innerHTML = "";
         new QRCode(document.getElementById("qrPrint"), { 
             text: qrUrl, 
-            width: 110, 
-            height: 110  
+            width: 100, 
+            height: 100  
         });
 
         document.getElementById('qrInfoContainer').innerHTML = `
@@ -349,6 +578,7 @@
 
     async function hapusData(id) { if(confirm("Hapus?")) { await sbClient.from('layanan').delete().eq('id', id); fetchData(); } }
     function closeModal() { document.getElementById('modalNota').style.display = 'none'; }
+    function closeRabModal() { document.getElementById('modalRAB').style.display = 'none'; }
 
     window.onload = async () => {
         const p = new URLSearchParams(window.location.search);
@@ -357,16 +587,16 @@
             const { data } = await sbClient.from('layanan').select('*').eq('id', p.get('id')).single();
             if(data) {
                 const isProduk = data.tipe === 'Produk';
+                const isRAB = data.tipe === 'RAB Spesial';
                 document.body.innerHTML = `
                 <div style="text-align:center; padding:30px; font-family: sans-serif;">
                     <h1 style="color:#007bff;">ARIF EDU TECH</h1>
                     <h2 style="color:${getStatusColor(data.status)}; text-transform: uppercase;">${data.status}</h2>
-                    <div style="text-align:left; max-width:400px; margin:auto; border:1px solid #ddd; padding:20px; border-radius:10px; background:white;">
-                        <p><strong>Nama:</strong> ${data.nama}</p>
-                        <p><strong>${isProduk ? 'Barang' : 'Unit'}:</strong> ${data.barang}</p>
-                        <p><strong>${isProduk ? 'Spesifikasi' : 'Keluhan'}:</strong> ${data.kelengkapan || '-'}</p>
-                        <p><strong>${isProduk ? 'Kelengkapan / Keterangan' : 'Progres'}:</strong> ${isProduk ? (data.keluhan || '-') : (data.tindakan || '-')}</p>
-                        ${data.dokumentasi_proses ? `<img src="${data.dokumentasi_proses}" style="max-width:100%; border-radius:10px; margin-top:10px;">` : ''}
+                    <div style="text-align:left; max-width:500px; margin:auto; border:1px solid #ddd; padding:20px; border-radius:10px; background:white;">
+                        <p><strong>Nama / Instansi:</strong> ${data.nama}</p>
+                        <p><strong>${isProduk ? 'Barang' : (isRAB ? 'Proyek' : 'Unit')}:</strong> ${data.barang}</p>
+                        <p><strong>Detail / Catatan:</strong> ${data.kelengkapan || '-'}</p>
+                        <p><strong>Total Biaya:</strong> Rp ${parseInt(data.total || 0).toLocaleString()}</p>
                     </div>
                 </div>`;
             }
