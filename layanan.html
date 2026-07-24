@@ -30,23 +30,35 @@
         .modal-content { background:white; max-width:950px; margin: 30px auto; padding:25px; border-radius:12px; }
         
         /* Layout Print & KOP Surat dengan Logo */
-        @media print { .no-print { display: none !important; } #printArea { display: block !important; } }
-        #printArea { display: none; padding: 20px; font-family: 'Segoe UI', Tahoma, Arial, sans-serif; }
+        @media print { 
+            @page { size: 215mm 330mm; margin: 10mm; } /* Ukuran Kertas F4 / Folio */
+            .no-print { display: none !important; } 
+            #printArea { display: block !important; } 
+        }
+        #printArea { display: none; padding: 10px; font-family: 'Segoe UI', Tahoma, Arial, sans-serif; }
         
-        .kop-container { display: flex; align-items: center; justify-content: center; border-bottom: 3px double #000; padding-bottom: 10px; margin-bottom: 20px; position: relative; }
-        .kop-logo { width: 100px; height: auto; position: absolute; left: 10px; top: 0; }
-        .kop-text { text-align: center; width: 100%; padding: 0 110px; }
-        .kop-text h2 { margin: 0; font-size: 20px; font-weight: bold; letter-spacing: 1px; }
+        /* KOP SURAT PRESISI DENGAN LOGO LEBIH BESAR */
+        .kop-container { display: flex; align-items: center; justify-content: space-between; border-bottom: 3px double #000; padding-bottom: 8px; margin-bottom: 12px; position: relative; }
+        .kop-logo { width: 135px; height: auto; max-height: 85px; object-fit: contain; position: absolute; left: 0; top: 50%; transform: translateY(-50%); }
+        .kop-text { text-align: center; width: 100%; padding: 0 140px 0 140px; }
+        .kop-text h2 { margin: 0; font-size: 21px; font-weight: bold; letter-spacing: 1px; }
         .kop-text h4 { margin: 2px 0; font-size: 12px; font-weight: bold; letter-spacing: 0.5px; }
-        .kop-text p { margin: 2px 0; font-size: 11px; }
+        .kop-text p { margin: 2px 0; font-size: 10.5px; line-height: 1.2; }
         
-        .rab-section { margin-bottom: 20px; }
-        .rab-header-info { display: flex; justify-content: space-between; font-weight: bold; font-size: 12px; background: #eee; padding: 5px 10px; border: 1px solid #ccc; margin-bottom: 5px; }
-        .rab-table { width: 100%; border-collapse: collapse; margin-bottom: 5px; }
-        .rab-table th, .rab-table td { border: 1px solid #000; padding: 5px; font-size: 11px; }
+        /* OPTIMASI TAMPILAN KHUSUS CETAK RAB SPESIAL (AGAR KETAT 1 LEMBAR F4) */
+        .rab-section { margin-bottom: 8px; }
+        .rab-header-info { display: flex; justify-content: space-between; font-weight: bold; font-size: 11px; background: #eee; padding: 3px 8px; border: 1px solid #000; margin-bottom: 3px; }
+        .rab-table { width: 100%; border-collapse: collapse; margin-bottom: 3px; }
+        .rab-table th, .rab-table td { border: 1px solid #000; padding: 3px 5px; font-size: 10px; }
         .rab-table th { text-align: center; background-color: #f9f9f9; }
         .rab-total-row { font-weight: bold; background: #f2f2f2; }
         
+        /* TABEL RAPI DATA ATAS NOTA BIASA / PRODUK */
+        .info-table-biasa { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 12px; }
+        .info-table-biasa td { border: none !important; padding: 3px 4px !important; vertical-align: top; }
+        .info-table-biasa td.lbl { width: 130px; font-weight: bold; color: #333; }
+        .info-table-biasa td.colon { width: 10px; text-align: center; font-weight: bold; }
+
         /* Layout Grid Input RAB */
         .grid-rab-input { display: grid; grid-template-columns: 40px 2.5fr 1fr 1.5fr 1.5fr 1.5fr; gap: 6px; margin-bottom: 6px; align-items: center; }
         .grid-rab-input input { margin-bottom: 0; }
@@ -151,9 +163,9 @@
 
 <!-- AREA CETAK / PRINT -->
 <div id="printArea">
-    <!-- KOP SURAT DENGAN LOGO.PNG -->
+    <!-- KOP SURAT DENGAN LOGO.PNG DIBESARKAN SEIMBANG -->
     <div class="kop-container">
-        <img src="logo.png" alt="Logo" class="kop-logo" onerror="this.src='https://via.placeholder.com/100x80?text=LOGO'">
+        <img src="logo.png" alt="Logo" class="kop-logo" onerror="this.src='https://via.placeholder.com/135x85?text=LOGO'">
         <div class="kop-text">
             <h2>ARIF EDU TECH</h2>
             <h4>HARDWARE - SOFTWARE - APLIKASI</h4>
@@ -163,7 +175,7 @@
     </div>
 
     <div id="notaKonten"></div>
-    <div id="qrPrint" style="display:flex; justify-content:center; margin:15px 0;"></div>
+    <div id="qrPrint" style="display:flex; justify-content:center; margin:8px 0 4px 0;"></div>
     <div id="qrInfoContainer" style="text-align:center;"></div>
 </div>
 
@@ -536,8 +548,8 @@
         let h = "";
 
         if (data.tipe === "RAB Spesial") {
-            h += `<h3 style="text-align:center; margin-bottom:5px; text-transform:uppercase;">${data.barang || 'RAB INSTALLASI & SERVICE'}</h3>`;
-            h += `<p style="text-align:center; font-weight:bold; margin-top:0; font-size:12px;">${data.nama || ''}</p>`;
+            h += `<h3 style="text-align:center; margin-bottom:2px; font-size:14px; text-transform:uppercase;">${data.barang || 'RAB INSTALLASI & SERVICE'}</h3>`;
+            h += `<p style="text-align:center; font-weight:bold; margin-top:0; margin-bottom:8px; font-size:11px;">${data.nama || ''}</p>`;
             
             if (data.rab_data && data.rab_data.length > 0) {
                 data.rab_data.forEach(tahap => {
@@ -550,12 +562,12 @@
                         <table class="rab-table">
                             <thead>
                                 <tr>
-                                    <th style="width:30px;">NO</th>
+                                    <th style="width:25px;">NO</th>
                                     <th>BAHAN</th>
-                                    <th style="width:60px;">JUMLAH</th>
-                                    <th style="width:90px;">SATUAN / KET</th>
-                                    <th style="width:100px;">HARGA SATUAN</th>
-                                    <th style="width:110px;">HARGA</th>
+                                    <th style="width:50px;">JUMLAH</th>
+                                    <th style="width:80px;">SATUAN / KET</th>
+                                    <th style="width:90px;">HARGA SATUAN</th>
+                                    <th style="width:100px;">HARGA</th>
                                 </tr>
                             </thead>
                             <tbody>`;
@@ -583,12 +595,12 @@
                 });
 
                 h += `
-                <div style="margin-top:20px;">
+                <div style="margin-top:8px;">
                     <table class="rab-table" style="width:100%;">
                         <thead>
                             <tr>
                                 <th colspan="2">TOTAL RAB PEMBANGUNAN, SERVICE, DAN INSTALLASI</th>
-                                <th style="width:150px;">HARGA</th>
+                                <th style="width:130px;">HARGA</th>
                             </tr>
                         </thead>
                         <tbody>`;
@@ -602,7 +614,7 @@
                 });
 
                 h += `
-                    <tr class="rab-total-row" style="font-size:13px; background:#e2e2e2;">
+                    <tr class="rab-total-row" style="font-size:11px; background:#e2e2e2;">
                         <td colspan="2" style="text-align:right; font-weight:bold;">GRAND TOTAL</td>
                         <td style="text-align:right; font-weight:bold;">Rp ${parseInt(data.total || 0).toLocaleString()}</td>
                     </tr>
@@ -612,44 +624,46 @@
             }
 
         } else if (data.tipe === "Produk") {
-            h += `<h3>NOTA PEMBELIAN BARANG</h3>
-                  <div style="text-align:left; font-size:12px;">
-                    <p>Tanggal: ${data.tgl}<br>
-                    Nama Pembeli: ${data.nama}<br>
-                    Produk Utama: ${data.barang}<br>
-                    Spesifikasi: ${data.kelengkapan || '-'}<br>
-                    Kelengkapan / Keterangan: ${data.keluhan || '-'}</p>
-                  </div>`;
+            h += `<h3 style="text-align:center; margin-bottom:12px; font-size:15px;">NOTA PEMBELIAN BARANG</h3>
+                  <table class="info-table-biasa">
+                    <tr><td class="lbl">Tanggal</td><td class="colon">:</td><td>${data.tgl}</td></tr>
+                    <tr><td class="lbl">Nama Pembeli</td><td class="colon">:</td><td>${data.nama}</td></tr>
+                    <tr><td class="lbl">Produk Utama</td><td class="colon">:</td><td>${data.barang}</td></tr>
+                    <tr><td class="lbl">Spesifikasi</td><td class="colon">:</td><td>${data.kelengkapan || '-'}</td></tr>
+                    <tr><td class="lbl">Kelengkapan/Ket.</td><td class="colon">:</td><td>${data.keluhan || '-'}</td></tr>
+                  </table>`;
         } else {
-            h += `<h3>${data.items && data.items.length > 0 ? 'NOTA' : 'TANDA SERVICE'}</h3>
-                  <div style="text-align:left; font-size:12px;">
-                    <p>Tgl Masuk: ${data.tgl}<br>
-                    Nama Pelanggan: ${data.nama}<br>
-                    Unit: ${data.barang}<br>
-                    Kelengkapan: ${data.kelengkapan || '-'}<br>
-                    Keluhan: ${data.keluhan || '-'}</p>
-                  </div>`;
+            h += `<h3 style="text-align:center; margin-bottom:12px; font-size:15px;">${data.items && data.items.length > 0 ? 'NOTA SERVICE' : 'TANDA TERIMA SERVICE'}</h3>
+                  <table class="info-table-biasa">
+                    <tr><td class="lbl">Tgl Masuk</td><td class="colon">:</td><td>${data.tgl}</td></tr>
+                    <tr><td class="lbl">Nama Pelanggan</td><td class="colon">:</td><td>${data.nama}</td></tr>
+                    <tr><td class="lbl">Unit / Perangkat</td><td class="colon">:</td><td>${data.barang}</td></tr>
+                    <tr><td class="lbl">Kelengkapan</td><td class="colon">:</td><td>${data.kelengkapan || '-'}</td></tr>
+                    <tr><td class="lbl">Keluhan / Masalah</td><td class="colon">:</td><td>${data.keluhan || '-'}</td></tr>
+                  </table>`;
         }
 
         if(data.tipe !== "RAB Spesial" && data.items && data.items.length > 0) {
-            h += `<hr><table>`;
+            h += `<hr style="border: 0.5px solid #ccc; margin: 10px 0;"><table>`;
             data.items.forEach(i => h += `<tr><td>${i.desc}</td><td style="text-align:right;">Rp ${parseInt(i.price).toLocaleString()}</td></tr>`);
-            h += `</table><h4>TOTAL AKHIR: Rp ${parseInt(data.total).toLocaleString()}</h4>`;
+            h += `</table><h4 style="text-align:right; margin-top:10px; font-size:14px;">TOTAL AKHIR: Rp ${parseInt(data.total).toLocaleString()}</h4>`;
         }
         
         document.getElementById('notaKonten').innerHTML = h;
         
+        // Ukuran QR disesuaikan agar pas 1 lembar F4
+        const qrSize = (data.tipe === "RAB Spesial") ? 65 : 100;
         document.getElementById('qrPrint').innerHTML = "";
         new QRCode(document.getElementById("qrPrint"), { 
             text: qrUrl, 
-            width: 100, 
-            height: 100  
+            width: qrSize, 
+            height: qrSize  
         });
 
         document.getElementById('qrInfoContainer').innerHTML = `
-            <div style="margin-top: 10px; font-size: 10px; text-align:center;">
+            <div style="margin-top: 4px; font-size: 9.5px; text-align:center;">
                 <span style="word-break: break-all; font-weight: bold; color: #007bff;">${qrUrl}</span>
-                <p style="margin-top: 8px; font-weight: bold; border-top: 1px dashed #ccc; padding-top: 5px;">
+                <p style="margin-top: 4px; font-weight: bold; border-top: 1px dashed #ccc; padding-top: 3px; margin-bottom:0;">
                     ${qrLabel}
                 </p>
             </div>`;
