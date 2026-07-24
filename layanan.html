@@ -37,9 +37,9 @@
         }
         #printArea { display: none; padding: 10px; font-family: 'Segoe UI', Tahoma, Arial, sans-serif; }
         
-        /* KOP SURAT PRESISI DENGAN LOGO LEBIH BESAR & SEJAJAR ATAS HURUFR ARIF EDU TECH */
+        /* KOP SURAT PRESISI DENGAN POSISI LOGO DINAIKKAN SEJAJAR ATAS TEKS */
         .kop-container { display: flex; align-items: flex-start; justify-content: space-between; border-bottom: 3px double #000; padding-bottom: 8px; margin-bottom: 12px; position: relative; }
-        .kop-logo { width: 140px; height: auto; max-height: 110px; object-fit: contain; position: absolute; left: 0; top: 0; }
+        .kop-logo { width: 140px; height: auto; max-height: 110px; object-fit: contain; position: absolute; left: 0; top: -12px; } /* Posisi top dinaikkan agar sejajar atas huruf */
         .kop-text { text-align: center; width: 100%; padding: 0 145px; }
         .kop-text h2 { margin: 0; font-size: 21px; font-weight: bold; letter-spacing: 1px; line-height: 1; }
         .kop-text h4 { margin: 4px 0 2px 0; font-size: 12px; font-weight: bold; letter-spacing: 0.5px; }
@@ -167,7 +167,7 @@
 
 <!-- AREA CETAK / PRINT -->
 <div id="printArea">
-    <!-- KOP SURAT DENGAN LOGO DIBESARKAN & SEJAJAR ATAS TEKS -->
+    <!-- KOP SURAT DENGAN POSISI LOGO PRESISI SEJAJAR ATAS -->
     <div class="kop-container">
         <img src="logo.png" alt="Logo" class="kop-logo" onerror="this.src='https://via.placeholder.com/140x110?text=LOGO'">
         <div class="kop-text">
@@ -560,7 +560,7 @@
             h += `<h3 style="text-align:center; margin-bottom:2px; font-size:14px; text-transform:uppercase;">${data.barang || 'RAB INSTALLASI & SERVICE'}</h3>`;
             h += `<p style="text-align:center; font-weight:bold; margin-top:0; margin-bottom:4px; font-size:11px;">${data.nama || ''}</p>`;
             
-            // PENAMBAHAN TULISAN NOTA KONTAN RATA KIRI ATAS TABEL
+            // TULISAN NOTA KONTAN RATA KIRI ATAS TABEL
             h += `<div style="text-align:left; font-weight:bold; font-size:11px; margin-bottom:4px; text-transform:uppercase;">NOTA KONTAN</div>`;
 
             if (data.rab_data && data.rab_data.length > 0) {
@@ -663,7 +663,6 @@
         
         document.getElementById('notaKonten').innerHTML = h;
         
-        // Ukuran QR disesuaikan agar pas 1 lembar F4
         const qrSize = (data.tipe === "RAB Spesial") ? 65 : 100;
         document.getElementById('qrPrint').innerHTML = "";
         new QRCode(document.getElementById("qrPrint"), { 
